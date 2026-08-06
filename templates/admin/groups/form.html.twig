@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_edit ? 'groups.edit_title'|trans : 'groups.create'|trans }} — {{ site_appearance.brandName }}{% endblock %}
+
+{% block body %}
+<div class="mb-6">
+    <h1 class="font-[family-name:var(--font-display)] text-3xl font-bold">{{ is_edit ? 'groups.edit_title'|trans : 'groups.create'|trans }}</h1>
+</div>
+
+{{ form_start(form, {attr: {class: 'panel max-w-xl space-y-4'}}) }}
+    {% include 'form/_fields.html.twig' with {form: form} only %}
+    <div class="flex flex-wrap gap-2">
+        <button class="btn-primary" type="submit">{{ is_edit ? 'groups.save'|trans : 'groups.create'|trans }}</button>
+        <a class="btn-ghost no-underline" href="{{ is_edit ? path('admin_groups_show', {id: group.uuid}) : path('admin_groups') }}">{{ 'groups.cancel'|trans }}</a>
+    </div>
+{{ form_end(form) }}
+
+{% if is_edit and group %}
+    <section class="panel mt-6 max-w-xl">
+        <h2 class="mb-3 text-lg font-semibold">{{ 'common.audit.title'|trans }}</h2>
+        {% include 'shared/_audit_meta.html.twig' with {entity: group, class: 'sm:grid-cols-2'} only %}
+    </section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,80 @@
+{% use "form_div_layout.html.twig" %}
+{% use "form/_toggle_password_csp.html.twig" %}
+
+{%- block form_row -%}
+    {# flex+gap beats Tailwind space-y (:where = 0 specificity, often overridden by preflight/SCSS). #}
+    <div class="flex flex-col gap-2">
+        {{- form_label(form) -}}
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+        {{- form_help(form) -}}
+    </div>
+{%- endblock form_row -%}
+
+{%- block form_label -%}
+    {% if label is not same as(false) -%}
+        {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' block text-sm font-medium text-[var(--color-ink)]/85')|trim}) %}
+        {{- parent() -}}
+    {%- endif -%}
+{%- endblock form_label -%}
+
+{%- block form_widget_simple -%}
+    {% set type = type|default('text') %}
+    {% if type == 'hidden' %}
+        {{- parent() -}}
+    {% else %}
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' input')|trim}) %}
+        {{- parent() -}}
+    {% endif %}
+{%- endblock form_widget_simple -%}
+
+{%- block toggle_password_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' input')|trim}) %}
+    {{- parent() -}}
+{%- endblock toggle_password_widget -%}
+
+{%- block textarea_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' input')|trim}) %}
+    {{- parent() -}}
+{%- endblock textarea_widget -%}
+
+{%- block choice_widget_collapsed -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' input')|trim}) %}
+    {{- parent() -}}
+{%- endblock choice_widget_collapsed -%}
+
+{%- block checkbox_row -%}
+    <div class="flex flex-col gap-2">
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+        {{- form_help(form) -}}
+    </div>
+{%- endblock checkbox_row -%}
+
+{%- block checkbox_widget -%}
+    <label class="inline-flex cursor-pointer items-center gap-2 text-sm text-[var(--color-ink)]/80">
+        <input type="checkbox"
+            {{ block('widget_attributes') }}
+            {% if value is defined %} value="{{ value }}"{% endif %}
+            {% if checked %} checked="checked"{% endif %}
+            class="size-4 rounded border-[var(--color-sand)] text-[var(--color-moss)] focus:ring-[var(--color-moss)]/30"
+        >
+        {% if label is not same as(false) -%}
+            <span>{{ label|trans({}, translation_domain) }}</span>
+        {%- endif %}
+    </label>
+{%- endblock checkbox_widget -%}
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        <ul class="list-none space-y-1 text-sm text-[var(--color-alert)]">
+            {%- for error in errors -%}
+                <li>{{ error.message }}</li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
+{%- endblock form_errors -%}
+
+{%- block repeated_row -%}
+    {{- block('form_rows') -}}
+{%- endblock repeated_row -%}

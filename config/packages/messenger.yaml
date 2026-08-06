@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../vendor/symfony/framework-bundle/Resources/config/schema/symfony-1.0.xsd
+
+framework:
+    messenger:
+        failure_transport: failed
+
+        transports:
+            # Async work such as HTTP-log persistence and mail.
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    queue_name: async
+                retry_strategy:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
+                    max_delay: 10000
+
+            failed: 'doctrine://default?queue_name=failed'
+
+            sync: 'sync://'
+
+        routing:
+            Nowo\HttpLogBundle\Message\PersistHttpLogMessage: async
+            Nowo\HttpLogBundle\Message\ExportHttpLogMessage: async
+            Nowo\HttpLogBundle\Message\PurgeHttpLogMessage: async
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'sync://'
+                failed: 'in-memory://'

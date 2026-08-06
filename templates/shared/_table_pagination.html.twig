@@ -1,0 +1,15 @@
+{#
+  Server-side table pagination — same contract as kit/_pagination (UiKit host override).
+  Never DataTables paging.
+#}
+{% include 'kit/_pagination.html.twig' with {
+    pagination: pagination,
+    item_count: item_count,
+    route: route|default(null),
+    route_params: route_params|default({}),
+    query: query|default({}),
+    nav_label: nav_label|default('pagination.nav'),
+    trans_domain: trans_domain|default('messages'),
+    nav_trans_domain: nav_trans_domain|default('messages'),
+    framework: framework|default('tailwind'),
+} only %}

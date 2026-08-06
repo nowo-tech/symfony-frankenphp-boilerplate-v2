@@ -1,0 +1,107 @@
+import { expect, test, type Page } from '@playwright/test';
+
+export const DEMO_EMAIL = process.env.PLAYWRIGHT_DEMO_EMAIL ?? 'admin@nowo-shell.local';
+export const DEMO_PASSWORD = process.env.PLAYWRIGHT_DEMO_PASSWORD ?? 'admin123';
+
+/** Wait for the Nowo Shell page-loader overlay to release pointer events. */
+export async function waitForPageLoader(page: Page): Promise<void> {
+  const loader = page.locator('.page-loader.is-active, [data-controller="page-loader"].is-active');
+  await loader.waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => undefined);
+}
+
+/** Dismiss cookie consent only when the modal is actually open. */
+export async function dismissCookieConsent(page: Page): Promise<void> {
+  await waitForPageLoader(page);
+  const openModal = page.locator('#cookieconsent[data-nowo-open="true"]:not(.hidden)');
+  try {
+    await openModal.waitFor({ state: 'visible', timeout: 3_000 });
+  } catch {
+    return;
+  }
+
+  const acceptAll = openModal.locator('#cookie_consent_use_all_cookies');
+  const functionalOnly = openModal.locator('#cookie_consent_use_only_functional_cookies');
+
+  const target = (await acceptAll.isVisible().catch(() => false)) ? acceptAll : functionalOnly;
+  await target.waitFor({ state: 'visible', timeout: 5_000 });
+  await expect(target).toBeEnabled();
+  await target.evaluate((el: HTMLElement) => el.click());
+
+  await openModal.waitFor({ state: 'hidden', timeout: 10_000 }).catch(async () => {
+    // Fallback: set consent cookies so subsequent navigations skip the modal.
+    await page.context().addCookies([
+      { name: 'Cookie_Consent', value: 'true', url: page.url() },
+      { name: 'Cookie_Consent_Key', value: 'e2e', url: page.url() },
+    ]);
+  });
+}
+
+/** Close driver.js product tour when present. */
+export async function dismissProductTour(page: Page): Promise<void> {
+  await waitForPageLoader(page);
+  const popover = page.locator('.driver-popover, .app-driver-popover');
+  try {
+    await popover.first().waitFor({ state: 'visible', timeout: 2_000 });
+  } catch {
+    return;
+  }
+
+  for (let i = 0; i < 12; i++) {
+    if (!(await popover.first().isVisible().catch(() => false))) {
+      return;
+    }
+    const next = popover
+      .locator(
+        'button.driver-popover-next-btn, button.driver-popover-done-btn, button.driver-popover-close-btn, button:has-text("Done"), button:has-text("Skip"), button:has-text("Close"), button:has-text("Omitir"), button:has-text("Listo"), button:has-text("Siguiente"), button:has-text("Next")',
+      )
+      .first();
+    if (await next.isVisible().catch(() => false)) {
+      await next.click({ force: true }).catch(() => undefined);
+      await popover.first().waitFor({ state: 'hidden', timeout: 500 }).catch(() => undefined);
+      continue;
+    }
+    await page.keyboard.press('Escape').catch(() => undefined);
+    await popover.first().waitFor({ state: 'hidden', timeout: 500 }).catch(() => undefined);
+  }
+}
+
+export async function loginAsDemo(page: Page, email = DEMO_EMAIL, password = DEMO_PASSWORD): Promise<void> {
+  await page.goto('/login');
+  await dismissCookieConsent(page);
+
+  await page.locator('input[name="login_form[_username]"]').fill(email);
+  await page.locator('input[name="login_form[_password]"]').fill(password);
+  await page.locator('.nowo-auth-kit__panel button[type="submit"], form[name="login_form"] button[type="submit"]').first().click();
+
+  await page.waitForURL(/\/dashboard(\?|$)/, { timeout: 30_000 });
+  await dismissProductTour(page);
+}
+
+/** Assert page did not land on login and returned a successful HTML response. */
+export async function expectAuthenticatedPage(page: Page, path: string): Promise<void> {
+  const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
+  await dismissProductTour(page);
+  expect(response, `No response for ${path}`).not.toBeNull();
+  const status = response!.status();
+  expect(status, `${path} returned ${status}`).toBeLessThan(400);
+  await expect(page, `Expected auth for ${path}`).not.toHaveURL(/\/login(\?|$|\/)/);
+  await expect(page.locator('body')).toBeVisible();
+}
+
+export async function expectGuestPage(page: Page, path: string): Promise<void> {
+  const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
+  await dismissCookieConsent(page);
+  expect(response, `No response for ${path}`).not.toBeNull();
+  const status = response!.status();
+  expect(status, `${path} returned ${status}`).toBeLessThan(400);
+  await expect(page.locator('body')).toBeVisible();
+}
+
+export async function logout(page: Page): Promise<void> {
+  const menu = page.locator('[data-controller="user-menu"], [data-user-menu]');
+  await menu.locator('summary').click();
+  const logoutLink = menu.locator('a[href*="/logout"]');
+  await expect(logoutLink).toBeVisible();
+  await logoutLink.click();
+  await page.waitForURL(/\/login(\?|$|\/)/, { timeout: 20_000 });
+}

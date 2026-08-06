@@ -1,0 +1,41 @@
+{# Guest / pre-login shell: theme + locale controls (AuthKit-aligned). #}
+<!DOCTYPE html>
+<html lang="{{ app.request.locale|default('en') }}"{% if site_appearance.footerFixed %} data-footer-fixed="1"{% endif %}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    {# Blocking IIFE from assets/theme-boot.ts + critical substrate (FOUC). #}
+    {% include '_theme_boot.html.twig' %}
+    <title>{% block title %}{{ site_appearance.brandName }}{% endblock %}</title>
+    {{ nowo_pwa_head() }}
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" href="{{ asset('brand/app-mark.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ asset('icons/apple-touch-icon.png') }}">
+    <link rel="stylesheet" href="{{ asset('css/nowo-ui.css', 'nowo_ui_kit') }}">
+    {{ vite_entry_link_tags('app') }}
+    {# After app CSS so site palette / radius / border tokens win the cascade. #}
+    <style>{{ site_appearance.cssOverrides|raw }}</style>
+    {{ vite_entry_script_tags('app') }}
+    <script src="{{ asset('js/nowo-ui-orb.js', 'nowo_ui_kit') }}" defer></script>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="page-shell">
+    {% include '_page_loader.html.twig' %}
+
+    {% include '_toasts.html.twig' %}
+    <div class="top-controls">
+        {% include '_theme_toggle.html.twig' %}
+        {% include '_locale_switcher.html.twig' %}
+    </div>
+    <main class="auth-shell-main relative z-10 mx-auto flex w-full max-w-6xl flex-1 justify-center px-4 py-12">
+        <div class="w-full {% block guest_shell_width %}max-w-2xl{% endblock %}">
+            {% block body %}{% endblock %}
+        </div>
+    </main>
+    {% block javascripts %}{% endblock %}
+    {{ nowo_pwa_install_prompt() }}
+    {% include '_legal_footer.html.twig' %}
+    {{ render(path('nowo_cookie_consent.show')) }}
+    {% block cookie_consent_extras %}{% endblock %}
+</body>
+</html>

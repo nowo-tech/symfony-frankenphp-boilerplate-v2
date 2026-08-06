@@ -1,0 +1,112 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Setup;
+
+use RuntimeException;
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+
+/**
+ * Fail closed outside local `dev`/`test` when SiteBackup still uses documented local defaults
+ * (panel password hash / setup token from `.env.dist`).
+ *
+ * Applies to `prod`, `staging`, and any other non-local environment name so misnamed
+ * deployments cannot keep the public `/setup` and `/_site_backup` surfaces unlocked.
+ *
+ * Instance latch (not static) so FrankenPHP workers do not share mutable static state.
+ *
+ * Console `cache:clear` / `cache:warmup` / `assets:install` are skipped so Docker
+ * `frankenphp_prod` image builds (`composer dump-env` + post-install auto-scripts) can
+ * warm the cache without baking runtime SiteBackup secrets into the image. HTTP requests
+ * and all other console commands still enforce the check.
+ */
+final class SiteBackupSecurityDefaultsGuard implements EventSubscriberInterface
+{
+    /** bcrypt hash for local password "shell-local-panel" shipped in `.env.dist`. */
+    public const string LOCAL_DEV_PANEL_PASSWORD_HASH = '$2y$12$Y0N6Pfivo9cGw9rCLyrZwOvjMV5dFcWyn5EO.U4nnwX2kg05rRCtK';
+
+    /** Documented local setup token from `.env.dist` — must be rotated outside local development. */
+    public const string LOCAL_DEV_SETUP_TOKEN = 'app-local-setup';
+
+    /** @var list<string> */
+    private const array SKIP_CONSOLE_COMMANDS = [
+        'cache:clear',
+        'cache:warmup',
+        'assets:install',
+    ];
+
+    private bool $checked = false;
+
+    public function __construct(
+        #[Autowire('%kernel.environment%')]
+        private readonly string $environment,
+        #[Autowire('%env(default::SITE_SETUP_TOKEN)%')]
+        private readonly ?string $setupToken,
+        #[Autowire('%env(default::SITE_BACKUP_PASSWORD_HASH)%')]
+        private readonly ?string $panelPasswordHash,
+    ) {
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::REQUEST => ['onRequest', 1024],
+            ConsoleEvents::COMMAND => ['onConsole', 1024],
+        ];
+    }
+
+    public function onRequest(RequestEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+        $this->assertProductionSecretsSafe();
+    }
+
+    public function onConsole(ConsoleCommandEvent $event): void
+    {
+        $name = $event->getCommand()?->getName();
+        if (null !== $name && \in_array($name, self::SKIP_CONSOLE_COMMANDS, true)) {
+            return;
+        }
+        $this->assertProductionSecretsSafe();
+    }
+
+    /**
+     * @throws RuntimeException when a non-local environment still uses empty or documented local SiteBackup secrets
+     */
+    public function assertProductionSecretsSafe(): void
+    {
+        if ($this->isLocalDevelopmentEnvironment() || $this->checked) {
+            return;
+        }
+        $this->checked = true;
+
+        $token = trim((string) $this->setupToken);
+        if ('' === $token) {
+            throw new RuntimeException('SITE_SETUP_TOKEN must be set outside local development (dev/test) so /setup is not anonymously writable. Generate a random secret and open /setup?token=… (see docs/PRODUCTION.md).');
+        }
+        if (hash_equals(self::LOCAL_DEV_SETUP_TOKEN, $token)) {
+            throw new RuntimeException('SITE_SETUP_TOKEN is still the documented local default (app-local-setup). Set a unique secret before exposing this instance (docs/PRODUCTION.md).');
+        }
+
+        $hash = trim((string) $this->panelPasswordHash);
+        if ('' === $hash) {
+            throw new RuntimeException('SITE_BACKUP_PASSWORD_HASH must be set outside local development (dev/test) for /_site_backup. Generate with: bin/console nowo:site-backup:hash-password');
+        }
+        if (hash_equals(self::LOCAL_DEV_PANEL_PASSWORD_HASH, $hash)) {
+            throw new RuntimeException('SITE_BACKUP_PASSWORD_HASH is still the documented local default (password "shell-local-panel"). Generate a new hash with: bin/console nowo:site-backup:hash-password');
+        }
+    }
+
+    private function isLocalDevelopmentEnvironment(): bool
+    {
+        return \in_array($this->environment, ['dev', 'test'], true);
+    }
+}

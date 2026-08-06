@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <!-- Console / shell mark: corner brackets + prompt bar -->
+  <path d="M10 14V10h8M46 10h8v8M54 46v8h-8M18 54H10v-8" stroke="#2f6f9c" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M20 40h10M34 40h14" stroke="#2f6f9c" stroke-width="5" stroke-linecap="square"/>
+  <path d="M20 24l8 8-8 8" stroke="#2f6f9c" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>

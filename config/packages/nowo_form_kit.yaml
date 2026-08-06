@@ -1,0 +1,83 @@
+# nowo-tech/form-kit-bundle
+# https://github.com/nowo-tech/FormKitBundle
+#
+# default_profile shell = host form profile (host form profile id).
+# Named kit profiles (auth_kit, dashboard_menu, …) stop vendor prepend from seeding
+# Bootstrap field classes when those bundles require FormKit.
+nowo_form_kit:
+    default_profile: shell
+    css_framework: tailwind
+    profiles:
+        shell: &shell_profile
+            alias: shell
+            translation_domain: messages
+            required_label_suffix: null
+            defaults:
+                attr:
+                    class: 'input'
+                row_attr:
+                    class: 'flex flex-col gap-2'
+            field_types:
+                textarea:
+                    attr:
+                        class: 'input'
+                        rows: 3
+                checkbox:
+                    attr:
+                        class: 'size-4 rounded border-[var(--color-sand)] text-[var(--color-moss)] focus:ring-[var(--color-moss)]/30'
+                    row_attr:
+                        class: 'flex items-center gap-2'
+                choice:
+                    attr:
+                        class: 'input'
+            help_modal:
+                framework: tailwind
+                icon_html: '<span aria-hidden="true">?</span>'
+
+        # AuthKit 1.14+ (#[FormKitConfig] auth_kit) — match Shell inputs.
+        # FormKit 2.2+ inherits form-level translation_domain; keep catalogue + auto_* off.
+        auth_kit:
+            <<: *shell_profile
+            alias: auth_kit
+            translation_domain: NowoAuthKitBundle
+            auto_placeholder: false
+            auto_help: false
+
+        # DashboardMenu 2.x / BreadcrumbKit 2.0.14+ / HttpLog 1.1+ admin forms.
+        # Host-defined profiles skip vendor domain seed — set kit catalogues explicitly.
+        dashboard_menu:
+            <<: *shell_profile
+            alias: dashboard_menu
+            translation_domain: NowoDashboardMenuBundle
+            auto_placeholder: false
+            auto_help: false
+
+        breadcrumb_kit:
+            <<: *shell_profile
+            alias: breadcrumb_kit
+            translation_domain: NowoBreadcrumbKitBundle
+            auto_placeholder: false
+            auto_help: false
+
+        http_log:
+            <<: *shell_profile
+            alias: http_log
+            translation_domain: NowoHttpLogBundle
+            auto_placeholder: false
+            auto_help: false
+
+        # CookieConsent FormKit forms label keys live in NowoCookieConsentBundle, not messages.
+        cookie_consent:
+            <<: *shell_profile
+            alias: cookie_consent
+            translation_domain: NowoCookieConsentBundle
+            auto_placeholder: false
+            auto_help: false
+
+        # RoutingKit 1.3+ panel form (#[FormKitConfig] routing_kit).
+        routing_kit:
+            <<: *shell_profile
+            alias: routing_kit
+            translation_domain: NowoRoutingKitBundle
+            auto_placeholder: false
+            auto_help: false

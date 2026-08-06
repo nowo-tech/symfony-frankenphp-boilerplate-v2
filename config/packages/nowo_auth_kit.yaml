@@ -1,0 +1,124 @@
+# nowo-tech/auth-kit-bundle — first-user bootstrap + i18n + remember me
+# https://github.com/nowo-tech/AuthKitBundle
+# Dual auth URLs: bare /login serves DEFAULT_LOCALE (unlocalized: serve); /{_locale}/login for other locales.
+nowo_auth_kit:
+    default_profile: default
+    outbound_mail_ready_checker: App\Identity\AuthKit\OutboundMailReadyChecker
+    locale:
+        in_path: both
+        default: '%default_locale%'
+        enabled: '%fallback_locales%'
+        unlocalized: serve
+    profiles:
+        default:
+            user_class: App\Identity\Entity\User
+            user_identifier_field: email
+            registration_mode: first_user_only
+            registration_role: ROLE_ADMIN
+            login_success_route: dashboard_home
+            firewall: main
+            login_fields:
+                - identifier
+                - password
+                - remember_me
+            registration_fields:
+                - email
+                - displayName
+                - password
+            remember_me:
+                enabled: true
+                lifetime: 604800
+                path: /
+            password_strength:
+                enabled: true
+                level: medium
+                policy_mode: level
+            password_reset:
+                mode: enabled
+                # link + OTP code (AuthKit delivery: link | code | both)
+                delivery: both
+                token_ttl: 3600
+                token_field: passwordResetToken
+                token_expires_field: passwordResetExpiresAt
+            magic_login:
+                mode: enabled
+                lifetime: 600
+                max_uses: 1
+            # OAuth buttons appear only when mode=enabled AND ≥1 enabled row in auth_kit_social_credential.
+            # create_user_if_missing:false — link existing users by email (avoids ROLE_ADMIN social sign-ups).
+            social_login:
+                mode: enabled
+                create_user_if_missing: false
+            # QR phone login (AuthKit 1.12). Requires User.phone + phoneVerifiedAt.
+            qr_login:
+                mode: enabled
+                challenge_ttl: 90
+                approve_requires: session
+                desktop_binding: strict
+                phone_field: phone
+                phone_verified_field: phoneVerifiedAt
+            embed:
+                mode: disabled
+            css:
+                button_class: 'btn-primary w-full'
+                secondary_button_class: 'btn-secondary flex w-full items-center justify-center no-underline'
+            templates:
+                layout: '@NowoAuthKitBundle/layout.html.twig'
+                form_theme:
+                    - form/password_strength_app_theme.html.twig
+                    - form/auth_kit_theme.html.twig
+                login: '@NowoAuthKitBundle/security/login.html.twig'
+                register: '@NowoAuthKitBundle/security/register.html.twig'
+                magic_login_request: '@NowoAuthKitBundle/security/magic_login_request.html.twig'
+                reset_request: '@NowoAuthKitBundle/security/reset_request.html.twig'
+                reset_password: '@NowoAuthKitBundle/security/reset_password.html.twig'
+                reset_password_code: '@NowoAuthKitBundle/security/reset_password_code.html.twig'
+            routes:
+                login:
+                    path: /login
+                    name: nowo_auth_kit_login
+                logout:
+                    path: /logout
+                    name: nowo_auth_kit_logout
+                register:
+                    path: /register
+                    name: nowo_auth_kit_register
+                reset_request:
+                    path: /reset-password
+                    name: nowo_auth_kit_reset_password_request
+                reset_password:
+                    path: /reset-password/reset/{token}
+                    name: nowo_auth_kit_reset_password
+                reset_password_code:
+                    path: /reset-password/complete
+                    name: nowo_auth_kit_reset_password_code
+                magic_login_request:
+                    path: /login/magic
+                    name: nowo_auth_kit_magic_login_request
+                magic_login_check:
+                    path: /login/magic/check
+                    name: nowo_auth_kit_magic_login_check
+                social_login_start:
+                    path: /login/social/{provider}
+                    name: nowo_auth_kit_social_login_start
+                social_login_check:
+                    path: /login/social/{provider}/check
+                    name: nowo_auth_kit_social_login_check
+                qr_login_start:
+                    path: /login/qr
+                    name: nowo_auth_kit_qr_login_start
+                qr_login_show:
+                    path: /login/qr/{id}
+                    name: nowo_auth_kit_qr_login_show
+                qr_login_status:
+                    path: /login/qr/{id}/status
+                    name: nowo_auth_kit_qr_login_status
+                qr_login_complete:
+                    path: /login/qr/{id}/complete
+                    name: nowo_auth_kit_qr_login_complete
+                qr_login_approve:
+                    path: /login/qr/{id}/approve
+                    name: nowo_auth_kit_qr_login_approve
+                qr_login_deny:
+                    path: /login/qr/{id}/deny
+                    name: nowo_auth_kit_qr_login_deny

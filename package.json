@@ -1,0 +1,46 @@
+{
+  "name": "symfony-frankenphp-boilerplate-v2",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.12.4",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:unit:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "3.2.2",
+    "@openai/codex-security": "^0.1.5",
+    "@playwright/test": "^1.62.1",
+    "@symfony/ux-autocomplete": "file:vendor/symfony/ux-autocomplete/assets",
+    "@symfony/ux-live-component": "file:vendor/symfony/ux-live-component/assets",
+    "@tailwindcss/vite": "4.3.3",
+    "@vitest/coverage-v8": "^4.1.10",
+    "esbuild": "^0.28.1",
+    "jsdom": "^30.0.1",
+    "sass": "1.102.0",
+    "tailwindcss": "4.3.3",
+    "tom-select": "2.6.2",
+    "typescript": "7.0.2",
+    "vite": "8.1.5",
+    "vite-plugin-symfony": "8.2.4",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@fontsource/sora": "5.2.8",
+    "datatables.net": "2.3.8",
+    "datatables.net-dt": "2.3.8",
+    "datatables.net-responsive": "3.0.8",
+    "datatables.net-responsive-dt": "3.0.8",
+    "driver.js": "1.8.0",
+    "jquery": "4.0.0"
+  }
+}

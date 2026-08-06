@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ group.name }} — {{ 'groups.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+    <div>
+        <a href="{{ path('admin_groups') }}" class="text-sm no-underline">{{ 'groups.back'|trans }}</a>
+        <h1 class="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold">{{ group.name }}</h1>
+        {% if group.description %}
+            <p class="mt-1 text-sm text-[var(--color-ink)]/65">{{ group.description }}</p>
+        {% endif %}
+    </div>
+    <div class="flex flex-wrap gap-2">
+        <a class="btn-ghost no-underline" href="{{ path('admin_groups_edit', {id: group.uuid}) }}">{{ 'groups.edit'|trans }}</a>
+        <form
+            method="post"
+            action="{{ path('admin_groups_delete', {id: group.uuid}) }}"
+            data-controller="confirm-submit"
+            data-confirm-submit-message-value="{{ 'groups.delete_confirm'|trans|e('html_attr') }}"
+            data-action="submit->confirm-submit#confirm"
+        >
+            <input type="hidden" name="_token" value="{{ csrf_token('admin_group_delete_' ~ group.id) }}">
+            <button class="btn-danger" type="submit">{{ 'groups.delete'|trans }}</button>
+        </form>
+    </div>
+</div>
+
+<section class="panel mb-6">
+    <h2 class="mb-3 text-lg font-semibold">{{ 'common.audit.title'|trans }}</h2>
+    {% include 'shared/_audit_meta.html.twig' with {entity: group, class: 'sm:grid-cols-2 max-w-xl'} only %}
+</section>
+
+<section class="panel mb-6">
+    {% include 'admin/_audit_timeline.html.twig' with {
+        form_action: path('admin_groups_show', {id: group.uuid}),
+        reset_path: path('admin_groups_show', {id: group.uuid}),
+        title_key: 'groups.audit_title',
+        intro_key: 'groups.audit_intro',
+        empty_key: 'groups.audit_empty',
+        audit_actions: groupAuditActions,
+        audit_filter: groupAuditFilter,
+        audit_entries: groupAuditEntries,
+        timeline_id: 'group-audit-timeline',
+        entry_testid: 'group-audit-entry'
+    } only %}
+</section>
+
+<section class="panel mb-6">
+    <h2 class="mb-3 text-lg font-semibold">{{ 'groups.members_title'|trans }}</h2>
+    <ul class="space-y-2 text-sm">
+        {% for membership in group.memberships %}
+            <li class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-sand)] py-2 last:border-0">
+                <div>
+                    <div class="font-medium">{{ membership.user.displayName }}</div>
+                    <div class="text-xs text-[var(--color-ink)]/55">{{ membership.user.email }}</div>
+                </div>
+                <form method="post" action="{{ path('admin_groups_members_remove', {groupId: group.uuid, userId: membership.user.uuid}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('admin_group_member_remove_' ~ membership.id) }}">
+                    <button class="btn-ghost" type="submit">{{ 'groups.remove_member'|trans }}</button>
+                </form>
+            </li>
+        {% else %}
+            <li class="text-[var(--color-ink)]/55">{{ 'groups.members_empty'|trans }}</li>
+        {% endfor %}
+    </ul>
+
+    <form method="post" action="{{ path('admin_groups_members_add', {id: group.uuid}) }}" class="mt-4 flex flex-wrap gap-2">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_group_member_add_' ~ group.id) }}">
+        <input class="input min-w-56 flex-1" type="email" name="email" required placeholder="{{ 'groups.member_email_placeholder'|trans }}" autocomplete="off">
+        <button class="btn-primary" type="submit">{{ 'groups.add_member'|trans }}</button>
+    </form>
+    <p class="mt-2 text-xs text-[var(--color-ink)]/55">{{ 'groups.add_member_help'|trans }}</p>
+</section>
+{% endblock %}

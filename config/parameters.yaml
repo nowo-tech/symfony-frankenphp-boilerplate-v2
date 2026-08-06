@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# Typed aliases for env vars defined in `.env` / `.env.dist`.
+# Do NOT add `env(NAME): 'default'` here (constitution Principle IX) — defaults belong in `.env.dist`.
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    default_locale: '%env(DEFAULT_LOCALE)%'
+    # Catalogue fallbacks when a key is missing in the active locale (always keep English).
+    fallback_locales: [en, es, de, nl, fr, it, pt]
+    # When true, SiteBackup setup gate also triggers if menus/breadcrumbs/cookies are missing.
+    app.setup.check_platform_catalogs: true

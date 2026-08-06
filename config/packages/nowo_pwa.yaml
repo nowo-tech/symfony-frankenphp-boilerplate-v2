@@ -1,0 +1,76 @@
+# nowo-tech/pwa-bundle
+# https://github.com/nowo-tech/PwaBundle
+nowo_pwa:
+    enabled: true
+
+    manifest:
+        name: Nowo Shell
+        short_name: Shell
+        description: 'A self-hosted application shell for PHP & Symfony'
+        lang: en
+        start_url: /dashboard
+        scope: /
+        display: standalone
+        theme_color: '#1a4f73'
+        background_color: '#e8edf3'
+        icons:
+            - { src: '/icons/icon-192.png', sizes: '192x192', type: image/png, purpose: any }
+            - { src: '/icons/icon-512.png', sizes: '512x512', type: image/png, purpose: 'any maskable' }
+
+    meta:
+        apple_mobile_web_app_title: Shell
+        theme_color_light: '#1a4f73'
+        theme_color_dark: '#6a9fc4'
+        apple_touch_icons:
+            - { href: '/icons/apple-touch-icon.png', sizes: '180x180' }
+
+    service_worker:
+        enabled: true
+        strategy: network-first
+        # Bump when deny/precache rules change so browsers drop stale SW caches.
+        cache_version: v4
+        cache_name_prefix: app-pwa
+        # Never precache auth HTML: pathname.endsWith('/login') also matches /es/login.
+        precache_urls:
+            - /offline
+        runtime_cache_patterns:
+            - '/build/'
+            - '/icons/'
+        deny_cache_patterns:
+            - '/api/'
+            - '/admin'
+            - '/account'
+            - '/cookie-consent-config'
+            - '/cookie_consent'
+            - '/login'
+            - '/register'
+            - '/logout'
+            - '/reset-password'
+            - '/setup'
+            - '/_site_backup'
+            - '/_profiler'
+            - '/_wdt'
+            - '/breadcrumb-kit-admin'
+        offline_url: /offline
+        skip_waiting: true
+        clients_claim: true
+
+    install_prompt:
+        enabled: true
+        display: banner
+        position: bottom
+        visibility: all
+        dismiss_days: 14
+        # Single BEM root — extra classes break {{ css_class }}__mark / --banner concatenation in the bundle template.
+        css_class: nowo-pwa-install
+        mark_asset: /brand/app-mark.svg
+        title: preferences.display.pwa_prompt_title
+        button_class: btn-primary
+        dismiss_button_class: btn-ghost
+        never_button_class: 'btn-ghost app-pwa-install__never'
+
+    install_links:
+        enabled: true
+        # Rendered only on Preferences → Display (not globally in base layout).
+        css_class: nowo-pwa-install-links
+        visibility: all

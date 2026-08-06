@@ -1,0 +1,9 @@
+services:
+  mailer:
+    profiles: ["mail"]
+    image: axllent/mailpit
+    ports:
+      - target: 1025
+        published: ${MAILPIT_SMTP_PORT:-1026}
+      - target: 8025
+        published: ${MAILPIT_UI_PORT:-18025}

@@ -1,0 +1,23 @@
+{# Profile area: Profile | My groups | Privacy #}
+{% set route = app.request.attributes.get('_route') %}
+{% include 'shared/_tabs.html.twig' with {
+    aria_label: 'preferences.profile.tabs_label'|trans,
+    nav_class: 'preferences-nav mb-6',
+    items: [
+        {
+            label: 'preferences.nav.profile'|trans,
+            href: path('account_profile'),
+            current: route == 'account_profile',
+        },
+        {
+            label: 'preferences.nav.groups'|trans,
+            href: path('account_groups'),
+            current: route == 'account_groups',
+        },
+        {
+            label: 'preferences.nav.privacy'|trans,
+            href: path('account_privacy'),
+            current: route == 'account_privacy',
+        },
+    ],
+} only %}

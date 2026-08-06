@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# Domain aliases / non-parameter bindings: config/services/*.yaml (imported first).
+# Scalar parameters use #[Autowire('%…%')] on constructors — no exclude list needed.
+# See https://symfony.com/doc/current/service_container/import.html
+
+imports:
+    - { resource: parameters.yaml }
+    - { resource: services/ }
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            # Registered in services/auth_kit.yaml with autoconfigure: false (AsDecorator).
+            - '../src/Identity/Routing/MagicLoginCheckRouteLoaderDecorator.php'
+
+when@test:
+    parameters:
+        # Keep catalog-empty → /setup redirect on in tests (DatabaseWebTestCase seeds catalogs by default).
+        app.setup.check_platform_catalogs: true

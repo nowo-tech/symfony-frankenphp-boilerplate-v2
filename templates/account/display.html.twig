@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'preferences.display.title'|trans }} — {{ site_appearance.brandName }}{% endblock %}
+
+{% block body %}
+<div class="mx-auto space-y-4">
+    <div>
+        <h1 class="mb-2 font-[family-name:var(--font-display)] text-3xl font-bold">{{ 'preferences.display.title'|trans }}</h1>
+        <p class="mb-2 text-sm text-[var(--color-ink)]/65">{{ 'preferences.display.intro'|trans }}</p>
+    </div>
+
+    {% include 'account/_area_nav.html.twig' %}
+    {% include 'account/_display_tabs.html.twig' %}
+
+    {{ form_start(form) }}
+        <section class="panel space-y-4" aria-labelledby="display-prefs-heading">
+            <h2 id="display-prefs-heading" class="text-lg font-semibold text-[var(--color-ink)]">{{ 'preferences.display.section_layout'|trans }}</h2>
+            {% include 'form/_fields.html.twig' with {form: form} only %}
+            <div class="flex flex-wrap gap-2 border-t border-[var(--color-sand)] pt-4">
+                <button class="btn-primary" type="submit">{{ 'preferences.display.submit'|trans }}</button>
+            </div>
+        </section>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

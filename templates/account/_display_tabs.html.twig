@@ -1,0 +1,13 @@
+{# Display area: Appearance only (platform shell). #}
+{% set route = app.request.attributes.get('_route') %}
+{% include 'shared/_tabs.html.twig' with {
+    aria_label: 'preferences.display.tabs_label'|trans,
+    nav_class: 'preferences-nav mb-6',
+    items: [
+        {
+            label: 'preferences.nav.appearance'|trans,
+            href: path('account_display'),
+            current: route == 'account_display',
+        },
+    ],
+} only %}

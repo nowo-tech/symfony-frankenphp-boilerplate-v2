@@ -1,0 +1,144 @@
+# Optional production-oriented stack (no source bind-mount).
+# Default local stack remains compose.yaml (frankenphp_dev + ./:/app).
+#
+#   cp .env.dist .env   # set real APP_SECRET / MySQL / SiteBackup secrets first
+#   docker compose -f compose.prod.yaml --env-file .env up --build -d
+#
+# Docs: docs/PRODUCTION.md
+services:
+  php:
+    image: ${IMAGES_PREFIX:-}symfony-frankenphp-boilerplate-v2
+    build:
+      context: .
+      target: frankenphp_prod
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      APP_ENV: prod
+      APP_SECRET: ${APP_SECRET:?Set APP_SECRET in .env}
+      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}
+      # SiteBackup: unique values required (local .env.dist defaults are refused at boot).
+      SITE_BACKUP_PASSWORD_HASH: ${SITE_BACKUP_PASSWORD_HASH:?Set SITE_BACKUP_PASSWORD_HASH}
+      SITE_SETUP_TOKEN: ${SITE_SETUP_TOKEN:?Set SITE_SETUP_TOKEN}
+      FRANKENPHP_MODE: ${FRANKENPHP_MODE:-worker}
+      FRANKENPHP_WORKER_NUM: ${FRANKENPHP_WORKER_NUM:-}
+      FRANKENPHP_LOOP_MAX: ${FRANKENPHP_LOOP_MAX:-500}
+      FRANKENPHP_RESET_KERNEL: ${FRANKENPHP_RESET_KERNEL:-false}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      # Persist Halite field-encryption key across container recreates (API secrets, webhooks, Mailer DSN).
+      - php_secrets:/app/var/secrets
+    ports:
+      - target: 80
+        published: ${HTTP_PORT:-9080}
+        protocol: tcp
+      - target: 443
+        published: ${HTTPS_PORT:-9443}
+        protocol: tcp
+      - target: 443
+        published: ${HTTP3_PORT:-9443}
+        protocol: udp
+
+  database:
+    image: mysql:${MYSQL_VERSION:-9.7}
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-app}
+      MYSQL_USER: ${MYSQL_USER:-app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}
+    volumes:
+      - database_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  messenger:
+    image: ${IMAGES_PREFIX:-}symfony-frankenphp-boilerplate-v2
+    build:
+      context: .
+      target: frankenphp_prod
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+      php:
+        condition: service_started
+    environment:
+      APP_ENV: prod
+      APP_SECRET: ${APP_SECRET:?Set APP_SECRET in .env}
+      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}
+      SITE_BACKUP_PASSWORD_HASH: ${SITE_BACKUP_PASSWORD_HASH:?Set SITE_BACKUP_PASSWORD_HASH}
+      SITE_SETUP_TOKEN: ${SITE_SETUP_TOKEN:?Set SITE_SETUP_TOKEN}
+      # Optional: inject Halite key material instead of (or in addition to) the php_secrets volume.
+      APP_ENCRYPT_KEY: ${APP_ENCRYPT_KEY:-}
+    volumes:
+      - php_secrets:/app/var/secrets
+    command:
+      [
+        "php",
+        "bin/console",
+        "messenger:consume",
+        "async",
+        "-vv",
+        "--time-limit=3600",
+        "--memory-limit=256M",
+      ]
+
+  # HTTP-log and other async work (async transport).
+  messenger-notify:
+    image: ${IMAGES_PREFIX:-}symfony-frankenphp-boilerplate-v2
+    build:
+      context: .
+      target: frankenphp_prod
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+      php:
+        condition: service_started
+    environment:
+      APP_ENV: prod
+      APP_SECRET: ${APP_SECRET:?Set APP_SECRET in .env}
+      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}
+      SITE_BACKUP_PASSWORD_HASH: ${SITE_BACKUP_PASSWORD_HASH:?Set SITE_BACKUP_PASSWORD_HASH}
+      SITE_SETUP_TOKEN: ${SITE_SETUP_TOKEN:?Set SITE_SETUP_TOKEN}
+      APP_ENCRYPT_KEY: ${APP_ENCRYPT_KEY:-}
+    volumes:
+      - php_secrets:/app/var/secrets
+    command:
+      [
+        "php",
+        "bin/console",
+        "messenger:consume",
+        "async",
+        "-vv",
+        "--time-limit=3600",
+        "--memory-limit=256M",
+      ]
+
+
+volumes:
+  caddy_data:
+  caddy_config:
+  database_data:
+  php_secrets:

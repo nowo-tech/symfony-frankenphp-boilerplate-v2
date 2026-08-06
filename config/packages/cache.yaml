@@ -1,0 +1,19 @@
+framework:
+    cache:
+        pools:
+            cache.rate_limiter:
+                adapter: cache.app
+            cache.action_token:
+                adapter: cache.app
+
+when@test:
+    framework:
+        cache:
+            app: cache.adapter.array
+            pools:
+                # Filesystem (not ArrayAdapter): ArrayAdapter implements ResetInterface and is
+                # cleared between KernelBrowser requests, which would wipe login_throttling state.
+                cache.rate_limiter:
+                    adapter: cache.adapter.filesystem
+                cache.action_token:
+                    adapter: cache.adapter.filesystem

@@ -1,0 +1,21 @@
+login:
+    heading: Iniciar sessão
+    submit: Iniciar sessão
+    register_link: Criar a primeira conta
+# FormKit convention keys (login_form.<field>.placeholder|help) — AuthKit only sets labels.
+login_form:
+    _username:
+        placeholder: Email ou nome de utilizador
+        help: ''
+    _password:
+        placeholder: Palavra-passe
+        help: ''
+    _remember_me:
+        placeholder: ''
+        help: ''
+register:
+    heading: Criar conta
+    submit: Registar
+    login_link: Já tenho uma conta
+    field:
+        displayName: Nome a apresentar

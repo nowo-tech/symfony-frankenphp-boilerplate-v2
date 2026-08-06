@@ -1,0 +1,16 @@
+{
+  "collection":{"code":"default","contextKey":"","name":"App","separatorIcon":"›","classList":"app-breadcrumb","classItem":"app-breadcrumb__item","classSeparator":"app-breadcrumb__sep","classCurrent":"is-current","responsive":{"hide_when_single_root":true}},
+  "items":[
+    {"route":"dashboard_home","label":"Home","parent":null,"dynamicParamKeys":[],"translations":{"en":"Home","es":"Inicio"}},
+    {"route":"account_profile","label":"Profile","parent":"dashboard_home","dynamicParamKeys":[],"translations":{"en":"Profile","es":"Perfil"}},
+    {"route":"account_security","label":"Security","parent":"account_profile","dynamicParamKeys":[],"translations":{"en":"Security","es":"Seguridad"}},
+    {"route":"account_display","label":"Display","parent":"account_profile","dynamicParamKeys":[],"translations":{"en":"Display","es":"Interfaz"}},
+    {"route":"admin_hub","label":"Administration","parent":null,"dynamicParamKeys":[],"translations":{"en":"Administration","es":"Administración"}},
+    {"route":"admin_users","label":"Users","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Users","es":"Usuarios"}},
+    {"route":"admin_groups","label":"Groups","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Groups","es":"Grupos"}},
+    {"route":"settings_appearance","label":"Appearance","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Appearance","es":"Apariencia"}},
+    {"route":"settings_mailer","label":"Mailer","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Mailer","es":"Correo"}},
+    {"route":"settings_instance_config","label":"Instance config","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Instance config","es":"Configuración de instancia"}},
+    {"route":"nowo_http_log_admin_index","label":"HTTP log","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"HTTP log","es":"Log HTTP"}}
+  ]
+}

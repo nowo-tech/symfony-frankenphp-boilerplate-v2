@@ -1,0 +1,36 @@
+# Project overrides only — keys that differ from the vendor catalogue.
+# Do not duplicate unchanged bundle strings; missing keys fall back to the package translations.
+# Modal body/buttons for the default profile may also come from CookieConsentDemoSeeder.
+
+nowo_cookie_consent:
+    privacy_route: 'legal_privacy'
+    title: 'Cookie notice'
+    intro: 'This service uses cookies and similar technologies to operate securely and to remember your choices. Strictly necessary cookies are required for core functionality and cannot be disabled. Optional cookies are used only with your prior consent.'
+    read_more: 'Privacy policy'
+    show_preferences: 'Cookie settings'
+    save: 'Confirm selection'
+    use_only_functional_cookies: 'Necessary cookies only'
+    use_all_cookies: 'Accept all cookies'
+    preferences_bubble:
+        label: 'Open cookie settings'
+    required:
+        title: 'Strictly necessary'
+        description: 'Cookies that are essential for authentication, security, and recording your consent. These are always active and cannot be switched off.'
+        always_on: 'Always active'
+    preferences:
+        close: 'Back'
+        usage_title: 'How we use cookies'
+        usage_description: 'We use cookies and similar technologies. Strictly necessary cookies remain active because they are essential for the service to function (security, session management, and storing your consent). Analytics and preference cookies are optional and are activated only with your prior consent. You may accept all categories, refuse non-essential cookies, or review each category. You may withdraw or change your consent at any time via Cookie settings.'
+        description: 'Optional cookies that store non-essential presentation or feature choices when you enable this category.'
+    functionality:
+        description: 'Optional cookies that enable enhanced features beyond core operation of the service.'
+    analytics:
+        description: 'Optional cookies used to measure usage and improve the service. They are set only if you consent and the operator has enabled analytics tooling.'
+    marketing:
+        description: 'Optional cookies used for advertising or remarketing. They are set only with your prior consent.'
+    inventory:
+        caption: 'Cookie inventory'
+        name: 'Name'
+        duration: 'Duration'
+    granular:
+        help: 'Enable or disable an entire category, or select individual cookies where available.'

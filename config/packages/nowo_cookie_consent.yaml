@@ -1,0 +1,158 @@
+# nowo-tech/cookie-consent-bundle
+# https://github.com/nowo-tech/CookieConsentBundle
+nowo_cookie_consent:
+    doctrine:
+        table_prefix: ''
+
+    # Optional categories (required is always shown)
+    categories:
+        - analytics
+        - preferences
+
+    use_logger: true
+    use_database_config: true
+    use_cookie_inventory: true
+    granular_cookie_selection: false
+
+    # Match Nowo Shell locales (DEFAULT_LOCALE / kernel.default_locale + enabled list)
+    default_locale: '%default_locale%'
+    enabled_locales: '%fallback_locales%'
+    detect_locale_from_accept_language: true
+
+    # Nowo Shell uses Tailwind 4
+    ui_theme: tailwind
+
+    # Admin Web UI (1.4+) — host shell only; do not fork admin/*.twig
+    web_ui:
+        enabled: true
+        path_prefix: /cookie-consent-config
+        layout_template: 'kit/cookie_consent_admin_layout.html.twig'
+        # Admin Web UI: UiKit Tailwind + ux_icon (public modal stays ui_theme: tailwind).
+        css_framework: tailwind
+        icon_set: ux_icon
+        list_page_size: 20
+    security:
+        access_roles: [ROLE_ADMIN]
+        allow_unauthenticated: false
+
+    # Skin follows Nowo Shell via CSS (`assets/styles/_cookie_consent.scss`) + data-theme sync.
+    color_theme: light
+    dark_mode_enabled: false
+    disable_page_interaction: true
+
+    # Floating cookie bubble only on login/register (included manually in AuthKit layout).
+    preferences_bubble_enabled: false
+    preferences_bubble_position: bottom-right
+    # Custom bubble art (YAML fallback when DB profile icon is empty).
+    preferences_bubble_icon: '<img class="nowo-cookie-consent__preferences-bubble-svg" src="/illustrations/cookie-consent-bubble.svg" alt="" width="62" height="62" decoding="async">'
+    preferences_bubble_border_color: '#EE922D'
+
+    # Auto-open the consent modal only on auth entry points
+    route_targeting_mode: only
+    target_routes:
+        - nowo_auth_kit_login
+        - nowo_auth_kit_register
+
+    # Do not auto-open the modal on legal pages
+    disabled_routes:
+        - legal_privacy
+        - legal_notice
+        - legal_terms
+        - legal_cookies
+
+    # CSRF enabled: modal JS (bundle ≥1.4.8) prepares Symfony SameOrigin double-submit
+    # for XHR (native submit never fires). Keep aligned with framework.csrf_protection.
+    csrf_protection: true
+    http_only: true
+
+    # Without this, the form has no action → browser/XHR POSTs to the current page
+    # (e.g. /login → 400) and the modal never closes.
+    form_action: nowo_cookie_consent.show
+
+    # First-party cookies used by this Nowo Shell instance (YAML fallback when DB inventory is empty).
+    # Names must match CookieConsentBundle CookieNameEnum + Symfony session / remember_me / CSRF.
+    cookie_inventory:
+        - name: PHPSESSID
+          duration: Session
+          category: required
+          type: first_party
+          sort_order: 0
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: Maintains the authenticated HTTP session required to access protected areas of the service.
+              es:
+                  provider: App (primera parte)
+                  purpose: Mantiene la sesión HTTP autenticada necesaria para acceder a las áreas protegidas del servicio.
+        - name: REMEMBERME
+          duration: 7 days
+          category: required
+          type: first_party
+          sort_order: 10
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: Enables persistent authentication when the user selects “Remember me” at sign-in (secure token; limited lifetime).
+              es:
+                  provider: App (primera parte)
+                  purpose: Permite la autenticación persistente cuando el usuario selecciona «Recordarme» al iniciar sesión (token seguro; duración limitada).
+        - name: csrf-token_*
+          duration: Session
+          category: required
+          type: first_party
+          sort_order: 15
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: Short-lived double-submit CSRF cookie set by Symfony when submitting protected forms (name pattern csrf-token_<token>; __Host- prefix on HTTPS).
+              es:
+                  provider: App (primera parte)
+                  purpose: Cookie CSRF de doble envío de corta duración que Symfony establece al enviar formularios protegidos (patrón csrf-token_<token>; prefijo __Host- en HTTPS).
+        - name: Cookie_Consent
+          duration: 1 year
+          category: required
+          type: first_party
+          sort_order: 20
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: Records that a cookie-consent decision was made so the banner is not shown again until preferences change or expire.
+              es:
+                  provider: App (primera parte)
+                  purpose: Registra que se tomó una decisión de consentimiento de cookies para no volver a mostrar el aviso hasta que se modifiquen o caduquen las preferencias.
+        - name: Cookie_Consent_Key
+          duration: 1 year
+          category: required
+          type: first_party
+          sort_order: 30
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: Anonymous technical key linking the browser consent record to the server-side consent audit log (accountability).
+              es:
+                  provider: App (primera parte)
+                  purpose: Clave técnica anónima que vincula el registro de consentimiento del navegador con el registro de auditoría en el servidor (responsabilidad).
+        - name: Cookie_Category_analytics
+          duration: 1 year
+          category: required
+          type: first_party
+          sort_order: 40
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: Stores whether the analytics category was accepted or refused (consent machinery; not an analytics tracker itself).
+              es:
+                  provider: App (primera parte)
+                  purpose: Almacena si la categoría de analítica fue aceptada o rechazada (mecanismo de consentimiento; no es un rastreador de analítica).
+        - name: Cookie_Category_preferences
+          duration: 1 year
+          category: required
+          type: first_party
+          sort_order: 50
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: Stores whether the preferences category was accepted or refused (consent machinery).
+              es:
+                  provider: App (primera parte)
+                  purpose: Almacena si la categoría de preferencias fue aceptada o rechazada (mecanismo de consentimiento).

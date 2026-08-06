@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration — {{ site_appearance.brandName }}{% endblock %}
+
+{% block body %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold">Administration</h1>
+    <p class="mt-1 text-sm text-[var(--color-ink)]/65">Manage this platform and its access controls.</p>
+</div>
+<div class="grid gap-4 sm:grid-cols-2">
+    {% for item in [
+        {route: 'admin_users', label: 'Users', testid: 'admin-users'},
+        {route: 'admin_groups', label: 'Groups', testid: 'admin-groups'},
+        {route: 'settings_appearance', label: 'Appearance', testid: 'admin-appearance'},
+        {route: 'settings_mailer', label: 'Mailer', testid: 'admin-mailer'},
+        {route: 'admin_social_login', label: 'Social login', testid: 'admin-social-login'},
+        {route: 'settings_instance_config', label: 'Instance config', testid: 'admin-instance-config'},
+        {route: 'nowo_site_backup_setup', label: 'Site backup', testid: 'admin-site-backup'},
+        {route: 'nowo_dashboard_menu_dashboard_index', label: 'Menus', testid: 'admin-menus'},
+        {route: 'nowo_breadcrumb_kit_dashboard_collections_index', label: 'Breadcrumbs', testid: 'admin-breadcrumbs'},
+        {route: 'admin_cookie_consent', label: 'Cookie consent', testid: 'admin-cookie-consent'},
+        {route: 'nowo_routing_kit_panel', label: 'Locale routes', testid: 'admin-routing-kit'},
+        {route: 'nowo_http_log_admin_index', label: 'HTTP log', testid: 'admin-http-log'}
+    ] %}
+        <a class="panel no-underline transition hover:border-[var(--color-moss)]" href="{{ path(item.route) }}" data-testid="{{ item.testid }}">
+            <h2 class="text-lg font-semibold text-[var(--color-ink)]">{{ item.label }}</h2>
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}

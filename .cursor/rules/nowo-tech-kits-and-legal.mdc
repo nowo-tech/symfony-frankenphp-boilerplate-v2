@@ -1,0 +1,56 @@
+---
+description: Prefer nowo-tech kits (Auth/Audit/User/…) and remind about legal/cookie notices
+alwaysApply: true
+---
+
+# Nowo.tech kits and legal reminders
+
+When implementing product features in this repo, **prefer official `nowo-tech/*` Symfony bundles** instead of reinventing auth, users, audit fields, cookies, or legal UX.
+
+## Prefer these kits (do not hand-roll equivalents)
+
+| Need | Package | Notes |
+|------|---------|--------|
+| Login / registration / password reset UI | `nowo-tech/auth-kit-bundle` | Configurable flows, Twig overrides, i18n |
+| User enable/disable, last activity, online | `nowo-tech/user-kit-bundle` | Account lifecycle on top of Security |
+| createdAt/updatedAt + blame fields | `nowo-tech/audit-kit-bundle` | Opt-in Doctrine timestamps/blame |
+| Cookie / GDPR consent modal | `nowo-tech/cookie-consent-bundle` | Categories + optional consent logging |
+| Login throttling | `nowo-tech/login-throttle-bundle` | Wraps Symfony `login_throttling` |
+| Password policy / strength / toggle | `nowo-tech/password-*-bundle` | Prefer kits over custom validators/UI |
+| Breadcrumb trails (DB + Twig) | `nowo-tech/breadcrumb-kit-bundle` | Route matching, i18n, optional admin CRUD |
+| Dashboard menus (DB + Twig/API) | `nowo-tech/dashboard-menu-bundle` | Tree menus, i18n, permissions, admin CRUD |
+| Admin UI macros / `nowo-ui-*` CSS / modals | `nowo-tech/ui-kit-bundle` | Host: `css_framework: tailwind`, `icon_set: ux_icon`; remap tokens under `.kit-admin` |
+| Symfony forms (options merge, i18n conventions) | `nowo-tech/form-kit-bundle` | Prefer over hand-rolled form themes / labels; kit profiles for AuthKit/admin |
+| Progressive Web App (manifest, SW, install) | `nowo-tech/pwa-bundle` | Prefer over hand-rolled service workers |
+| Dual locale public paths (`/foo` + `/{locale}/foo`) | `nowo-tech/routing-kit-bundle` | `#[Routable]` + panel `/_routing/`; AuthKit/SiteBackup keep their own locale config |
+| HTTP request/response audit log + admin | `nowo-tech/http-log-bundle` | Admin `/admin/http-log`; async Messenger persist; host layout `kit/http_log_admin_layout.html.twig` |
+| Client SDK for this Nowo Shell server | `nowo-tech/shell-bundle` | DSN (`APP_INGEST_DSN`) with host/port; Envelope ingest. Also installed **in this server** for dogfooding when `APP_INGEST_DSN` is set. |
+| Field encryption | `nowo-tech/doctrine-encrypt-bundle` | Halite; API secrets + webhook URLs + Mailer DSN |
+| Twig debug overlay | `nowo-tech/twig-inspector-bundle` | Already used in `require-dev` |
+
+Packagist vendor: https://packagist.org/packages/nowo-tech/
+
+## Before inventing Identity/Security UI
+
+1. Ask whether `auth-kit-bundle` + `user-kit-bundle` cover the need.
+2. Prefer integrating those bundles (Flex recipes, template overrides) over growing `src/Identity` with bespoke login/register CRUD.
+3. Use `audit-kit-bundle` for entity timestamps/blame instead of copying trait logic.
+
+## Legal notice / privacy / terms (ALWAYS remind)
+
+When touching public UI, marketing pages, cookies, analytics, contact forms, or self-hosted SaaS surfaces, **remind the user** and propose:
+
+- Legal notice / privacy / terms pages as English UI copy (`lang="en"`), with room for operator-specific text.
+- Cookie consent via `nowo-tech/cookie-consent-bundle` when any non-essential cookie or third-party script appears (Vite analytics, embeds, etc.).
+- GDPR-oriented data handling (`anonymize-bundle`, encrypt-bundle) when storing personal data beyond auth essentials.
+
+Do **not** silently ship tracking or optional cookies without consent UX.
+
+## Current project status (honest baseline)
+
+Identity already uses **AuthKit** for login/registration (`registration_mode: first_user_only`), plus UserKit / AuditKit / password kits for account lifecycle. Phase 6 `037-authkit-identity-migration` is **kit polish** (area nav, social links, security activity) — **not** a greenfield AuthKit migration; see `specs/037-authkit-identity-migration/`. Do not reintroduce a custom `SecurityController`.
+
+## Agent behaviour
+
+- If the user asks for login, registration, memberships, audit columns, forms, or legal/cookie UX → **mention the matching nowo-tech package first**, then implement with it unless they explicitly refuse.
+- Keep docs/PHPDoc/UI strings in English (see `english-docs-and-phpdoc` rule).

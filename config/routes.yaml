@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../vendor/symfony/routing/Loader/schema/routing.schema.json
+
+controllers_identity:
+    resource:
+        path: ../src/Identity/Controller/
+        namespace: App\Identity\Controller
+    type: attribute
+
+controllers_appearance:
+    resource:
+        path: ../src/Shared/Appearance/Controller/
+        namespace: App\Shared\Appearance\Controller
+    type: attribute
+
+controllers_settings:
+    resource:
+        path: ../src/Shared/Settings/Controller/
+        namespace: App\Shared\Settings\Controller
+    type: attribute
+
+controllers_admin_hub:
+    resource:
+        path: ../src/Shared/Controller/
+        namespace: App\Shared\Controller
+    type: attribute
+
+controllers_legal:
+    resource:
+        path: ../src/Shared/Legal/Controller/
+        namespace: App\Shared\Legal\Controller
+    type: attribute
+
+controllers_public_locale:
+    resource:
+        path: ../src/Shared/Locale/
+        namespace: App\Shared\Locale
+    type: attribute
+
+controllers_health:
+    resource:
+        path: ../src/Shared/Health/
+        namespace: App\Shared\Health
+    type: attribute
+
+# RoutingKit DB/JSON locale routes — MUST be last so {name}.{locale} overlays app routes.
+nowo_routing_kit_db:
+    resource: .
+    type: nowo_routing_kit

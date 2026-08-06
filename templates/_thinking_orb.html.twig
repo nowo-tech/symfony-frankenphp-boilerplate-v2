@@ -1,0 +1,9 @@
+{# Thinking Orb — UiKit canvas + nowo-ui-orb.js (MIT thinking-orbs engine). #}
+{% include '@NowoUiKitBundle/partials/_thinking_orb.html.twig' with {
+    state: state|default('working'),
+    size: size|default(64),
+    theme: theme|default('auto'),
+    speed: speed|default(1),
+    paused: paused|default(false),
+    label: label|default(null),
+} %}

@@ -1,0 +1,30 @@
+{#
+  Nowo Shell section tabs — delegates to UiKit route-based tabs (same API as kit admin).
+
+  Required:
+    - aria_label: string (already translated)
+    - items: list of {
+        label: string,
+        href: string,
+        current?: bool,
+        attr?: { [htmlAttribute]: string }
+      }
+
+  Optional:
+    - nav_class: extra classes on the wrapper (e.g. 'mb-6', 'project-nav')
+    - attr: extra attributes on the wrapper
+    - framework: UiKit css_framework (default tailwind)
+#}
+{% set nav_class = nav_class|default('') %}
+{% set attr = attr|default({}) %}
+{% set framework = framework|default(nowo_ui_kit_css_framework|default('tailwind')) %}
+<div
+    class="shell-tabs{{ nav_class ? ' ' ~ nav_class : '' }}"
+    {% for name, value in attr %}{{ name }}="{{ value }}" {% endfor %}
+>
+    {% include '@NowoUiKitBundle/partials/_tabs.html.twig' with {
+        items: items,
+        aria_label: aria_label,
+        framework: framework,
+    } only %}
+</div>

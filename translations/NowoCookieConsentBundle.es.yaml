@@ -1,0 +1,36 @@
+# Project overrides only — keys that differ from the vendor catalogue.
+# Do not duplicate unchanged bundle strings; missing keys fall back to the package translations.
+# Modal body/buttons for the default profile may also come from CookieConsentDemoSeeder.
+
+nowo_cookie_consent:
+    privacy_route: 'legal_privacy'
+    title: 'Aviso de cookies'
+    intro: 'Este servicio utiliza cookies y tecnologías similares para funcionar de forma segura y recordar sus elecciones. Las cookies estrictamente necesarias son imprescindibles para la funcionalidad esencial y no pueden desactivarse. Las cookies opcionales se utilizan únicamente con su consentimiento previo.'
+    read_more: 'Política de privacidad'
+    show_preferences: 'Configuración de cookies'
+    save: 'Confirmar selección'
+    use_only_functional_cookies: 'Solo cookies necesarias'
+    use_all_cookies: 'Aceptar todas las cookies'
+    preferences_bubble:
+        label: 'Abrir configuración de cookies'
+    required:
+        title: 'Estrictamente necesarias'
+        description: 'Cookies imprescindibles para la autenticación, la seguridad y el registro de su consentimiento. Permanecen siempre activas y no pueden desactivarse.'
+        always_on: 'Siempre activas'
+    preferences:
+        close: 'Volver'
+        usage_title: 'Cómo usamos las cookies'
+        usage_description: 'Utilizamos cookies y tecnologías similares. Las cookies estrictamente necesarias permanecen activas porque son esenciales para el funcionamiento del servicio (seguridad, gestión de sesión y registro de su consentimiento). Las cookies de analítica y de preferencias son opcionales y se activan únicamente con su consentimiento previo. Puede aceptar todas las categorías, rechazar las no esenciales o revisar cada categoría. Puede retirar o modificar su consentimiento en cualquier momento mediante Configuración de cookies.'
+        description: 'Cookies opcionales que almacenan elecciones de presentación o de funciones no esenciales cuando usted habilita esta categoría.'
+    functionality:
+        description: 'Cookies opcionales que habilitan funciones ampliadas más allá del funcionamiento esencial del servicio.'
+    analytics:
+        description: 'Cookies opcionales utilizadas para medir el uso y mejorar el servicio. Solo se establecen si usted consiente y el operador ha activado herramientas de analítica.'
+    marketing:
+        description: 'Cookies opcionales utilizadas con fines publicitarios o de remarketing. Solo se establecen con su consentimiento previo.'
+    inventory:
+        caption: 'Inventario de cookies'
+        name: 'Nombre'
+        duration: 'Duración'
+    granular:
+        help: 'Active o desactive una categoría completa, o seleccione cookies individuales cuando esté disponible.'

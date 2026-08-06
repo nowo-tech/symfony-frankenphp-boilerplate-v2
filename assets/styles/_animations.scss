@@ -1,0 +1,197 @@
+@keyframes shell-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shell-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shell-toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+}
+
+@keyframes shell-loader-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shell-loader-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/*
+ * Thinking Orbs page loader — soft translucent veil (content stays readable).
+ * Prefer opacity transitions over display toggles so click navigations ease in.
+ */
+.page-loader {
+  --page-loader-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --page-loader-in: 0.7s;
+  --page-loader-out: 0.45s;
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  /* Soft veil — avoid a heavy fog that reads as a hard cut. */
+  background: color-mix(in srgb, var(--color-paper, #f3f6f4) 18%, transparent);
+  color: var(--color-ink, #0a1219);
+  -webkit-backdrop-filter: blur(5px) saturate(1.03);
+  backdrop-filter: blur(5px) saturate(1.03);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--page-loader-out) var(--page-loader-ease),
+    visibility var(--page-loader-out) var(--page-loader-ease);
+}
+
+html[data-theme="dark"] .page-loader {
+  background: color-mix(in srgb, var(--app-paper, #0c1210) 22%, transparent);
+  color: var(--app-ink, #e6eee9);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .page-loader {
+    background: color-mix(in srgb, #0c1210 22%, transparent);
+    color: #e6eee9;
+  }
+}
+
+/*
+ * Keep the grid box while leaving so opacity can fade.
+ * When fully dismissed ([hidden]), force display:none — a zero-opacity layer with
+ * backdrop-filter can still wash out the page in Chromium.
+ */
+.page-loader.is-leaving {
+  display: grid;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  animation: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition:
+    opacity var(--page-loader-out) var(--page-loader-ease),
+    visibility var(--page-loader-out) var(--page-loader-ease);
+}
+
+.page-loader[hidden] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Soft enter: gentle ease + enough duration to read as a fade, not a cut. */
+.page-loader.is-active:not(.is-leaving) {
+  display: grid;
+  visibility: visible;
+  pointer-events: auto;
+  animation: shell-loader-fade-in var(--page-loader-in) var(--page-loader-ease) forwards;
+}
+
+.page-loader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  opacity: 0;
+}
+
+.page-loader.is-active:not(.is-leaving) .page-loader__inner {
+  animation: shell-loader-content-in 0.65s var(--page-loader-ease) 0.14s both;
+}
+
+.page-loader.is-leaving .page-loader__inner {
+  opacity: 0;
+  transition: opacity 0.28s var(--page-loader-ease);
+}
+
+.page-loader__label {
+  margin: 0;
+  font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.thinking-orb,
+.nowo-ui-orb {
+  flex-shrink: 0;
+}
+
+html.is-page-loading,
+html.is-page-loading body {
+  cursor: progress;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-loader,
+  .page-loader.is-leaving {
+    transition: none;
+  }
+
+  .page-loader.is-active:not(.is-leaving),
+  .page-loader.is-active:not(.is-leaving) .page-loader__inner {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+}
+
+[data-motion="reduce"] {
+  .page-loader,
+  .page-loader.is-leaving {
+    transition: none;
+  }
+
+  .page-loader.is-active:not(.is-leaving),
+  .page-loader.is-active:not(.is-leaving) .page-loader__inner {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+}

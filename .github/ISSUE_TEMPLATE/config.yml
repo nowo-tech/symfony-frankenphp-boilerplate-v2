@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/nowo-tech/nowo-shell/security/advisories/new
+    about: Report a security issue privately (do not file a public bug).
+  - name: Contributing guide
+    url: https://github.com/nowo-tech/nowo-shell/blob/main/docs/CONTRIBUTING.md
+    about: Spec-driven workflow, kits preference, issue/PR templates, and QA expectations.
+  - name: Funding / Sponsors
+    url: https://github.com/sponsors/nowo-tech
+    about: Support Nowo.tech maintenance of Nowo Shell and the kit ecosystem.
+  - name: client demo (client)
+    url: https://github.com/nowo-tech/client demo/issues
+    about: Issues for the Symfony instrumentation client belong in client demo.

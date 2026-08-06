@@ -1,0 +1,22 @@
+{# Blocking classic IIFE compiled from assets/theme-boot.ts (see vite themeBootIife plugin). #}
+<script src="{{ asset('build/theme-boot.js') }}"></script>
+{# Critical page substrate so a translucent loader never reveals the wrong theme. #}
+<style>
+    html[data-theme="light"],
+    html[data-theme="light"] body {
+        color-scheme: light;
+        background-color: {{ site_appearance.paperColor|e('css') }};
+    }
+    html[data-theme="dark"],
+    html[data-theme="dark"] body {
+        color-scheme: dark;
+        background-color: {{ site_appearance.paperColorDark|e('css') }};
+    }
+    @media (prefers-color-scheme: dark) {
+        html:not([data-theme="light"]),
+        html:not([data-theme="light"]) body {
+            color-scheme: dark;
+            background-color: {{ site_appearance.paperColorDark|e('css') }};
+        }
+    }
+</style>

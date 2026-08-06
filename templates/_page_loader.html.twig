@@ -1,0 +1,19 @@
+{# Full-page Thinking Orb loader (Nowo Shell chrome; UiKit orb canvas only). #}
+<div
+    class="page-loader is-active"
+    data-controller="page-loader"
+    data-page-loader-target="overlay"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+>
+    <div class="page-loader__inner">
+        {% include '@NowoUiKitBundle/partials/_thinking_orb.html.twig' with {
+            state: 'working',
+            size: 64,
+            theme: 'auto',
+            label: 'loader.loading'|trans({}, 'NowoUiKitBundle'),
+        } %}
+        <p class="page-loader__label">{{ 'loader.loading'|trans({}, 'NowoUiKitBundle') }}</p>
+    </div>
+</div>

@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Sora", "Segoe UI", sans-serif;
+  --font-display: "Sora", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-ink: var(--app-ink);
+  --color-paper: var(--app-paper);
+  --color-moss: var(--app-moss);
+  --color-moss-deep: var(--app-moss-deep);
+  --color-sand: var(--app-sand);
+  --color-mist: var(--app-mist);
+  --color-alert: var(--app-alert);
+  --color-warn: var(--app-warn);
+  --color-surface: var(--app-surface);
+  --color-surface-muted: var(--app-surface-muted);
+}
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --app-ink: #0a1219;
+  --app-paper: #e8edf3;
+  --app-moss: #1a4f73;
+  --app-moss-deep: #123a56;
+  --app-sand: #cfd8e4;
+  --app-mist: #dde5ee;
+  --app-alert: #b42318;
+  --app-warn: #b54708;
+  --app-surface: #ffffff;
+  --app-surface-muted: #f2f5f9;
+  --app-radius-card: 0.25rem;
+  --app-radius-control: 0.125rem;
+  --app-border-width: 1px;
+  --app-mark: #2f6f9c;
+  --app-shell-a: #e6ebf2;
+  --app-shell-b: #e4eaf1;
+  --app-flash-error-bg: #fef2f2;
+  --app-flash-error-border: #fecaca;
+  --app-flash-ok-bg: #edf4fa;
+  --app-flash-ok-border: #b4d0e6;
+  --app-flash-ok-text: #123a56;
+  --app-badge-error-bg: #fee2e2;
+  --app-badge-error-text: #991b1b;
+  --app-badge-warn-bg: #fef3c7;
+  --app-badge-warn-text: #78350f;
+  --app-shadow: 10 18 32;
+  /* Aliases for SCSS (Tailwind @theme may tree-shake unused --color-* tokens). */
+  --color-ink: var(--app-ink);
+  --color-paper: var(--app-paper);
+  --color-moss: var(--app-moss);
+  --color-moss-deep: var(--app-moss-deep);
+  --color-sand: var(--app-sand);
+  --color-mist: var(--app-mist);
+  --color-alert: var(--app-alert);
+  --color-warn: var(--app-warn);
+  --color-surface: var(--app-surface);
+  --color-surface-muted: var(--app-surface-muted);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --app-ink: #e4ebf3;
+  --app-paper: #0a1018;
+  --app-moss: #6a9fc4;
+  --app-moss-deep: #8bb5d4;
+  --app-sand: #243041;
+  --app-mist: #141c28;
+  --app-alert: #f97066;
+  --app-warn: #fdb022;
+  --app-surface: #101820;
+  --app-surface-muted: #152030;
+  --app-mark: #6a9fc4;
+  --app-shell-a: #0c121a;
+  --app-shell-b: #0a1018;
+  --app-flash-error-bg: color-mix(in srgb, var(--app-alert) 18%, var(--app-surface));
+  --app-flash-error-border: color-mix(in srgb, var(--app-alert) 40%, var(--app-sand));
+  --app-flash-ok-bg: color-mix(in srgb, var(--app-moss) 18%, var(--app-surface));
+  --app-flash-ok-border: color-mix(in srgb, var(--app-moss) 40%, var(--app-sand));
+  --app-flash-ok-text: #c5dff0;
+  --app-badge-error-bg: color-mix(in srgb, var(--app-alert) 22%, var(--app-surface));
+  --app-badge-error-text: #fecaca;
+  --app-badge-warn-bg: color-mix(in srgb, var(--app-warn) 22%, var(--app-surface));
+  --app-badge-warn-text: #fde68a;
+  --app-shadow: 0 0 0;
+  --color-ink: var(--app-ink);
+  --color-paper: var(--app-paper);
+  --color-moss: var(--app-moss);
+  --color-moss-deep: var(--app-moss-deep);
+  --color-sand: var(--app-sand);
+  --color-mist: var(--app-mist);
+  --color-alert: var(--app-alert);
+  --color-warn: var(--app-warn);
+  --color-surface: var(--app-surface);
+  --color-surface-muted: var(--app-surface-muted);
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--color-paper)] text-[var(--color-ink)] font-sans antialiased min-h-screen;
+  }
+
+  a {
+    @apply text-[var(--color-moss)] hover:text-[var(--color-moss-deep)];
+  }
+}

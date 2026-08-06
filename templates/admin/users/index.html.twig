@@ -1,0 +1,210 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'users.title'|trans }} — {{ site_appearance.brandName }}{% endblock %}
+
+{% block body %}
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+        <h1 class="font-[family-name:var(--font-display)] text-3xl font-bold">{{ 'users.title'|trans }}</h1>
+        <p class="mt-1 text-sm text-[var(--color-ink)]/65">{{ 'users.intro'|trans }}</p>
+    </div>
+    <a class="btn-primary no-underline" href="{{ path('admin_users_new') }}">{{ 'users.create'|trans }}</a>
+</div>
+
+<form method="get" action="{{ path('admin_users') }}" class="mb-4 flex flex-wrap gap-2">
+    <input
+        class="input min-w-56 flex-1"
+        type="search"
+        name="q"
+        value="{{ q }}"
+        placeholder="{{ 'users.search_placeholder'|trans }}"
+        autocomplete="off"
+    >
+    <button class="btn-ghost" type="submit">{{ 'common.filter'|trans }}</button>
+    <a class="btn-ghost no-underline" href="{{ path('admin_users') }}">{{ 'common.clear_filters'|trans }}</a>
+</form>
+
+<section class="panel overflow-x-auto">
+    <table class="w-full text-left text-sm">
+        <thead>
+            <tr class="border-b border-[var(--color-sand)] text-[var(--color-ink)]/55">
+                <th class="px-2 py-2 font-medium">{{ 'users.col.user'|trans }}</th>
+                <th class="px-2 py-2 font-medium">{{ 'users.col.email'|trans }}</th>
+                <th class="px-2 py-2 font-medium">{{ 'users.col.status'|trans }}</th>
+                <th class="px-2 py-2 font-medium">{{ 'users.col.presence'|trans }}</th>
+                <th class="px-2 py-2 font-medium">{{ 'users.col.roles'|trans }}</th>
+                <th class="px-2 py-2 font-medium">{{ 'users.col.audit'|trans }}</th>
+                <th class="px-2 py-2 font-medium">{{ 'users.col.actions'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                {% set isSelf = app.user and app.user.id == user.id %}
+                {% set isAdminRole = 'ROLE_ADMIN' in user.roles %}
+                {% set isLastAdmin = isAdminRole and adminCount <= 1 %}
+                <tr class="row-hover border-b border-[var(--color-sand)]/70 last:border-0">
+                    <td class="px-2 py-3">
+                        <div class="flex items-center gap-2">
+                            <span class="user-avatar user-avatar--sm" aria-hidden="true">{{ user.initials }}</span>
+                            <span class="font-medium">{{ user.displayName }}</span>
+                        </div>
+                    </td>
+                    <td class="px-2 py-3 text-[var(--color-ink)]/75">{{ user.email }}</td>
+                    <td class="px-2 py-3">
+                        {% if user.anonymized %}
+                            <span class="badge bg-[var(--color-ink)]/10 text-[var(--color-ink)]/70">{{ 'users.status.anonymized'|trans }}</span>
+                        {% elseif user.enabled %}
+                            <span class="badge bg-[var(--color-moss)]/15 text-[var(--color-moss)]">{{ 'users.status.enabled'|trans }}</span>
+                        {% else %}
+                            <span class="badge bg-[var(--color-alert)]/15 text-[var(--color-alert)]">{{ 'users.status.disabled'|trans }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-2 py-3">
+                        {% if user_is_online(user) %}
+                            <span class="badge bg-[var(--color-moss)]/15 text-[var(--color-moss)]">{{ 'users.presence.online'|trans }}</span>
+                        {% else %}
+                            <span class="badge bg-[var(--color-sand)] text-[var(--color-ink)]/65">{{ 'users.presence.offline'|trans }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-2 py-3">
+                        {% set roleLabel = isAdminRole ? 'users.role.admin'|trans : 'users.role.user'|trans %}
+                        {% if isSelf %}
+                            <span class="badge bg-[var(--color-sand)]">{{ roleLabel }}</span>
+                            <div class="mt-1 text-xs text-[var(--color-ink)]/45">{{ 'users.actions.self'|trans }}</div>
+                        {% else %}
+                            <div data-controller="confirm-dialog">
+                                <button
+                                    type="button"
+                                    class="badge badge--editable bg-[var(--color-sand)]"
+                                    data-action="confirm-dialog#open"
+                                    title="{{ 'users.actions.edit_role'|trans }}"
+                                    aria-label="{{ 'users.actions.edit_role'|trans }}"
+                                >
+                                    <span>{{ roleLabel }}</span>
+                                    <svg class="badge__edit-icon" width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 2.83H5v-.92l9.06-9.06.92.92L5.92 20.08zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                    </svg>
+                                </button>
+                                <dialog
+                                    class="confirm-dialog"
+                                    data-confirm-dialog-target="dialog"
+                                    aria-labelledby="user-role-dialog-title-{{ user.id }}"
+                                >
+                                    <form
+                                        method="post"
+                                        action="{{ path('admin_users_role', {id: user.uuid}) }}"
+                                        class="confirm-dialog__panel"
+                                    >
+                                        <h2 id="user-role-dialog-title-{{ user.id }}" class="confirm-dialog__title">{{ 'users.edit_role_title'|trans }}</h2>
+                                        <p class="confirm-dialog__body">{{ 'users.edit_role_body'|trans({'%name%': user.displayName, '%email%': user.email}) }}</p>
+                                        {% if isLastAdmin %}
+                                            <p class="confirm-dialog__body">{{ 'users.last_admin_hint'|trans }}</p>
+                                        {% endif %}
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_user_role_' ~ user.id) }}">
+                                        <label class="confirm-dialog__label" for="user-role-{{ user.id }}">{{ 'users.role_label'|trans }}</label>
+                                        <select
+                                            id="user-role-{{ user.id }}"
+                                            class="input w-full"
+                                            name="role"
+                                            {% if isLastAdmin %}disabled{% endif %}
+                                        >
+                                            <option value="user" {% if not isAdminRole %}selected{% endif %}>{{ 'users.role.user'|trans }}</option>
+                                            <option value="admin" {% if isAdminRole %}selected{% endif %}>{{ 'users.role.admin'|trans }}</option>
+                                        </select>
+                                        <div class="confirm-dialog__actions">
+                                            <button type="button" class="btn-ghost" data-confirm-dialog-close>{{ 'users.cancel'|trans }}</button>
+                                            <button class="btn-primary" type="submit" {% if isLastAdmin %}disabled{% endif %}>{{ 'users.actions.update_role'|trans }}</button>
+                                        </div>
+                                    </form>
+                                </dialog>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="px-2 py-3 align-top">
+                        {% include 'shared/_audit_meta.html.twig' with {entity: user} only %}
+                    </td>
+                    <td class="px-2 py-3">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a class="btn-ghost btn-sm no-underline" href="{{ path('admin_users_activity', {id: user.uuid}) }}">{{ 'users.actions.activity'|trans }}</a>
+                            <a class="btn-ghost btn-sm no-underline" href="{{ path('admin_users_export', {id: user.uuid}) }}">{{ 'users.actions.export'|trans }}</a>
+                            {% if isSelf %}
+                                <span class="text-xs text-[var(--color-ink)]/45">{{ 'users.actions.self'|trans }}</span>
+                            {% elseif user.anonymized %}
+                                <span class="badge bg-[var(--color-ink)]/10 text-[var(--color-ink)]/70">{{ 'users.status.anonymized'|trans }}</span>
+                            {% else %}
+                                <form method="post" action="{{ path('admin_users_toggle_enabled', {id: user.uuid}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle_user_' ~ user.id) }}">
+                                    <button type="submit" class="btn-secondary btn-sm">
+                                        {% if user.enabled %}
+                                            {{ 'users.actions.disable'|trans }}
+                                        {% else %}
+                                            {{ 'users.actions.enable'|trans }}
+                                        {% endif %}
+                                    </button>
+                                </form>
+                                <div data-controller="confirm-dialog" data-confirm-dialog-expected-value="ANONYMIZE">
+                                    <button type="button" class="btn-danger btn-sm" data-action="confirm-dialog#open">{{ 'users.actions.anonymize'|trans }}</button>
+                                    <dialog class="confirm-dialog" data-confirm-dialog-target="dialog" aria-labelledby="admin-user-anonymize-{{ user.id }}">
+                                        <form method="post" action="{{ path('admin_users_anonymize', {id: user.uuid}) }}" class="confirm-dialog__panel">
+                                            <div class="confirm-dialog__header">
+                                                <h2 id="admin-user-anonymize-{{ user.id }}" class="confirm-dialog__title">{{ 'users.anonymize_confirm_title'|trans }}</h2>
+                                                <p class="confirm-dialog__body">{{ 'users.anonymize_confirm_body'|trans({'%email%': user.email}) }}</p>
+                                            </div>
+                                            <label class="confirm-dialog__label" for="admin-user-anonymize-input-{{ user.id }}">
+                                                {{ 'preferences.privacy.anonymize_type_label'|trans }}
+                                            </label>
+                                            <input
+                                                id="admin-user-anonymize-input-{{ user.id }}"
+                                                class="input w-full"
+                                                type="text"
+                                                autocomplete="off"
+                                                data-confirm-dialog-target="confirmInput"
+                                                required
+                                            >
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_user_anonymize_' ~ user.id) }}">
+                                            <div class="confirm-dialog__actions">
+                                                <button type="button" class="btn-ghost" data-confirm-dialog-close>{{ 'users.cancel'|trans }}</button>
+                                                <button type="submit" class="btn-danger" data-confirm-dialog-target="submit" disabled>{{ 'users.actions.anonymize'|trans }}</button>
+                                            </div>
+                                        </form>
+                                    </dialog>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td class="px-2 py-4 text-[var(--color-ink)]/55" colspan="7">{{ 'users.empty'|trans }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="panel mt-6">
+    <h2 class="mb-3 text-lg font-semibold">{{ 'users.activity.recent_title'|trans }}</h2>
+    <p class="mb-3 text-sm text-[var(--color-ink)]/60">{{ 'users.activity.recent_intro'|trans }}</p>
+    {% if recentActions is empty %}
+        <p class="text-sm text-[var(--color-ink)]/55">{{ 'users.activity.empty'|trans }}</p>
+    {% else %}
+        <ul class="space-y-2 text-sm">
+            {% for entry in recentActions %}
+                <li class="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--color-sand)] py-2 last:border-0">
+                    <span>
+                        <span class="font-medium">{{ ('users.activity.action.' ~ entry.action.value)|trans }}</span>
+                        {% if entry.subjectUser %}
+                            — <a class="no-underline" href="{{ path('admin_users_activity', {id: entry.subjectUser.uuid}) }}">{{ entry.subjectUser.displayName }}</a>
+                        {% elseif entry.context.group is defined %}
+                            — {{ entry.context.group }}
+                        {% elseif entry.context.project is defined %}
+                            — {{ entry.context.project }}
+                        {% endif %}
+                    </span>
+                    <time class="text-xs text-[var(--color-ink)]/50" datetime="{{ entry.createdAt|date('c') }}">{{ entry.createdAt|date('Y-m-d H:i') }}</time>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</section>
+{% endblock %}
