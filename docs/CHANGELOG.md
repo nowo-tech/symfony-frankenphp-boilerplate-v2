@@ -9,6 +9,17 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-08-06
+
+### Fixed
+
+- PHP-CS-Fixer style so the CI **Quality** job passes: import order, `@deprecated` phrasing, native function escapes (`\sprintf` / `\is_array`), shell-style `#` comment → `//` in `tests/bootstrap.php`, and related tidy in Setup demo seeders / Identity / Appearance tests.
+
+### Notes
+
+- No database migrations. No Composer or kit pin changes.
+- Operators: pull `v1.0.1` (or `main`); no migrate/seed required for this patch.
+
 ## [1.0.0] - 2026-08-06
 
 First **stable** release of the Nowo Shell platform boilerplate: Symfony 8.1 + PHP 8.5 + FrankenPHP host with AuthKit, users/groups, appearance, legal/cookies, menus, HTTP logging, SiteBackup, and Nowo kits. Spec-Driven Development via GitHub Spec Kit.
@@ -28,5 +39,6 @@ First **stable** release of the Nowo Shell platform boilerplate: Symfony 8.1 + P
 - This is the first tag on [`nowo-tech/symfony-frankenphp-boilerplate-v2`](https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2). Lineage was extracted from the former Nowo Shell / Beacon product tree; historical product-only changelog entries are intentionally omitted.
 - Clone and follow [INSTALL.md](INSTALL.md). Upgrade path for consumers of older private forks: see [UPGRADING.md](UPGRADING.md).
 
-[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/releases/tag/v1.0.0

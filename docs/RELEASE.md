@@ -35,11 +35,11 @@ git push origin main
 git push origin vX.Y.Z
 ```
 
-Example for the initial release:
+Example for a patch release:
 
 ```bash
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
+git tag -a v1.0.1 -m "Release v1.0.1"
+git push origin v1.0.1
 ```
 
 ## GitHub Release
