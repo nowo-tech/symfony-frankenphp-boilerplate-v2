@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -26,7 +26,21 @@ jobs:
         id: tag
         run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
 
+      - name: Skip if release already exists
+        id: exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}
+        run: |
+          if gh release view "$TAG_NAME" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG_NAME already exists — skipping create (idempotent)."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Get tag message
+        if: steps.exists.outputs.exists != 'true'
         id: tag_message
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
@@ -38,6 +52,7 @@ jobs:
           { echo "MESSAGE<<${DELIM}"; printf '%s' "$TAG_MESSAGE"; echo ""; echo "${DELIM}"; } >> "$GITHUB_OUTPUT"
 
       - name: Extract version from tag
+        if: steps.exists.outputs.exists != 'true'
         id: version
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
@@ -45,6 +60,7 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Get changelog entry
+        if: steps.exists.outputs.exists != 'true'
         id: changelog
         run: |
           VERSION="${{ steps.version.outputs.VERSION }}"
@@ -65,6 +81,7 @@ jobs:
           fi
 
       - name: Prepare release body
+        if: steps.exists.outputs.exists != 'true'
         id: body
         env:
           TAG_MSG: ${{ steps.tag_message.outputs.MESSAGE }}
@@ -78,11 +95,13 @@ jobs:
           DELIM=$(openssl rand -hex 16)
           { echo "content<<${DELIM}"; printf '%s' "$BODY"; echo ""; echo "${DELIM}"; } >> "$GITHUB_OUTPUT"
 
+      # softprops/action-gh-release@v3 runs on Node 24 (v2 used deprecated Node 20).
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        if: steps.exists.outputs.exists != 'true'
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.tag.outputs.TAG_NAME }}
-          name: Release ${{ steps.tag.outputs.TAG_NAME }}
+          name: ${{ steps.tag.outputs.TAG_NAME }}
           body: ${{ steps.body.outputs.content }}
           draft: false
           prerelease: ${{ contains(steps.tag.outputs.TAG_NAME, '-alpha') || contains(steps.tag.outputs.TAG_NAME, '-beta') || contains(steps.tag.outputs.TAG_NAME, '-rc') }}

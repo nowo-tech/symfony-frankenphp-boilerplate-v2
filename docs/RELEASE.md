@@ -54,7 +54,7 @@ EOF
 
 Prefer pasting the matching `## [X.Y.Z]` section from [`CHANGELOG.md`](CHANGELOG.md) as the release body.
 
-Optional: workflow [`.github/workflows/release.yml`](../.github/workflows/release.yml) automates release creation on `v*` tag push.
+Optional: workflow [`.github/workflows/release.yml`](../.github/workflows/release.yml) automates release creation on `v*` tag push (`softprops/action-gh-release@v3`, Node 24). It is **idempotent**: if a release for that tag already exists (e.g. created with `gh release create`), the job succeeds and skips.
 
 ## After release
 
