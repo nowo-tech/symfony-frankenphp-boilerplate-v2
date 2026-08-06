@@ -56,26 +56,24 @@ final readonly class BreadcrumbDemoSeeder
 
         $itemsByRoute = [];
         foreach ($itemsData as $index => $itemData) {
-            if (!is_array($itemData)) {
-                throw new InvalidArgumentException(sprintf('Fixture "%s" has a non-object item at index %d.', self::FIXTURE_FILE, $index));
+            if (!\is_array($itemData)) {
+                throw new InvalidArgumentException(\sprintf('Fixture "%s" has a non-object item at index %d.', self::FIXTURE_FILE, $index));
             }
 
-            $routeName = $this->requireString($itemData, 'route', sprintf('items[%d]', $index));
-            $parentRoute = $this->requireNullableString($itemData, 'parent', sprintf('items[%d]', $index));
+            $routeName = $this->requireString($itemData, 'route', \sprintf('items[%d]', $index));
+            $parentRoute = $this->requireNullableString($itemData, 'parent', \sprintf('items[%d]', $index));
             $parent = null;
             if (null !== $parentRoute) {
-                $parent = $itemsByRoute[$parentRoute] ?? throw new InvalidArgumentException(
-                    sprintf('Fixture "%s" references unknown parent route "%s" for "%s".', self::FIXTURE_FILE, $parentRoute, $routeName),
-                );
+                $parent = $itemsByRoute[$parentRoute] ?? throw new InvalidArgumentException(\sprintf('Fixture "%s" references unknown parent route "%s" for "%s".', self::FIXTURE_FILE, $parentRoute, $routeName));
             }
 
             $itemsByRoute[$routeName] = $this->ensureItem(
                 $collection,
                 $routeName,
-                $this->requireString($itemData, 'label', sprintf('items[%d]', $index)),
-                $this->requireTranslations($itemData, 'translations', sprintf('items[%d]', $index)),
+                $this->requireString($itemData, 'label', \sprintf('items[%d]', $index)),
+                $this->requireTranslations($itemData, 'translations', \sprintf('items[%d]', $index)),
                 $parent,
-                $this->requireStringList($itemData, 'dynamicParamKeys', sprintf('items[%d]', $index)),
+                $this->requireStringList($itemData, 'dynamicParamKeys', \sprintf('items[%d]', $index)),
                 $changed,
             );
         }
@@ -145,8 +143,8 @@ final readonly class BreadcrumbDemoSeeder
     private function requireArray(array $source, string $key, string $context): array
     {
         $value = $source[$key] ?? null;
-        if (!is_array($value)) {
-            throw new InvalidArgumentException(sprintf('Fixture "%s" expects %s.%s to be an object.', self::FIXTURE_FILE, $context, $key));
+        if (!\is_array($value)) {
+            throw new InvalidArgumentException(\sprintf('Fixture "%s" expects %s.%s to be an object.', self::FIXTURE_FILE, $context, $key));
         }
 
         return $value;
@@ -160,8 +158,8 @@ final readonly class BreadcrumbDemoSeeder
     private function requireList(array $source, string $key, string $context): array
     {
         $value = $source[$key] ?? null;
-        if (!is_array($value) || !array_is_list($value)) {
-            throw new InvalidArgumentException(sprintf('Fixture "%s" expects %s.%s to be a list.', self::FIXTURE_FILE, $context, $key));
+        if (!\is_array($value) || !array_is_list($value)) {
+            throw new InvalidArgumentException(\sprintf('Fixture "%s" expects %s.%s to be a list.', self::FIXTURE_FILE, $context, $key));
         }
 
         return $value;
@@ -173,8 +171,8 @@ final readonly class BreadcrumbDemoSeeder
     private function requireString(array $source, string $key, string $context): string
     {
         $value = $source[$key] ?? null;
-        if (!is_string($value)) {
-            throw new InvalidArgumentException(sprintf('Fixture "%s" expects %s.%s to be a string.', self::FIXTURE_FILE, $context, $key));
+        if (!\is_string($value)) {
+            throw new InvalidArgumentException(\sprintf('Fixture "%s" expects %s.%s to be a string.', self::FIXTURE_FILE, $context, $key));
         }
 
         return $value;
@@ -186,8 +184,8 @@ final readonly class BreadcrumbDemoSeeder
     private function requireNullableString(array $source, string $key, string $context): ?string
     {
         $value = $source[$key] ?? null;
-        if (null !== $value && !is_string($value)) {
-            throw new InvalidArgumentException(sprintf('Fixture "%s" expects %s.%s to be a string or null.', self::FIXTURE_FILE, $context, $key));
+        if (null !== $value && !\is_string($value)) {
+            throw new InvalidArgumentException(\sprintf('Fixture "%s" expects %s.%s to be a string or null.', self::FIXTURE_FILE, $context, $key));
         }
 
         return $value;
@@ -203,10 +201,8 @@ final readonly class BreadcrumbDemoSeeder
         $value = $this->requireArray($source, $key, $context);
         $translations = [];
         foreach ($value as $locale => $translation) {
-            if (!is_string($locale) || !is_string($translation)) {
-                throw new InvalidArgumentException(
-                    sprintf('Fixture "%s" expects %s.%s to be a string map.', self::FIXTURE_FILE, $context, $key),
-                );
+            if (!\is_string($locale) || !\is_string($translation)) {
+                throw new InvalidArgumentException(\sprintf('Fixture "%s" expects %s.%s to be a string map.', self::FIXTURE_FILE, $context, $key));
             }
             $translations[$locale] = $translation;
         }
@@ -223,8 +219,8 @@ final readonly class BreadcrumbDemoSeeder
     {
         $value = $this->requireList($source, $key, $context);
         foreach ($value as $entry) {
-            if (!is_string($entry)) {
-                throw new InvalidArgumentException(sprintf('Fixture "%s" expects %s.%s to contain only strings.', self::FIXTURE_FILE, $context, $key));
+            if (!\is_string($entry)) {
+                throw new InvalidArgumentException(\sprintf('Fixture "%s" expects %s.%s to contain only strings.', self::FIXTURE_FILE, $context, $key));
             }
         }
 

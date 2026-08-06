@@ -289,7 +289,7 @@ final class AppearanceThemePresets
     }
 
     /**
-     * @deprecated Use matchLightId() / matchDarkId() for independent modes.
+     * @deprecated use matchLightId() / matchDarkId() for independent modes
      */
     public static function matchId(SiteAppearance $appearance): string
     {

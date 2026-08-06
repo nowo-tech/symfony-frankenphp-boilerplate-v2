@@ -170,7 +170,7 @@ abstract class DatabaseWebTestCase extends WebTestCase
     }
 
     /**
-     * @deprecated Use {@see bootWithDemoUser()} — kept for gradual test migration.
+     * @deprecated use {@see bootWithDemoUser()} — kept for gradual test migration
      *
      * @return array{0: KernelBrowser, 1: User}
      */

@@ -8,7 +8,7 @@ require dirname(__DIR__).'/vendor/autoload.php';
 
 new Dotenv()->bootEnv(dirname(__DIR__).'/.env');
 
-# Isolate SQLite per PHPUnit process after Dotenv so concurrent runners do not share
+// Isolate SQLite per PHPUnit process after Dotenv so concurrent runners do not share
 // the same test database file (readonly / lock errors under parallel coverage).
 $testDbPath = sprintf('/dev/shm/symfony-frankenphp-boilerplate-v2-phpunit-%d.db', getmypid());
 $_SERVER['APP_TEST_DATABASE_URL'] = 'sqlite:///'.$testDbPath;

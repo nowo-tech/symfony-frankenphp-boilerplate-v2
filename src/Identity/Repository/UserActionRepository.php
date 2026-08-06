@@ -237,5 +237,4 @@ class UserActionRepository extends ServiceEntityRepository
 
         throw new RuntimeException(\sprintf('Identity audit query is unsupported on %s.', $platform::class));
     }
-
 }
