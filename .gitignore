@@ -59,6 +59,8 @@
 /.vscode/
 *.log
 composer.phar
+# Entrypoint flock for concurrent composer/pnpm (php + messenger*)
+/.deps.lock
 
 # Local Docker bind mounts (MySQL data, etc.)
 /.data/

@@ -76,23 +76,34 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ] || [ 
 		exit 1
 	fi
 
-	# Install Composer deps when vendor autoload is missing (empty or partial failed install).
-	# Do not abort startup on network blips — PHP may still serve; re-run composer later.
-	if [ -f composer.json ] && [ ! -f vendor/autoload_runtime.php ]; then
-		echo 'Installing PHP dependencies (composer)…'
-		composer install --prefer-dist --no-progress --no-interaction \
-			|| echo "WARNING: composer install failed (check DNS/network). Re-run: docker compose exec php composer install" >&2
-	fi
+	# php + messenger* share ./:/app; serialize Composer/pnpm so concurrent entrypoints
+	# cannot race (ENOENT on vendor/symfony/ux-*/assets during pnpm install).
+	# Lock on the project bind mount (var/ is an anonymous volume per container).
+	(
+		flock 9
+		# Install Composer deps when vendor autoload is missing (empty or partial failed install).
+		# Do not abort startup on network blips — PHP may still serve; re-run composer later.
+		if [ -f composer.json ] && [ ! -f vendor/autoload_runtime.php ]; then
+			echo 'Installing PHP dependencies (composer)…'
+			composer install --prefer-dist --no-progress --no-interaction \
+				|| echo "WARNING: composer install failed (check DNS/network). Re-run: docker compose exec php composer install" >&2
+		fi
 
-	# Install JS deps when Vite binary is missing (Pentatrion Vite / pnpm).
-	# Needs Composer file: deps (ux-autocomplete / ux-live-component under vendor/).
-	# Image sets CI=1 (Corepack); that forces frozen-lockfile — fall back without CI when needed.
-	if [ -f package.json ] && [ ! -x node_modules/.bin/vite ]; then
-		echo 'Installing JS dependencies (pnpm)…'
-		pnpm install --frozen-lockfile \
-			|| CI= pnpm install --no-frozen-lockfile \
-			|| echo "WARNING: pnpm install failed (check DNS/network, composer vendor for file: deps, or lockfile). Run: make pnpm ARGS='install --no-frozen-lockfile'" >&2
-	fi
+		# Install JS deps when Vite binary is missing (Pentatrion Vite / pnpm).
+		# Needs Composer file: deps (ux-autocomplete / ux-live-component under vendor/).
+		# Image sets CI=1 (Corepack); that forces frozen-lockfile — fall back without CI when needed.
+		if [ -f package.json ] && [ ! -x node_modules/.bin/vite ]; then
+			if [ ! -d vendor/symfony/ux-autocomplete/assets ] || [ ! -d vendor/symfony/ux-live-component/assets ]; then
+				echo 'Composer UX asset packages missing; retrying composer install…'
+				composer install --prefer-dist --no-progress --no-interaction \
+					|| echo "WARNING: composer install failed (UX file: deps for pnpm). Re-run: docker compose exec php composer install" >&2
+			fi
+			echo 'Installing JS dependencies (pnpm)…'
+			pnpm install --frozen-lockfile \
+				|| CI= pnpm install --no-frozen-lockfile \
+				|| echo "WARNING: pnpm install failed (check DNS/network, composer vendor for file: deps, or lockfile). Run: make pnpm ARGS='install --no-frozen-lockfile'" >&2
+		fi
+	) 9>./.deps.lock
 
 	if [ -f bin/console ] && { [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; }; then
 		php bin/console -V || true
