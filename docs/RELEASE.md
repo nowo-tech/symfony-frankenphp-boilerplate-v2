@@ -38,8 +38,8 @@ git push origin vX.Y.Z
 Example for a patch release:
 
 ```bash
-git tag -a v1.0.2 -m "Release v1.0.2"
-git push origin v1.0.2
+git tag -a v1.0.3 -m "Release v1.0.3"
+git push origin v1.0.3
 ```
 
 ## GitHub Release

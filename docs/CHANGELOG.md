@@ -9,6 +9,18 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-08-07
+
+### Fixed
+
+- PHPStan (CI **Quality**): `SeedDemoCommand` uses `InstanceSettingsRepository::getOrCreate()`; `AdminUserController` imports `RuntimeException`; `UserUiPreferences::getPreferredCollapsedIssuePanels()` reads the stored column; remove unused `CookieConsentDemoSeeder::requireNullableString()`.
+- PHPStan test hygiene: DomCrawler checkbox via `ChoiceFormField::tick()`, `PrePersistEventArgs` stubs use `EntityManagerInterface`, MenuTwig anonymous `getRouteName(): string`, prefer `$_SERVER` for test DB URL, and ignore FrankenPHP `$_ENV`/`putenv` rules only on `tests/bootstrap.php`.
+
+### Notes
+
+- No database migrations. No Composer or kit pin changes.
+- Operators: pull `v1.0.3` (or `main`); no migrate/seed required for this patch. Redeploy application code if you run `app:seed-demo` (setup-completed marking now uses `getOrCreate()`).
+
 ## [1.0.2] - 2026-08-07
 
 ### Fixed
@@ -52,7 +64,8 @@ First **stable** release of the Nowo Shell platform boilerplate: Symfony 8.1 + P
 - This is the first tag on [`nowo-tech/symfony-frankenphp-boilerplate-v2`](https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2). Lineage was extracted from the former Nowo Shell / Beacon product tree; historical product-only changelog entries are intentionally omitted.
 - Clone and follow [INSTALL.md](INSTALL.md). Upgrade path for consumers of older private forks: see [UPGRADING.md](UPGRADING.md).
 
-[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/releases/tag/v1.0.0
