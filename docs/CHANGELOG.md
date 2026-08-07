@@ -9,6 +9,19 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-08-07
+
+### Fixed
+
+- Twig-CS-Fixer hash and filter spacing in BreadcrumbKit / CookieConsent / Dashboard Menu admin Twig overrides so CI **Quality** (Twig CS) passes.
+- Concurrent Compose entrypoints (`php` + `messenger*`) racing Composer / pnpm installs: serialize with `flock` on `./.deps.lock`, retry Composer when UX `file:` asset packages are missing before `pnpm install`, and harden CI Compose E2E (prefetch Composer, install Playwright deps inside the `php` service).
+
+### Notes
+
+- No database migrations. No Composer or kit pin changes.
+- `.deps.lock` is gitignored (runtime lock on the project bind mount).
+- Operators: pull `v1.0.2` (or `main`); no migrate/seed required for this patch. Redeploy / recreate containers so the updated FrankenPHP entrypoint is used.
+
 ## [1.0.1] - 2026-08-06
 
 ### Fixed
@@ -39,6 +52,7 @@ First **stable** release of the Nowo Shell platform boilerplate: Symfony 8.1 + P
 - This is the first tag on [`nowo-tech/symfony-frankenphp-boilerplate-v2`](https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2). Lineage was extracted from the former Nowo Shell / Beacon product tree; historical product-only changelog entries are intentionally omitted.
 - Clone and follow [INSTALL.md](INSTALL.md). Upgrade path for consumers of older private forks: see [UPGRADING.md](UPGRADING.md).
 
-[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/releases/tag/v1.0.0

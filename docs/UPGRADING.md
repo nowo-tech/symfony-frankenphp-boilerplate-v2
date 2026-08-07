@@ -7,6 +7,7 @@ Product apps built on this tree (e.g. [symfony-beacon](https://github.com/nowo-t
 ## Table of contents
 
 - [First install (no previous version)](#first-install-no-previous-version)
+- [Upgrading from 1.0.1 to 1.0.2](#upgrading-from-101-to-102)
 - [Upgrading from 1.0.0 to 1.0.1](#upgrading-from-100-to-101)
 - [Upgrading from an untagged / private fork to 1.0.0](#upgrading-from-an-untagged--private-fork-to-100)
 - [After every upgrade](#after-every-upgrade)
@@ -45,6 +46,19 @@ There is no `composer update nowo-tech/symfony-frankenphp-boilerplate-v2` path f
 - Only `.env.dist` is versioned.
 - Do not commit `.env`, `.env.dev`, or `.env.local`.
 - After pulling upstream changes, always merge new keys from `.env.dist` into your local `.env`.
+
+---
+
+## Upgrading from 1.0.1 to 1.0.2
+
+```bash
+git fetch --tags
+git checkout v1.0.2   # or pull main at the release commit
+composer install   # optional; lockfile unchanged
+docker compose up -d --force-recreate   # pick up FrankenPHP entrypoint flock fix
+```
+
+**1.0.2** is a patch: Twig-CS-Fixer overrides + Docker/CI dependency install race. **No migrations**, no kit bumps, no `.env.dist` changes. No `seed-platform` or asset rebuild required solely for this release. Recreate containers so the updated entrypoint (`.deps.lock` / `flock`) is active.
 
 ---
 
