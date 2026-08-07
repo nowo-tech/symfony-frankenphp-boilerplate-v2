@@ -274,36 +274,35 @@ jobs:
       - name: Build and start Compose stack
         run: |
           docker compose build
-          # Prefetch Composer on the bind mount before php+messenger race entrypoint installs.
+          # Prefetch Composer + pnpm on the bind mount before `up` so the FrankenPHP
+          # entrypoint only does a fast Composer check (pnpm no longer blocks HTTPS).
           # package.json file: deps need vendor/symfony/ux-*/assets for pnpm.
           docker compose run --rm --no-deps php \
             composer install --prefer-dist --no-progress --no-interaction
           test -d vendor/symfony/ux-autocomplete/assets
           test -d vendor/symfony/ux-live-component/assets
+          docker compose run --rm --no-deps php \
+            pnpm install --frozen-lockfile
+          test -x node_modules/.bin/vite
+          test -d node_modules/@playwright/test
           docker compose up -d
-          # Entrypoint installs node_modules (if needed) and migrates when DB is ready.
+          # Entrypoint migrates when DB is ready; wait for TLS health.
           for i in $(seq 1 90); do
             if curl -kfsS https://localhost:9444/health/live >/dev/null 2>&1; then
               echo "Stack is live"
               exit 0
             fi
             echo "Waiting for HTTPS… (${i}/90)"
+            if [ $((i % 15)) -eq 0 ]; then
+              docker compose ps || true
+              docker compose logs --tail=40 php || true
+            fi
             sleep 5
           done
           echo "Timed out waiting for /health/live" >&2
+          docker compose ps || true
           docker compose logs --tail=200
           exit 1
-
-      # Playwright image mounts ./; entrypoint may have skipped/failed pnpm — install in php
-      # (where vendor/symfony/ux-*/assets from Composer file: deps is guaranteed visible).
-      - name: Ensure node_modules for Playwright
-        run: |
-          test -d vendor/symfony/ux-autocomplete/assets
-          test -d vendor/symfony/ux-live-component/assets
-          if [ ! -d node_modules/@playwright/test ]; then
-            docker compose exec -T php pnpm install --frozen-lockfile
-          fi
-          test -d node_modules/@playwright/test
 
       - name: Build frontend assets
         run: make vite-build

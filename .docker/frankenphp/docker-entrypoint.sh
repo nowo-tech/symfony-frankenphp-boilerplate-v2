@@ -76,9 +76,14 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ] || [ 
 		exit 1
 	fi
 
-	# php + messenger* share ./:/app; serialize Composer/pnpm so concurrent entrypoints
-	# cannot race (ENOENT on vendor/symfony/ux-*/assets during pnpm install).
-	# Lock on the project bind mount (var/ is an anonymous volume per container).
+	# php + messenger* share ./:/app; serialize Composer so concurrent entrypoints
+	# cannot race on an empty vendor/. Lock on the project bind mount (var/ is an
+	# anonymous volume per container).
+	#
+	# Do NOT install pnpm here for frankenphp/php/bin/console: a cold pnpm install
+	# can take several minutes and blocks HTTPS (/health/live) and Messenger until
+	# done. Frontend deps are installed by `make deps` / `make up`, the vite HMR
+	# service (command pnpm …), or CI prefetch. Opt in with INSTALL_JS_DEPS=1.
 	(
 		flock 9
 		# Install Composer deps when vendor autoload is missing (empty or partial failed install).
@@ -89,10 +94,14 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ] || [ 
 				|| echo "WARNING: composer install failed (check DNS/network). Re-run: docker compose exec php composer install" >&2
 		fi
 
+		install_js=0
+		if [ "$1" = 'pnpm' ] || [ "$1" = 'node' ] || [ "${INSTALL_JS_DEPS:-0}" = '1' ]; then
+			install_js=1
+		fi
 		# Install JS deps when Vite binary is missing (Pentatrion Vite / pnpm).
 		# Needs Composer file: deps (ux-autocomplete / ux-live-component under vendor/).
 		# Image sets CI=1 (Corepack); that forces frozen-lockfile — fall back without CI when needed.
-		if [ -f package.json ] && [ ! -x node_modules/.bin/vite ]; then
+		if [ "$install_js" = '1' ] && [ -f package.json ] && [ ! -x node_modules/.bin/vite ]; then
 			if [ ! -d vendor/symfony/ux-autocomplete/assets ] || [ ! -d vendor/symfony/ux-live-component/assets ]; then
 				echo 'Composer UX asset packages missing; retrying composer install…'
 				composer install --prefer-dist --no-progress --no-interaction \
