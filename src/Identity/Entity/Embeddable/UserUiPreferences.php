@@ -244,7 +244,7 @@ class UserUiPreferences
      */
     public function getPreferredCollapsedIssuePanels(): array
     {
-        return [];
+        return $this->preferredCollapsedIssuePanels ?? [];
     }
 
     /**

@@ -18,6 +18,7 @@ use App\Identity\UserActionType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
+use RuntimeException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;

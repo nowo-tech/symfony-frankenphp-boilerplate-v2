@@ -107,7 +107,7 @@ abstract class DatabaseWebTestCase extends WebTestCase
         $candidates[] = $projectDir.'/var/test.db';
         $candidates[] = '/tmp/symfony-frankenphp-boilerplate-v2-phpunit.db';
         $candidates[] = '/dev/shm/symfony-frankenphp-boilerplate-v2-phpunit.db';
-        $envUrl = $_SERVER['APP_TEST_DATABASE_URL'] ?? $_ENV['APP_TEST_DATABASE_URL'] ?? null;
+        $envUrl = $_SERVER['APP_TEST_DATABASE_URL'] ?? null;
         if (\is_string($envUrl) && str_starts_with($envUrl, 'sqlite:///')) {
             $candidates[] = substr($envUrl, \strlen('sqlite:///'));
         }

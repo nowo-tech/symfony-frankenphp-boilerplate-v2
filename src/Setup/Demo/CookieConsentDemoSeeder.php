@@ -448,19 +448,6 @@ final readonly class CookieConsentDemoSeeder
 
     /**
      * @param array<mixed> $source
-     */
-    private function requireNullableString(array $source, string $key, string $context): ?string
-    {
-        $value = $source[$key] ?? null;
-        if (null !== $value && !\is_string($value)) {
-            throw new InvalidArgumentException(\sprintf('Fixture "%s" expects %s.%s to be a string or null.', self::FIXTURE_FILE, $context, $key));
-        }
-
-        return $value;
-    }
-
-    /**
-     * @param array<mixed> $source
      *
      * @return list<string>
      */

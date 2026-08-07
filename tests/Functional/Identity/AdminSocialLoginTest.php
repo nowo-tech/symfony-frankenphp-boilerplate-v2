@@ -9,6 +9,7 @@ use App\Tests\Support\DatabaseWebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Nowo\AuthKitBundle\Entity\SocialLoginCredential;
 use Nowo\AuthKitBundle\Repository\SocialLoginCredentialRepository;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpFoundation\Request;
 
 final class AdminSocialLoginTest extends DatabaseWebTestCase
@@ -84,7 +85,9 @@ final class AdminSocialLoginTest extends DatabaseWebTestCase
         $form = $crawler->selectButton('Save provider')->form();
         $form['social_login_credential[label]'] = 'Google Workspace';
         $form['social_login_credential[client_id]'] = 'google-id-updated';
-        $form['social_login_credential[enabled]'] = true;
+        $enabled = $form->get('social_login_credential[enabled]');
+        self::assertInstanceOf(ChoiceFormField::class, $enabled);
+        $enabled->tick();
         $client->submit($form);
         self::assertResponseRedirects('/admin/social-login');
 

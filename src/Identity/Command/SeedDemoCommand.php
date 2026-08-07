@@ -79,7 +79,7 @@ final class SeedDemoCommand extends Command
             $io->note(\sprintf('Demo admin already present: %s', $user->getEmail()));
         }
 
-        $settings = $this->instanceSettingsRepository->get();
+        $settings = $this->instanceSettingsRepository->getOrCreate();
         if (null === $settings->getSetupCompletedAt()) {
             $settings->markSetupCompleted();
             $this->instanceSettingsRepository->save($settings);
