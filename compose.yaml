@@ -12,19 +12,25 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost}
       DEFAULT_URI: ${DEFAULT_URI:-https://localhost:9444}
       APP_ENV: ${APP_ENV:-dev}
       APP_SECRET: ${APP_SECRET:-ChangeMePleaseUseARealSecret}
       # Doctrine / MySQL (`database` service)
-      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-!ChangeMe!}@${MYSQL_HOST:-database}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=1}
       # --- FrankenPHP classic ↔ worker (see .docker/frankenphp/docker-entrypoint.sh) ---
       FRANKENPHP_MODE: ${FRANKENPHP_MODE:-classic}
       FRANKENPHP_WORKER_NUM: ${FRANKENPHP_WORKER_NUM:-}
       FRANKENPHP_LOOP_MAX: ${FRANKENPHP_LOOP_MAX:-500}
       FRANKENPHP_RESET_KERNEL: ${FRANKENPHP_RESET_KERNEL:-false}
+      # Worker-mode companion for hot_reload: restart PHP workers on file changes (make worker).
+      # Leave empty in production-oriented overrides.
+      FRANKENPHP_WORKER_CONFIG: ${FRANKENPHP_WORKER_CONFIG:-watch}
       XDEBUG_MODE: ${XDEBUG_MODE:-off}
       # Host bind-mount ./:/app is not owned by container root; silence Git "dubious ownership".
       GIT_CONFIG_COUNT: "1"
@@ -129,6 +135,22 @@ services:
       start_period: 20s
   ###< doctrine/doctrine-bundle ###
 
+  # Redis (sessions + cache.app). Standalone default hostname: `redis`.
+  # Shared mode uses compose.infra.yaml `redis-8.10.0` — set REDIS_HOST accordingly.
+  redis:
+    image: redis:${REDIS_VERSION:-8.10.0}-alpine
+    restart: unless-stopped
+    volumes:
+      # Host-visible Redis data (gitignored).
+      - ./.data/redis:/data
+    # No host ports — reach via Compose network only (REQ-FP-006).
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
   # Symfony Messenger worker (consumes the async MySQL queue).
   # Different from FRANKENPHP_MODE=worker (HTTP). This service does NOT serve HTTP.
   messenger:
@@ -140,12 +162,15 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       php:
         condition: service_started
     environment:
       APP_ENV: ${APP_ENV:-dev}
       APP_SECRET: ${APP_SECRET:-ChangeMePleaseUseARealSecret}
-      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-!ChangeMe!}@${MYSQL_HOST:-database}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=1}
       XDEBUG_MODE: ${XDEBUG_MODE:-off}
       GIT_CONFIG_COUNT: "1"
@@ -182,12 +207,15 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       php:
         condition: service_started
     environment:
       APP_ENV: ${APP_ENV:-dev}
       APP_SECRET: ${APP_SECRET:-ChangeMePleaseUseARealSecret}
-      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      DATABASE_URL: mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-!ChangeMe!}@${MYSQL_HOST:-database}:${MYSQL_PORT:-3306}/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-9.7}&charset=utf8mb4
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=1}
       XDEBUG_MODE: ${XDEBUG_MODE:-off}
       GIT_CONFIG_COUNT: "1"

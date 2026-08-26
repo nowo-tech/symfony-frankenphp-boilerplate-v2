@@ -1,0 +1,21 @@
+{# Shared instance role header (title + edit/delete). #}
+<div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+    <div>
+        <a href="{{ path('admin_roles') }}" class="text-sm no-underline">{{ 'roles.back'|trans }}</a>
+        <h1 class="mt-2 font-[family-name:var(--font-display)] text-3xl font-bold">{{ role|rbac_role_name }}</h1>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        <a class="btn-ghost no-underline" href="{{ path('admin_roles_edit', {id: role.uuid}) }}">{{ 'roles.edit'|trans }}</a>
+        {% if not role.system and role.users|length == 0 and deleteForm is defined %}
+            {{ form_start(deleteForm, {
+                attr: {
+                    'data-controller': 'confirm-submit',
+                    'data-confirm-submit-message-value': 'roles.delete_confirm'|trans|e('html_attr'),
+                    'data-action': 'submit->confirm-submit#confirm',
+                }
+            }) }}
+                <button class="btn-danger" type="submit">{{ 'roles.delete'|trans }}</button>
+            {{ form_end(deleteForm) }}
+        {% endif %}
+    </div>
+</div>

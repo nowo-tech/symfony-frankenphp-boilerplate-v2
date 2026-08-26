@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Identity\Controller;
 
 use App\Identity\Service\SocialLoginCredentialSeeder;
+use App\Shared\Controller\RequiresValidFormTrait;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use App\Shared\Settings\Form\SocialLoginCredentialType;
 use Nowo\AuthKitBundle\Entity\SocialLoginCredential;
 use Nowo\AuthKitBundle\Repository\SocialLoginCredentialRepository;
@@ -22,10 +24,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class AdminSocialLoginController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly SocialLoginCredentialRepository $credentials,
         private readonly SocialLoginCredentialSeeder $seeder,
         private readonly SocialLoginGate $socialLoginGate,
+        private readonly CsrfOnlyFormFactory $csrfOnlyFormFactory,
     ) {
     }
 
@@ -34,6 +39,14 @@ final class AdminSocialLoginController extends AbstractController
     {
         /** @var list<SocialLoginCredential> $rows */
         $rows = $this->credentials->findBy([], ['label' => 'ASC']);
+        $deleteForms = [];
+        foreach ($rows as $row) {
+            $provider = $row->getProvider();
+            $deleteForms[$provider] = $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_social_login_delete', ['provider' => $provider]),
+                'admin_social_login_delete_'.$provider,
+            )->createView();
+        }
 
         $existing = [];
         foreach ($rows as $row) {
@@ -51,6 +64,7 @@ final class AdminSocialLoginController extends AbstractController
             'credentials' => $rows,
             'missing_builtins' => $missingBuiltins,
             'social_login_active' => $this->socialLoginGate->isEnabled(),
+            'deleteForms' => $deleteForms,
         ]);
     }
 
@@ -206,9 +220,12 @@ final class AdminSocialLoginController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        if (!$this->isCsrfTokenValid('admin_social_login_delete_'.$provider, $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $form = $this->csrfOnlyFormFactory->createNamed(
+            $this->generateUrl('admin_social_login_delete', ['provider' => $provider]),
+            'admin_social_login_delete_'.$provider,
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         $this->seeder->delete($credential);
         $this->addFlash('success', 'flash.social_login.deleted');

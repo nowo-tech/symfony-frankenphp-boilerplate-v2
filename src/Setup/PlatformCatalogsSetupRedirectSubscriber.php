@@ -95,6 +95,8 @@ final readonly class PlatformCatalogsSetupRedirectSubscriber implements EventSub
         $prefixes = [
             $base,
             '/_site_backup',
+            '/admin/maintenance',
+            '/_maintenance_preview',
             '/_wdt',
             '/_profiler',
             '/build/',
@@ -112,6 +114,7 @@ final readonly class PlatformCatalogsSetupRedirectSubscriber implements EventSub
             '/admin/_routing',
             '/_error',
             '/health/',
+            '/_device',
         ];
         foreach ($prefixes as $prefix) {
             if ($path === rtrim($prefix, '/') || str_starts_with($path, $prefix)) {
@@ -131,6 +134,7 @@ final readonly class PlatformCatalogsSetupRedirectSubscriber implements EventSub
             || str_starts_with($route, 'legal_')
             || str_starts_with($route, 'health_')
             || str_starts_with($route, 'guest_locale_')
-            || str_starts_with($route, 'nowo_site_backup_');
+            || str_starts_with($route, 'nowo_site_backup_')
+            || str_starts_with($route, 'nowo_maintenance_mode_');
     }
 }

@@ -7,9 +7,11 @@ namespace App\Shared\Appearance\Controller;
 use App\Shared\Appearance\AppearanceSettingsSection;
 use App\Shared\Appearance\AppearanceSettingsSubtab;
 use App\Shared\Appearance\AppearanceThemePresets;
+use App\Shared\Appearance\Form\AppearanceThemePickerType;
 use App\Shared\Appearance\Form\SiteAppearanceType;
 use App\Shared\Appearance\Repository\SiteAppearanceRepository;
 use App\Shared\Appearance\SiteAppearanceProvider;
+use App\Shared\Controller\RequiresValidFormTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +24,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class AppearanceSettingsController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly SiteAppearanceRepository $repository,
         private readonly SiteAppearanceProvider $appearanceProvider,
@@ -71,16 +75,20 @@ final class AppearanceSettingsController extends AbstractController
         $appearance = $this->repository->getOrCreate();
         $redirectParams = $this->sectionParams($sectionEnum, $subEnum);
 
+        $themeForm = $this->createForm(AppearanceThemePickerType::class, null, [
+            'action' => $this->generateUrl('settings_appearance_section', $redirectParams),
+            'csrf_token_id' => 'appearance_theme',
+        ]);
+        $themeForm->handleRequest($request);
+
         if (
             AppearanceSettingsSection::Themes === $sectionEnum
-            && $request->isMethod(Request::METHOD_POST)
-            && $request->request->has('apply_theme')
+            && $themeForm->isSubmitted()
+            && $themeForm->isValid()
         ) {
-            if (!$this->isCsrfTokenValid('appearance_theme', $request->request->getString('_token'))) {
-                throw $this->createAccessDeniedException('Invalid CSRF token.');
-            }
-
-            $themeId = (string) $request->request->get('apply_theme');
+            /** @var array{apply_theme?: string}|null $data */
+            $data = $themeForm->getData();
+            $themeId = (string) ($data['apply_theme'] ?? $request->request->get('apply_theme', ''));
             if (AppearanceThemePresets::apply($appearance, $themeId)) {
                 $this->repository->save($appearance);
                 $this->appearanceProvider->refresh();
@@ -120,6 +128,7 @@ final class AppearanceSettingsController extends AbstractController
 
         return $this->render('settings/appearance.html.twig', [
             'form' => $form,
+            'appearanceThemeForm' => $themeForm->createView(),
             'section' => $sectionEnum,
             'subtab' => $subEnum,
             'sections' => AppearanceSettingsSection::cases(),

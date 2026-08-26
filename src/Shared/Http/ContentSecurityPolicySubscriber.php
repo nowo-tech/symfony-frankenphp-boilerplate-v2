@@ -6,7 +6,9 @@ namespace App\Shared\Http;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -16,15 +18,22 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Lives in PHP (not Caddy) so Symfony WebProfiler can merge its script/style
  * nonces into the same header. Caddy still sets the other hardening headers.
  *
- * Debug / Web Debug Toolbar needs script-src 'unsafe-eval' because
- * toolbar_js.html.twig eval()s scripts from the /_wdt AJAX fragment.
+ * A per-request nonce is issued on the main request ({@see REQUEST_ATTR_NONCE}) for
+ * host {@code <style>} blocks. Production uses {@code style-src-elem 'self' 'nonce-…'}
+ * (no {@code unsafe-inline} on elements). {@code style-src-attr 'unsafe-inline'} allows
+ * CSSOM ({@code element.style}) used by SortableJS, sidebar motion, etc.
+ *
+ * Debug keeps {@code unsafe-inline} on {@code style-src-elem} for the Web Profiler.
  */
+#[AsEventListener(event: KernelEvents::REQUEST, priority: 1024)]
 #[AsEventListener(event: KernelEvents::RESPONSE, priority: -100)]
 final readonly class ContentSecurityPolicySubscriber
 {
-    private const string CSP_PREFIX = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: blob:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; ";
+    public const string REQUEST_ATTR_NONCE = '_shell_csp_nonce';
 
-    private const string CSP_SUFFIX = "; connect-src 'self' ws: wss:; worker-src 'self'; manifest-src 'self'";
+    private const string CSP_BASE = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: blob:; font-src 'self' data:; ";
+
+    private const string CSP_TAIL = "; connect-src 'self' ws: wss:; worker-src 'self'; manifest-src 'self'";
 
     public function __construct(
         #[Autowire('%kernel.debug%')]
@@ -32,7 +41,30 @@ final readonly class ContentSecurityPolicySubscriber
     ) {
     }
 
-    public function __invoke(ResponseEvent $event): void
+    public function __invoke(RequestEvent|ResponseEvent $event): void
+    {
+        if ($event instanceof RequestEvent) {
+            $this->onRequest($event);
+
+            return;
+        }
+
+        $this->onResponse($event);
+    }
+
+    private function onRequest(RequestEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
+        $request = $event->getRequest();
+        if (!$request->attributes->has(self::REQUEST_ATTR_NONCE)) {
+            $request->attributes->set(self::REQUEST_ATTR_NONCE, base64_encode(random_bytes(16)));
+        }
+    }
+
+    private function onResponse(ResponseEvent $event): void
     {
         if (!$event->isMainRequest()) {
             return;
@@ -53,18 +85,31 @@ final readonly class ContentSecurityPolicySubscriber
             return;
         }
 
-        $response->headers->set('Content-Security-Policy', $this->buildCsp());
+        $response->headers->set('Content-Security-Policy', $this->buildCsp($request));
     }
 
-    private function buildCsp(): string
+    private function buildCsp(Request $request): string
     {
-        $scriptSrc = "script-src 'self'";
+        $nonce = (string) $request->attributes->get(self::REQUEST_ATTR_NONCE, '');
+        $styleSrcElem = "style-src-elem 'self'";
+        if ('' !== $nonce) {
+            $styleSrcElem .= " 'nonce-".$nonce."'";
+        }
         if ($this->kernelDebug) {
-            // WDT toolbar uses eval() on /_wdt HTML fragments.
+            $styleSrcElem .= " 'unsafe-inline'";
+        }
+
+        $styleSrcAttr = "style-src-attr 'unsafe-inline'";
+
+        $scriptSrc = "script-src 'self'";
+        if ('' !== $nonce) {
+            $scriptSrc .= " 'nonce-".$nonce."'";
+        }
+        if ($this->kernelDebug) {
             $scriptSrc .= " 'unsafe-eval'";
         }
 
-        return self::CSP_PREFIX.$scriptSrc.self::CSP_SUFFIX;
+        return self::CSP_BASE.$styleSrcElem.'; '.$styleSrcAttr.'; '.$scriptSrc.self::CSP_TAIL;
     }
 
     private function isHtmlResponse(Response $response): bool
@@ -74,7 +119,6 @@ final readonly class ContentSecurityPolicySubscriber
             return true;
         }
 
-        // Symfony often omits Content-Type until the kernel finishes; sniff body.
         $content = $response->getContent();
 
         return \is_string($content) && str_contains(substr($content, 0, 512), '<html');

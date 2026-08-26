@@ -48,4 +48,12 @@ final class SafeInternalRedirectTest extends TestCase
             '/fallback',
         ));
     }
+
+    public function testRejectsBlankAndControlCharacters(): void
+    {
+        $request = Request::create('https://shell.example/dashboard');
+        self::assertSame('/fallback', SafeInternalRedirect::resolve($request, '   ', '/fallback'));
+        self::assertSame('/fallback', SafeInternalRedirect::resolve($request, "/ok\npath", '/fallback'));
+        self::assertSame('/fallback', SafeInternalRedirect::resolve($request, 'relative', '/fallback'));
+    }
 }

@@ -11,6 +11,19 @@
   --nowo-auth-kit-radius: 0.75rem;
 }
 
+.nowo-auth-kit,
+.page-shell {
+  --nowo-slide-track-bg: color-mix(in srgb, var(--app-sand, #cfd8e4) 80%, var(--app-surface, #ffffff));
+  --nowo-slide-text: color-mix(in srgb, var(--app-ink, #0a1219) 65%, transparent);
+  --nowo-slide-thumb-bg: var(--app-moss, #1a4f73);
+  --nowo-slide-confirmed-bg: var(--app-moss, #1a4f73);
+}
+
+.nowo-slide-to-confirm--danger {
+  --nowo-slide-thumb-bg: var(--app-alert, #b42318);
+  --nowo-slide-confirmed-bg: var(--app-alert, #b42318);
+}
+
 .nowo-auth-kit__main {
   width: 100%;
 }

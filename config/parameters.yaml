@@ -7,5 +7,7 @@ parameters:
     default_locale: '%env(DEFAULT_LOCALE)%'
     # Catalogue fallbacks when a key is missing in the active locale (always keep English).
     fallback_locales: [en, es, de, nl, fr, it, pt]
+    # Session cookie name (project-scoped; avoid colliding with other apps on localhost).
+    app.session_cookie_name: NOWO_SHELL_SESSID
     # When true, SiteBackup setup gate also triggers if menus/breadcrumbs/cookies are missing.
     app.setup.check_platform_catalogs: true

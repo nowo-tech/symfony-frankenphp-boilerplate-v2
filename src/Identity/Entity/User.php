@@ -31,7 +31,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * Display / tour / push preferences live in {@see UserUiPreferences} (embedded columns).
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'app_user')]
+#[ORM\Table(name: 'user')]
 #[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
 #[ORM\UniqueConstraint(name: 'uniq_app_user_uuid', columns: ['uuid'])]
 #[ORM\UniqueConstraint(name: 'uniq_app_user_slack_user_id', columns: ['slack_user_id'])]
@@ -110,6 +110,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, HasPass
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $anonymizedAt = null;
 
+    /**
+     * Assignable instance RBAC roles (permission bundles). Codes merge into {@see getRoles()}.
+     *
+     * @var Collection<int, InstanceRole>
+     */
+    #[ORM\ManyToMany(targetEntity: InstanceRole::class, inversedBy: 'users')]
+    #[ORM\JoinTable(name: 'role_user')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'role_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\OrderBy(['name' => 'ASC'])]
+    private Collection $instanceRoles;
+
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     private ?User $createdBy = null;
@@ -122,6 +134,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, HasPass
     {
         $this->ensureUuid();
         $this->passwordHistory = new ArrayCollection();
+        $this->instanceRoles = new ArrayCollection();
         $this->uiPreferences = new UserUiPreferences();
     }
 
@@ -235,6 +248,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, HasPass
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
+        foreach ($this->instanceRoles as $instanceRole) {
+            if ($instanceRole->isEnabled()) {
+                $roles[] = $instanceRole->getCode();
+            }
+        }
 
         return array_values(array_unique($roles));
     }
@@ -601,6 +619,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, HasPass
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, InstanceRole>
+     */
+    public function getInstanceRoles(): Collection
+    {
+        return $this->instanceRoles;
+    }
+
+    public function addInstanceRole(InstanceRole $role): self
+    {
+        if (!$this->instanceRoles->contains($role)) {
+            $this->instanceRoles->add($role);
+        }
+
+        return $this;
+    }
+
+    public function removeInstanceRole(InstanceRole $role): self
+    {
+        $this->instanceRoles->removeElement($role);
+
+        return $this;
+    }
+
+    public function hasInstanceRole(InstanceRole $role): bool
+    {
+        return $this->instanceRoles->contains($role);
     }
 
     public function getCreatedBy(): ?object

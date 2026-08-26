@@ -15,7 +15,7 @@
     {{ vite_entry_link_tags('kit-admin') }}
     {# Load before vendor nowo-ui.css append; .kit-admin .nowo-ui-* specificity still wins. #}
     {% include 'kit/_kit_admin_styles.html.twig' %}
-    <style>
+    <style{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %}>
         body > .ts-dropdown { z-index: 1060; }
     </style>
 {% endblock %}

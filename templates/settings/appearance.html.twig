@@ -108,8 +108,9 @@
                 {% endif %}
             </div>
 
-            <form method="post" class="space-y-5">
-                <input type="hidden" name="_token" value="{{ csrf_token('appearance_theme') }}">
+            {{ form_start(appearanceThemeForm, {attr: {class: 'space-y-5'}}) }}
+                {# apply_theme is submitted by theme_card buttons — do not paint the Type text field. #}
+                {{ form_row(appearanceThemeForm._token) }}
                 <div>
                     <h3 class="mb-3 text-sm font-semibold">{{ 'appearance.themes.light'|trans }}</h3>
                     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -126,7 +127,7 @@
                         {% endfor %}
                     </div>
                 </div>
-            </form>
+            {{ form_end(appearanceThemeForm, {render_rest: false}) }}
         </section>
     {% else %}
         {{ form_start(form, {attr: {class: 'panel space-y-4', 'data-testid': 'appearance-form', 'data-appearance-section': section.value}}) }}

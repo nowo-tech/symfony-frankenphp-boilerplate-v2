@@ -9,6 +9,8 @@ framework:
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
+                    # Doctrine `queue_name`. Redis DSN must stay host+port (REQ-MESSENGER-001);
+                    # put the stream name here as `stream:` when switching to Redis — never `/messages` in the DSN.
                     queue_name: async
                 retry_strategy:
                     max_retries: 3

@@ -38,4 +38,24 @@ describe('human-key-label controller', () => {
     controller.generate(new Event('click'));
     expect(input.value).toBe('calm-shell');
   });
+
+  it('no-ops when adjective or noun lists are empty', async () => {
+    await Promise.resolve();
+    const root = document.querySelector('[data-controller="human-key-label"]') as HTMLElement;
+    root.setAttribute('data-human-key-label-adjectives-value', '[]');
+    root.setAttribute('data-human-key-label-nouns-value', '["shell"]');
+    application.stop();
+    application = Application.start();
+    application.register('human-key-label', HumanKeyLabelController);
+    await Promise.resolve();
+
+    const input = root.querySelector('input') as HTMLInputElement;
+    const controller = application.getControllerForElementAndIdentifier(
+      root,
+      'human-key-label',
+    ) as HumanKeyLabelController;
+    controller.generate(new Event('click'));
+    expect(input.value).toBe('');
+  });
 });
+

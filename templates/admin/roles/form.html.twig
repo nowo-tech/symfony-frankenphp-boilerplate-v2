@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_edit ? 'roles.edit_title'|trans : 'roles.create'|trans }} — {{ site_appearance.brandName }}{% endblock %}
+
+{% block body %}
+<div class="mb-6">
+    <h1 class="font-[family-name:var(--font-display)] text-3xl font-bold">{{ is_edit ? 'roles.edit_title'|trans : 'roles.create'|trans }}</h1>
+    <p class="mt-1 text-sm text-[var(--color-ink)]/65">{{ 'roles.form_intro'|trans }}</p>
+</div>
+
+{% include 'admin/_crud_form.html.twig' with {
+    form: form,
+    submit_label: is_edit ? 'roles.save' : 'roles.create',
+    cancel_href: is_edit ? path('admin_roles_show', {id: role.uuid}) : path('admin_roles'),
+    cancel_label: 'roles.cancel',
+} only %}
+{% endblock %}

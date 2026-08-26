@@ -8,13 +8,18 @@ use App\Identity\AdminAuditFilter;
 use App\Identity\AdminIdentityAudit;
 use App\Identity\Entity\User;
 use App\Identity\Exception\AccountAnonymizeException;
+use App\Identity\Form\AdminUserRoleConfirmType;
 use App\Identity\Form\AdminUserType;
+use App\Identity\Form\UserFilterType;
 use App\Identity\Repository\UserActionRepository;
 use App\Identity\Repository\UserRepository;
 use App\Identity\Service\AccountAnonymizer;
 use App\Identity\Service\AccountDataExporter;
 use App\Identity\Service\UserActionRecorder;
 use App\Identity\UserActionType;
+use App\Shared\Controller\RequiresValidFormTrait;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
+use Nowo\FormKitBundle\Form\GetFilterFormFactory;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
@@ -35,6 +40,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class AdminUserController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserActionRepository $userActionRepository,
@@ -43,6 +50,8 @@ final class AdminUserController extends AbstractController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly AccountDataExporter $accountDataExporter,
         private readonly AccountAnonymizer $accountAnonymizer,
+        private readonly CsrfOnlyFormFactory $csrfOnlyFormFactory,
+        private readonly GetFilterFormFactory $filterFormFactory,
     ) {
     }
 
@@ -50,13 +59,49 @@ final class AdminUserController extends AbstractController
     #[Route('/admin/users', name: 'admin_users', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $query = $request->query->getString('q');
+        $filterForm = $this->filterFormFactory->create(UserFilterType::class, [], [
+            'action' => $this->generateUrl('admin_users'),
+        ]);
+        $filterForm->handleRequest($request);
+        $query = $filterForm->isSubmitted() && $filterForm->isValid()
+            ? (string) ($filterForm->get('q')->getData() ?? '')
+            : $request->query->getString('q');
+        $users = $this->userRepository->findAllForAdminDirectory('' !== $query ? $query : null);
+
+        $roleForms = [];
+        $toggleEnabledForms = [];
+        $anonymizeForms = [];
+        foreach ($users as $user) {
+            $userId = $user->getId();
+            if (null === $userId) {
+                continue;
+            }
+            $roleForms[$userId] = $this->createForm(AdminUserRoleConfirmType::class, [
+                'role' => \in_array('ROLE_ADMIN', $user->getRoles(), true) ? 'admin' : 'user',
+            ], [
+                'action' => $this->generateUrl('admin_users_role', ['id' => $user->getUuid()]),
+                'method' => 'POST',
+                'csrf_token_id' => 'admin_user_role_'.$userId,
+            ])->createView();
+            $toggleEnabledForms[$userId] = $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_users_toggle_enabled', ['id' => $user->getUuid()]),
+                'toggle_user_'.$userId,
+            )->createView();
+            $anonymizeForms[$userId] = $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_users_anonymize', ['id' => $user->getUuid()]),
+                'admin_user_anonymize_'.$userId,
+            )->createView();
+        }
 
         return $this->render('admin/users/index.html.twig', [
-            'users' => $this->userRepository->findAllForAdminDirectory('' !== $query ? $query : null),
+            'users' => $users,
             'q' => $query,
+            'filter_form' => $filterForm->createView(),
             'adminCount' => $this->countAdmins(),
             'recentActions' => $this->userActionRepository->findLatest(25),
+            'roleForms' => $roleForms,
+            'toggleEnabledForms' => $toggleEnabledForms,
+            'anonymizeForms' => $anonymizeForms,
         ]);
     }
 
@@ -161,9 +206,11 @@ final class AdminUserController extends AbstractController
         #[MapEntity(mapping: ['id' => 'uuid'])]
         User $user,
     ): RedirectResponse {
-        if (!$this->isCsrfTokenValid('admin_user_role_'.$user->getId(), $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->createForm(AdminUserRoleConfirmType::class, null, [
+            'csrf_token_id' => 'admin_user_role_'.$user->getId(),
+        ]);
+        $form->handleRequest($request);
+        $this->requireValidForm($form);
 
         /** @var User $current */
         $current = $this->getUser();
@@ -173,7 +220,7 @@ final class AdminUserController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        $role = $request->request->getString('role');
+        $role = (string) $form->get('role')->getData();
         if (!\in_array($role, ['user', 'admin'], true)) {
             $this->addFlash('error', 'flash.users.invalid_role');
 
@@ -214,9 +261,12 @@ final class AdminUserController extends AbstractController
         #[MapEntity(mapping: ['id' => 'uuid'])]
         User $user,
     ): RedirectResponse {
-        if (!$this->isCsrfTokenValid('toggle_user_'.$user->getId(), (string) $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->csrfOnlyFormFactory->createNamed(
+            $this->generateUrl('admin_users_toggle_enabled', ['id' => $user->getUuid()]),
+            'toggle_user_'.$user->getId(),
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         /** @var User $current */
         $current = $this->getUser();
@@ -276,9 +326,12 @@ final class AdminUserController extends AbstractController
         #[MapEntity(mapping: ['id' => 'uuid'])]
         User $user,
     ): RedirectResponse {
-        if (!$this->isCsrfTokenValid('admin_user_anonymize_'.$user->getId(), $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->csrfOnlyFormFactory->createNamed(
+            $this->generateUrl('admin_users_anonymize', ['id' => $user->getUuid()]),
+            'admin_user_anonymize_'.$user->getId(),
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         /** @var User $current */
         $current = $this->getUser();

@@ -8,9 +8,20 @@
     {"route":"admin_hub","label":"Administration","parent":null,"dynamicParamKeys":[],"translations":{"en":"Administration","es":"Administración"}},
     {"route":"admin_users","label":"Users","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Users","es":"Usuarios"}},
     {"route":"admin_groups","label":"Groups","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Groups","es":"Grupos"}},
+    {"route":"admin_roles","label":"Roles","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Roles","es":"Roles"}},
+    {"route":"admin_roles_new","label":"New role","parent":"admin_roles","dynamicParamKeys":[],"translations":{"en":"New role","es":"Nuevo rol"}},
+    {"route":"admin_roles_show","label":"Role","parent":"admin_roles","dynamicParamKeys":["id"],"translations":{"en":"Role","es":"Rol"}},
+    {"route":"admin_roles_permissions","label":"Permissions","parent":"admin_roles_show","dynamicParamKeys":["id"],"translations":{"en":"Permissions","es":"Permisos"}},
+    {"route":"admin_roles_users","label":"Users","parent":"admin_roles_show","dynamicParamKeys":["id"],"translations":{"en":"Users","es":"Usuarios"}},
+    {"route":"admin_roles_edit","label":"Edit","parent":"admin_roles_show","dynamicParamKeys":["id"],"translations":{"en":"Edit","es":"Editar"}},
+    {"route":"admin_permissions","label":"Permissions","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Permissions","es":"Permisos"}},
+    {"route":"admin_permissions_new","label":"New permission","parent":"admin_permissions","dynamicParamKeys":[],"translations":{"en":"New permission","es":"Nuevo permiso"}},
+    {"route":"admin_permissions_edit","label":"Edit","parent":"admin_permissions","dynamicParamKeys":["id"],"translations":{"en":"Edit","es":"Editar"}},
     {"route":"settings_appearance","label":"Appearance","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Appearance","es":"Apariencia"}},
     {"route":"settings_mailer","label":"Mailer","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Mailer","es":"Correo"}},
     {"route":"settings_instance_config","label":"Instance config","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Instance config","es":"Configuración de instancia"}},
-    {"route":"nowo_http_log_admin_index","label":"HTTP log","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"HTTP log","es":"Log HTTP"}}
+    {"route":"nowo_http_log_admin_index","label":"HTTP log","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"HTTP log","es":"Log HTTP"}},
+    {"route":"nowo_maintenance_mode_panel_index","label":"Maintenance","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Maintenance","es":"Mantenimiento"}},
+    {"route":"nowo_maintenance_mode_preview","label":"Maintenance preview","parent":"admin_hub","dynamicParamKeys":[],"translations":{"en":"Maintenance preview","es":"Vista previa de mantenimiento"}}
   ]
 }

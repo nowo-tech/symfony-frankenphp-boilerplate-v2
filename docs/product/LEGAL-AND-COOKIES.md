@@ -39,6 +39,17 @@ Configuration: `config/packages/nowo_cookie_consent.yaml`
 
 Twig overrides (optional) live under `templates/bundles/NowoCookieConsentBundle/` — CookieConsent **1.4.5+** prepends that path automatically. Skin tokens: `assets/styles/_cookie_consent.scss`. Do **not** fork the modal Twig for skinning; prefer tokens. XHR CSRF double-submit lives in vendor `nowo-consent-modal.js` (**≥1.4.8**).
 
+### Public modal skin (`assets/styles/_cookie_consent.scss`)
+
+Nowo Shell owns minimal host bridge SCSS for cookie consent (Vite `app` build; pin `nowo-tech/cookie-consent-bundle` **≥1.9.0**). Kit `nowo-cookie-consent.css` is imported in `assets/app.ts`; layouts set `data-nowo-cookie-consent-external-css="true"`.
+
+Modal **layout / position / equal-weight buttons** live on the DB profile (`dashboard_cookie_config`), not YAML. `CookieConsentDemoSeeder` + `src/Setup/Demo/fixtures/cookie_consent.default.json` upsert:
+
+- `consentModal`: `box` / `wide` / **`bottom`** / **`left`** / equal-weight buttons on
+- `preferencesModal`: same corner + equal-weight buttons
+
+Re-run `make seed-platform` after changing the fixture so existing instances pick up position/skin settings.
+
 Routes: `config/routes/nowo_cookie_consent.yaml`  
 Privacy link from the modal: `translations/NowoCookieConsentBundle.*.yaml` → `legal_privacy`.
 
@@ -66,8 +77,8 @@ make seed-platform
 
 | Cookie | Category | Notes |
 |--------|----------|--------|
-| `PHPSESSID` | required | Framework session |
-| `REMEMBERME` | required | AuthKit remember-me (7 days) |
+| `NOWO_SHELL_SESSID` | required | Framework session (1 day) |
+| `REMEMBERME` | required | AuthKit remember-me (30 days) |
 | `csrf-token_*` | required | Symfony double-submit CSRF (`__Host-` on HTTPS) |
 | `Cookie_Consent` | required | Consent decision marker (bundle) |
 | `Cookie_Consent_Key` | required | Anonymous audit key (bundle) |
@@ -108,21 +119,17 @@ Nowo Shell encrypts selected secrets with [`nowo-tech/doctrine-encrypt-bundle`](
 
 | Entity field | Purpose |
 |--------------|---------|
-| `ProjectApiKey.secretKey` | Envelope DSN secret |
-| `NotificationDestination.endpointUrl` | Slack / HTTP webhook URL (often contains tokens) |
+| `InstanceSettings` Mailer DSN (and related Mailer secrets) | Recoverable operator SMTP/API credentials |
 
-Key material lives in `var/secrets/.Halite.default.key` by default (never commit). Document key handling and retention in your privacy / security notices when operating a public instance. Prefer `anonymize-bundle` for erasure workflows when personal data beyond auth essentials is stored.
+Key material lives in `var/secrets/.Halite.default.key` by default (never commit). Document key handling and retention in your privacy / security notices when operating a public instance. Prefer `anonymize-bundle` for erasure workflows when personal data beyond auth essentials is stored. Product apps may encrypt additional fields (API keys, webhooks) — those belong in the product privacy notice, not this shell.
 
 ## Admin activity history
 
-Nowo Shell stores an immutable **user action** trail (`user_action`) for:
+Nowo Shell stores an immutable **user action** trail (`user_action`) for administrative and account-security events (create/role/enable, group CRUD, instance RBAC changes, magic-login / password-reset requests, instance config/mailer updates).
 
-- Administrative and membership events (create/role/enable, group CRUD, project member/group link changes)
-- Explicit **product** actions (open project issues/settings/performance/analytics, open issue/event, create API key, clear/delete project, change issue assignee/status)
+Each row may include the actor, subject user, structured context (emails, roles), and the **client IP** of the request. Form bodies and secrets are not stored.
 
-Each row may include the actor, subject user, structured context (emails, roles, project/issue titles, status from/to), and the **client IP** of the request. Form bodies and secrets are not stored.
-
-Treat this as personal data: document it in your privacy policy, define retention, and restrict `/admin/users` (and per-user activity) to operators who need it. Per-issue assignee/status history (`issue_history`) remains on the issue page and is separate from this instance-wide timeline. AuditKit timestamps/blame on entities are also separate and do not replace this timeline.
+Treat this as personal data: document it in your privacy policy, define retention, and restrict `/admin/users` (and per-user activity) to operators who need it. AuditKit timestamps/blame on entities are separate and do not replace this timeline.
 
 ### Account export and anonymize (`043`)
 

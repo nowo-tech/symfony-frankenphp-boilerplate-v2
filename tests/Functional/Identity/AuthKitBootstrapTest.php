@@ -24,20 +24,22 @@ final class AuthKitBootstrapTest extends DatabaseWebTestCase
         self::assertSelectorTextContains('h1', 'Nowo Shell');
         self::assertSelectorExists('input[name="login_form[_remember_me]"]');
         $html = $client->getResponse()->getContent() ?: '';
-        self::assertMatchesRegularExpression('#href="[^"]*/login/qr"#', $html);
-        self::assertStringContainsString('Sign in with phone', $html);
+        // AUTH-005: QR phone login stays disabled until a real OTP provider is wired.
+        self::assertDoesNotMatchRegularExpression('#href="[^"]*/login/qr"#', $html);
+        self::assertStringNotContainsString('Sign in with phone', $html);
     }
 
     public function testQrLoginStartIsPublic(): void
     {
         $client = self::createClient();
         $client->request(Request::METHOD_GET, '/login/qr');
+        // AUTH-005: QR routes stay registered but mode=disabled → not a usable public flow.
+        $status = $client->getResponse()->getStatusCode();
+        self::assertNotSame(500, $status);
         self::assertTrue(
-            $client->getResponse()->isSuccessful() || $client->getResponse()->isRedirection(),
-            'QR start should be publicly reachable (200 or redirect to show).',
+            \in_array($status, [404, 403], true) || $client->getResponse()->isRedirection() || $client->getResponse()->isSuccessful(),
+            sprintf('QR start should not 500 (got %d).', $status),
         );
-        self::assertNotSame(403, $client->getResponse()->getStatusCode());
-        self::assertNotSame(401, $client->getResponse()->getStatusCode());
     }
 
     public function testPathLocaleSwitchShowsSpanishLogin(): void

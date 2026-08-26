@@ -12,14 +12,17 @@
       {"position":10,"label":"Administration","translations":{"en":"Administration","es":"Administración"},"children":[
         {"position":10,"label":"Hub","route":"admin_hub","permission":"ROLE_ADMIN","translations":{"en":"Hub","es":"Panel"}},
         {"position":20,"label":"Users","route":"admin_users","permission":"ROLE_ADMIN","translations":{"en":"Users","es":"Usuarios"}},
-        {"position":30,"label":"Groups","route":"admin_groups","permission":"ROLE_ADMIN","translations":{"en":"Groups","es":"Grupos"}}
+        {"position":30,"label":"Roles","route":"admin_roles","permission":"ROLE_ADMIN","translations":{"en":"Roles","es":"Roles"}},
+        {"position":40,"label":"Permissions","route":"admin_permissions","permission":"ROLE_ADMIN","translations":{"en":"Permissions","es":"Permisos"}},
+        {"position":50,"label":"Groups","route":"admin_groups","permission":"ROLE_ADMIN","translations":{"en":"Groups","es":"Grupos"}}
       ]},
       {"position":20,"label":"Instance","translations":{"en":"Instance","es":"Instancia"},"children":[
         {"position":10,"label":"Appearance","route":"settings_appearance","permission":"ROLE_ADMIN","translations":{"en":"Appearance","es":"Apariencia"}},
         {"position":20,"label":"Mailer","route":"settings_mailer","permission":"ROLE_ADMIN","translations":{"en":"Mailer","es":"Correo"}},
         {"position":30,"label":"Social login","route":"admin_social_login","permission":"ROLE_ADMIN","translations":{"en":"Social login","es":"Login social"}},
         {"position":40,"label":"Instance config","route":"settings_instance_config","permission":"ROLE_ADMIN","translations":{"en":"Instance config","es":"Configuración de instancia"}},
-        {"position":50,"label":"Site backup","route":"nowo_site_backup_setup","permission":"ROLE_ADMIN","translations":{"en":"Site backup","es":"Copia del sitio"}}
+        {"position":50,"label":"Site backup","route":"nowo_site_backup_setup","permission":"ROLE_ADMIN","translations":{"en":"Site backup","es":"Copia del sitio"}},
+        {"position":60,"label":"Maintenance","route":"nowo_maintenance_mode_panel_index","permission":"ROLE_ADMIN","translations":{"en":"Maintenance","es":"Mantenimiento"}}
       ]},
       {"position":30,"label":"Navigation","translations":{"en":"Navigation","es":"Navegación"},"children":[
         {"position":10,"label":"Menus","route":"nowo_dashboard_menu_dashboard_index","permission":"ROLE_ADMIN","translations":{"en":"Menus","es":"Menús"}},
@@ -28,7 +31,8 @@
         {"position":40,"label":"Locale routes","route":"nowo_routing_kit_panel","permission":"ROLE_ADMIN","translations":{"en":"Locale routes","es":"Rutas por idioma"}}
       ]},
       {"position":40,"label":"Observability","translations":{"en":"Observability","es":"Observabilidad"},"children":[
-        {"position":10,"label":"HTTP log","route":"nowo_http_log_admin_index","permission":"ROLE_ADMIN","translations":{"en":"HTTP log","es":"Log HTTP"}}
+        {"position":10,"label":"HTTP log","route":"nowo_http_log_admin_index","permission":"ROLE_ADMIN","translations":{"en":"HTTP log","es":"Log HTTP"}},
+        {"position":20,"label":"Maintenance preview","route":"nowo_maintenance_mode_preview","permission":"ROLE_ADMIN","translations":{"en":"Maintenance preview","es":"Vista previa de mantenimiento"}}
       ]}
     ]}
   ]

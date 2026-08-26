@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Identity\Controller;
 
+use App\Shared\Controller\RequiresValidFormTrait;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use App\Shared\Http\SafeInternalRedirect;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -19,9 +21,12 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class GuestLocaleController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         #[Autowire('%kernel.default_locale%')]
         private readonly string $defaultLocale,
+        private readonly CsrfOnlyFormFactory $csrfOnlyFormFactory,
     ) {
     }
 
@@ -47,21 +52,31 @@ final class GuestLocaleController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        if (!$this->isCsrfTokenValid('guest_locale', (string) $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->csrfOnlyFormFactory->createWithFields(
+            $this->generateUrl('guest_locale_switch', ['locale' => $locale]),
+            'guest_locale',
+            ['redirect' => ''],
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         $request->getSession()->set('_locale', $locale);
 
-        return $this->redirect($this->safeRedirectTarget($request, $locale));
+        /** @var array{redirect?: string} $data */
+        $data = $form->getData();
+
+        return $this->redirect($this->safeRedirectTarget($request, $locale, $data));
     }
 
-    private function safeRedirectTarget(Request $request, string $locale): string
+    /**
+     * @param array{redirect?: string}|array<string, mixed> $formData
+     */
+    private function safeRedirectTarget(Request $request, string $locale, array $formData = []): string
     {
         $fallback = $locale === $this->defaultLocale
             ? $this->generateUrl('nowo_auth_kit_login_unlocalized')
             : $this->generateUrl('nowo_auth_kit_login', ['_locale' => $locale]);
-        $redirect = (string) $request->request->get('redirect', $request->query->get('redirect', ''));
+        $redirect = (string) ($formData['redirect'] ?? $request->query->get('redirect', ''));
         $safe = SafeInternalRedirect::resolve($request, $redirect, $fallback);
         if ($safe === $fallback) {
             return $fallback;

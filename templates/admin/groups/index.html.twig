@@ -11,18 +11,23 @@
     <a class="btn-primary no-underline" href="{{ path('admin_groups_new') }}">{{ 'groups.create'|trans }}</a>
 </div>
 
-<form method="get" action="{{ path('admin_groups') }}" class="mb-4 flex flex-wrap gap-2">
-    <input
-        class="input min-w-56 flex-1"
-        type="search"
-        name="q"
-        value="{{ q }}"
-        placeholder="{{ 'groups.search_placeholder'|trans }}"
-        autocomplete="off"
-    >
+{{ form_start(filter_form, {attr: {class: 'mb-4 flex flex-wrap items-end gap-2'}}) }}
+    {% for field in filter_form %}
+        {% if not field.rendered and 'hidden' not in field.vars.block_prefixes %}
+            {{ form_row(field, {
+                label: false,
+                attr: {
+                    class: 'input min-w-56 flex-1',
+                    autocomplete: 'off',
+                },
+                row_attr: {class: 'grow min-w-56'},
+            }) }}
+        {% endif %}
+    {% endfor %}
     <button class="btn-ghost" type="submit">{{ 'common.filter'|trans }}</button>
     <a class="btn-ghost no-underline" href="{{ path('admin_groups') }}">{{ 'common.clear_filters'|trans }}</a>
-</form>
+    {% include 'form/_fields.html.twig' with {form: filter_form} only %}
+{{ form_end(filter_form, {render_rest: false}) }}
 
 <section class="panel overflow-x-auto">
     <table class="w-full text-left text-sm">

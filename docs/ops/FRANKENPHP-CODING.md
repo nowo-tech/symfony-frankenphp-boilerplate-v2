@@ -157,3 +157,4 @@ That implies it also works in classic and with reset-true.
 - Runtime: `Symfony\Component\Runtime\Runner\FrankenPhpWorkerRunner`
 - Spec: [`specs/001-bootstrap/spec.md`](../../specs/001-bootstrap/spec.md)
 - PHPStan rules: [`nowo-tech/phpstan-frankenphp`](https://packagist.org/packages/nowo-tech/phpstan-frankenphp) (`ruleset-classic` + `ruleset-worker` + `ruleset-hardening` in `phpstan.neon.dist`)
+- Hot reload (dev DX): [FRANKENPHP-HOT-RELOAD.md](FRANKENPHP-HOT-RELOAD.md)

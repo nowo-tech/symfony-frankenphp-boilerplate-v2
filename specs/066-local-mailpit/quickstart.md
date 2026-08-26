@@ -1,7 +1,7 @@
 # Quickstart: Local Mailpit
 
 ```bash
-cp .env.dist .env   # if needed
+cp .env.dist .env.local   # if needed
 make up
 make mailpit
 ```

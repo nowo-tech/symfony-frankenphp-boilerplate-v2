@@ -10,6 +10,7 @@ return [
     Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
     Nowo\TwigInspectorBundle\NowoTwigInspectorBundle::class => ['dev' => true, 'test' => true],
+    Nowo\HotReloadBundle\NowoHotReloadBundle::class => ['dev' => true, 'test' => true],
     Nowo\AuthKitBundle\NowoAuthKitBundle::class => ['all' => true],
     Nowo\PasswordStrengthBundle\PasswordStrengthBundle::class => ['all' => true],
     Nowo\PasswordToggleBundle\NowoPasswordToggleBundle::class => ['all' => true],
@@ -19,7 +20,6 @@ return [
     Symfony\UX\StimulusBundle\StimulusBundle::class => ['all' => true],
     Symfony\UX\LiveComponent\LiveComponentBundle::class => ['all' => true],
     Symfony\UX\Autocomplete\AutocompleteBundle::class => ['all' => true],
-    # Feature kits that prepend FormKit / UiKit defaults must register before those kits.
     Nowo\DashboardMenuBundle\NowoDashboardMenuBundle::class => ['all' => true],
     Nowo\CookieConsentBundle\NowoCookieConsentBundle::class => ['all' => true],
     Nowo\HttpLogBundle\NowoHttpLogBundle::class => ['all' => true],
@@ -36,4 +36,10 @@ return [
     Nowo\SelectAllChoiceBundle\NowoSelectAllChoiceBundle::class => ['all' => true],
     Nowo\SiteBackupBundle\NowoSiteBackupBundle::class => ['all' => true],
     Nowo\RoutingKitBundle\NowoRoutingKitBundle::class => ['all' => true],
+    Nowo\MaintenanceModeBundle\NowoMaintenanceModeBundle::class => ['all' => true],
+    Nowo\BeaconBundle\NowoBeaconBundle::class => ['all' => true],
+    Nowo\PhoneInputBundle\NowoPhoneInputBundle::class => ['all' => true],
+    Nowo\DeviceIntelligenceBundle\NowoDeviceIntelligenceBundle::class => ['all' => true],
+    Nowo\OtpInputBundle\NowoOtpInputBundle::class => ['all' => true],
+    Nowo\SlideToConfirmBundle\NowoSlideToConfirmBundle::class => ['all' => true],
 ];

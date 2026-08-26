@@ -14,12 +14,27 @@ Built on **Symfony 8.1**, **PHP 8.5**, **FrankenPHP** (classic/worker), **MySQL 
 
 Docs: [INSTALL](docs/INSTALL.md) · [UPGRADING](docs/UPGRADING.md) · [CHANGELOG](docs/CHANGELOG.md) · [ARCHITECTURE](docs/ARCHITECTURE.md)
 
+---
+
+![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
+
+This application is **FrankenPHP worker mode friendly**.
+
+All services implement `ResetInterface` where required; application code is safe under `FRANKENPHP_MODE=worker` + `FRANKENPHP_RESET_KERNEL=false`. See [`docs/ops/FRANKENPHP-CODING.md`](docs/ops/FRANKENPHP-CODING.md) for coding rules and [`docs/ops/FRANKENPHP-HOT-RELOAD.md`](docs/ops/FRANKENPHP-HOT-RELOAD.md) for dev hot reload.
+
+```bash
+make classic   # Start in classic mode (default; PHP-FPM-like, one process per request)
+make worker    # Start in worker mode (keep app in memory; fastest throughput)
+```
+
+---
+
 ## Start locally
 
 Requirements: Docker and Docker Compose.
 
 ```bash
-cp .env.dist .env
+cp .env.dist .env.local
 make up
 make bootstrap
 ```
@@ -58,6 +73,21 @@ Optional host tools for Spec Kit:
 make specify-check
 ```
 
+## Tests and coverage
+
+| Surface | Floor (hard gate) | Target | Docs |
+|---------|-------------------|--------|------|
+| PHP (`src/`, Controllers/Demo excluded) | **100%** statements (`COVERAGE_MIN`) | **100%** | [`docs/COVERAGE.md`](docs/COVERAGE.md) |
+| TypeScript (includable Stimulus helpers) | **100%** lines/statements (Vitest) | **100%** | same |
+
+```bash
+make test
+COVERAGE_MIN=0 make test-coverage   # measure without failing the floor
+make test-coverage                  # fails below COVERAGE_MIN (default 100)
+make test-unit-js-coverage
+make test-e2e
+```
+
 ## Spec-Driven Development (Spec Kit)
 
 Canonical flow (Cursor skills / slash commands):
@@ -80,3 +110,5 @@ specify integration upgrade --force --script sh
 # or full re-init (review diffs; restore constitution if overwritten):
 # specify init --here --force --integration cursor-agent --script sh --ignore-agent-tools
 ```
+
+- Pluggable **SMS Bridge** provider () — [docs/product/SMS.md](docs/product/SMS.md)

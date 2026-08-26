@@ -7,6 +7,7 @@ Product apps built on this tree (e.g. [symfony-beacon](https://github.com/nowo-t
 ## Table of contents
 
 - [First install (no previous version)](#first-install-no-previous-version)
+- [Unreleased (main after 1.0.3)](#unreleased-main-after-103)
 - [Upgrading from 1.0.2 to 1.0.3](#upgrading-from-102-to-103)
 - [Upgrading from 1.0.1 to 1.0.2](#upgrading-from-101-to-102)
 - [Upgrading from 1.0.0 to 1.0.1](#upgrading-from-100-to-101)
@@ -20,7 +21,7 @@ Product apps built on this tree (e.g. [symfony-beacon](https://github.com/nowo-t
 ```bash
 git clone git@github.com:nowo-tech/symfony-frankenphp-boilerplate-v2.git
 cd symfony-frankenphp-boilerplate-v2
-cp .env.dist .env
+cp .env.dist .env.local
 git config core.hooksPath .githooks   # optional: block Cursor co-author trailers
 make up
 make bootstrap   # migrate + app:seed-platform
@@ -45,10 +46,21 @@ There is no `composer update nowo-tech/symfony-frankenphp-boilerplate-v2` path f
 ### Env file policy
 
 - Only `.env.dist` is versioned.
-- Do not commit `.env`, `.env.dev`, or `.env.local`.
+- Do not commit `.env`, `.env.local`, or `.env.dev` / `.env.prod`. Operator working file is `.env.local` (REQ-ENV-003).
 - After pulling upstream changes, always merge new keys from `.env.dist` into your local `.env`.
 
 ---
+
+## Unreleased (main after 1.0.3)
+
+**No migrations.** Platform form chrome only (`086-platform-form-chrome`):
+
+```bash
+composer install   # optional
+make vite-build    # required for .checkbox + password-toggle CSS
+```
+
+Password-manager icons on focus (NordPass, etc.) are extension UI, not a host layout regression.
 
 ## Upgrading from 1.0.2 to 1.0.3
 

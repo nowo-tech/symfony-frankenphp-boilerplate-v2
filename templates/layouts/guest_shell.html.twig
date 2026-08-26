@@ -1,6 +1,6 @@
 {# Guest / pre-login shell: theme + locale controls (AuthKit-aligned). #}
 <!DOCTYPE html>
-<html lang="{{ app.request.locale|default('en') }}"{% if site_appearance.footerFixed %} data-footer-fixed="1"{% endif %}>
+<html lang="{{ app.request.locale|default('en') }}"{% if site_appearance.footerFixed %} data-footer-fixed="1"{% endif %} data-nowo-cookie-consent-external-css="true">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/nowo-ui.css', 'nowo_ui_kit') }}">
     {{ vite_entry_link_tags('app') }}
     {# After app CSS so site palette / radius / border tokens win the cascade. #}
-    <style>{{ site_appearance.cssOverrides|raw }}</style>
+    <style{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %}>{{ site_appearance.cssOverrides|raw }}</style>
     {{ vite_entry_script_tags('app') }}
     <script src="{{ asset('js/nowo-ui-orb.js', 'nowo_ui_kit') }}" defer></script>
     {% block stylesheets %}{% endblock %}
@@ -35,7 +35,7 @@
     {% block javascripts %}{% endblock %}
     {{ nowo_pwa_install_prompt() }}
     {% include '_legal_footer.html.twig' %}
-    {{ render(path('nowo_cookie_consent.show')) }}
+    {{ nowo_cookie_consent_render() }}
     {% block cookie_consent_extras %}{% endblock %}
 </body>
 </html>

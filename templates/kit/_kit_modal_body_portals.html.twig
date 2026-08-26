@@ -2,7 +2,7 @@
   Bootstrap appends .modal-backdrop to <body>, but kit modals live under
   .app-main__inner / .page-shell (stacking contexts). Reparent via kit-admin.ts.
 #}
-<style>
+<style{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %}>
   body > .modal {
     --bs-modal-zindex: 1080;
     z-index: 1080;

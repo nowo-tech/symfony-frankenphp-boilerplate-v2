@@ -49,7 +49,7 @@
                     data-confirm-dialog-target="dialog"
                     aria-labelledby="privacy-anonymize-confirm-title"
                 >
-                    <form method="post" action="{{ path('account_privacy_anonymize') }}" class="confirm-dialog__panel">
+                    {{ form_start(anonymizeForm, {attr: {class: 'confirm-dialog__panel'}}) }}
                         <div class="confirm-dialog__header">
                             <h2 id="privacy-anonymize-confirm-title" class="confirm-dialog__title">{{ 'preferences.privacy.anonymize_confirm_title'|trans }}</h2>
                             <p class="confirm-dialog__body">{{ 'preferences.privacy.anonymize_confirm_body'|trans }}</p>
@@ -57,22 +57,18 @@
                         <label class="confirm-dialog__label" for="privacy-anonymize-confirm-input">
                             {{ 'preferences.privacy.anonymize_type_label'|trans }}
                         </label>
-                        <input
-                            id="privacy-anonymize-confirm-input"
-                            class="input w-full"
-                            type="text"
-                            autocomplete="off"
-                            data-confirm-dialog-target="confirmInput"
-                            required
-                        >
-                        <input type="hidden" name="_token" value="{{ csrf_token('account_privacy_anonymize') }}">
+                        {{ form_row(anonymizeForm.confirmation, {
+                            label: false,
+                            translation_domain: false,
+                        }) }}
+                        {% include 'form/_fields.html.twig' with {form: anonymizeForm} only %}
                         <div class="confirm-dialog__actions">
                             <button type="button" class="btn-ghost" data-confirm-dialog-close>{{ 'common.cancel'|trans }}</button>
                             <button type="submit" class="btn-danger" data-confirm-dialog-target="submit" disabled data-testid="account-privacy-anonymize-submit">
                                 {{ 'preferences.privacy.anonymize_confirm'|trans }}
                             </button>
                         </div>
-                    </form>
+                    {{ form_end(anonymizeForm, {render_rest: false}) }}
                 </dialog>
             </div>
         {% endif %}

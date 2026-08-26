@@ -19,6 +19,7 @@ nowo_http_log:
         # AuthKit recovery tokens live in the path; never persist them in HTTP audit logs.
         - 'nowo_auth_kit_reset_password*'
         - 'nowo_auth_kit_magic_login_*'
+        - 'nowo_device_intelligence*'
     ignore_path_prefixes:
         - '/admin/http-log'
         - '/api'
@@ -30,6 +31,7 @@ nowo_http_log:
         - '/_profiler'
         - '/reset-password'
         - '/login/magic'
+        - '/_device'
     capture:
         request_headers: true
         request_body: false
@@ -99,11 +101,19 @@ when@prod:
         sampling_rate: 0.25
         capture:
             request_body: false
+            max_body_bytes: 16384
             response_body_by_type:
                 html: false
-                json: true
+                json: false
                 soap: false
                 xml: false
                 text: false
                 binary: false
                 other: false
+        retention:
+            days: 14
+        export:
+            max_sync_rows: 500
+        security:
+            access_roles: [ROLE_ADMIN]
+            allow_unauthenticated: false

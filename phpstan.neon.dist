@@ -5,20 +5,12 @@ parameters:
         - tests
     tmpDir: var/phpstan
     treatPhpDocTypesAsCertain: false
+    doctrine:
+        # Doctrine non-nullable associations are often uninitialized (`?Entity = null`) until persist/hydrate.
+        allowNullablePropertyForRequiredField: true
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
         consoleApplicationLoader: tests/phpstan/console-application.php
-    ignoreErrors:
-        -
-            identifier: doctrine.associationType
-            path: src/*/Entity/*
-        # PHPUnit bootstrap isolates the SQLite URL per process; not request-scoped app code.
-        -
-            identifier: frankenphp.worker.noEnvMutation
-            path: tests/bootstrap.php
-        -
-            identifier: frankenphp.classic.noPutenv
-            path: tests/bootstrap.php
 
 includes:
     - vendor/phpstan/phpstan-symfony/extension.neon

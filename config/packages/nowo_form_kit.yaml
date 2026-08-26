@@ -7,10 +7,15 @@
 nowo_form_kit:
     default_profile: shell
     css_framework: tailwind
+    # FormKit ≥2.4.0 already maps snake-case `search` → Symfony SearchType (REQ-FORMKIT-007).
     profiles:
         shell: &shell_profile
             alias: shell
-            translation_domain: messages
+            # Host FormKit catalogues live in translations/form.*.yaml
+            # ({form}.{field}.label|placeholder|help). Kit profiles below override.
+            translation_domain: form
+            auto_placeholder: true
+            auto_help: true
             required_label_suffix: null
             defaults:
                 attr:
@@ -24,12 +29,14 @@ nowo_form_kit:
                         rows: 3
                 checkbox:
                     attr:
-                        class: 'size-4 rounded border-[var(--color-sand)] text-[var(--color-moss)] focus:ring-[var(--color-moss)]/30'
+                        class: 'checkbox'
                     row_attr:
                         class: 'flex items-center gap-2'
                 choice:
                     attr:
                         class: 'input'
+                submit:
+                    help: false
             help_modal:
                 framework: tailwind
                 icon_html: '<span aria-hidden="true">?</span>'
@@ -81,3 +88,50 @@ nowo_form_kit:
             translation_domain: NowoRoutingKitBundle
             auto_placeholder: false
             auto_help: false
+
+        # GET list filters — own FormKit profile (not shell).
+        # Wire via AbstractGetFilterType (#[FormKitConfig('filter')]).
+        #
+        # Contract (FormKit >= 2.4.0):
+        #   - label: never (defaults.label: false)
+        #   - placeholder: always (auto_placeholder: true)
+        #   - help: always (auto_help: true), unless field sets help: false
+        #   - required: always false (defaults.required: false) except per_page
+        filter:
+            <<: *shell_profile
+            alias: filter
+            translation_domain: form
+            auto_placeholder: true
+            auto_help: true
+            defaults:
+                attr:
+                    class: 'input'
+                row_attr:
+                    class: ''
+                label: false
+                required: false
+            field_types:
+                text:
+                    label: false
+                search:
+                    label: false
+                textarea:
+                    label: false
+                integer:
+                    label: false
+                number:
+                    label: false
+                email:
+                    label: false
+                password:
+                    label: false
+                checkbox:
+                    label: false
+                choice:
+                    label: false
+                    placeholder: false
+                hidden:
+                    label: false
+                    placeholder: false
+                submit:
+                    help: false

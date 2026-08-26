@@ -44,6 +44,7 @@ Numbering is inherited from the Beacon lineage for continuity; **product-only** 
 | [082-appearance-theme-presets](082-appearance-theme-presets/spec.md) | Appearance themes (`shell`, …) | Completed |
 | [083-module-boundaries](083-module-boundaries/spec.md) | Platform module boundaries | Completed |
 | [085-architecture-convergence](085-architecture-convergence/spec.md) | Platform architecture convergence | Completed |
+| [086-platform-form-chrome](086-platform-form-chrome/spec.md) | Platform `.checkbox` + password-toggle gap/eye | Completed |
 
 \*May still mention Beacon product examples in older plan/tasks companions; treat `spec.md` + constitution as normative for this repo.
 

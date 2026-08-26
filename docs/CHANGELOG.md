@@ -9,6 +9,25 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 ## [Unreleased]
 
+### Added
+- **AuthKit 1.20 security UX** (REQ-AUTH-008): slide-to-confirm, device-intelligence (`di_obs`, Trusted browsers), otp-input on password-reset complete; FormKit **2.5.2**. Device ID is not a credential. `qr_login.mode` stays **disabled** (AUTH-005). Migration `Version20260825190000`.
+
+- **SMS Bridge provider** (`App\Shared\Sms\`): `SMS_PROVIDER=sms_bridge` + `bin/console app:sms:send`. Docs: [docs/product/SMS.md](product/SMS.md).
+
+- Platform **`.checkbox`** / `.checkbox-label` paint (AuthKit, kit-admin, RoutingKit); FormKit `checkbox` field class (`086-platform-form-chrome`).
+
+### Changed
+
+- CookieConsent **1.9.6** + Dashboard Menu **2.1.10**: embed via `nowo_cookie_consent_render()` (no kernel sub-request); kit tags `SearchQueryType` (no host `form.type` override).
+- Rector / PHP-CS-Fixer file headers document ownership split (semantic vs PER-CS; always CS after Rector).
+
+- Password toggle: eye on the **right** with **0.5rem** gap; `nowo_password_toggle` uses `input-group-text` (host SCSS owns flex layout).
+- Form themes (`app_theme` / `auth_kit_theme`) and kit-admin `.nowo-ui-check` aligned to platform checkbox chrome.
+
+### Notes
+
+- Run `doctrine:migrations:migrate` for Device Intelligence tables (`Version20260825190000`). Run `make vite-build` after pull (OTP / slide host SCSS). Password-manager extension icons on focus (e.g. NordPass) are outside host control.
+
 ## [1.0.3] - 2026-08-07
 
 ### Fixed

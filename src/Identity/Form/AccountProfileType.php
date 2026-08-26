@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Identity\Form;
 
 use App\Identity\Entity\User;
-use Nowo\FormKitBundle\Form\FormKitAbstractType;
+use App\Shared\Form\FormKitAbstractType;
 use Nowo\PasswordToggleBundle\Form\Type\PasswordType;
+use Nowo\PhoneInputBundle\Form\FlagDisplay;
+use Nowo\PhoneInputBundle\Form\PrefixDisplay;
+use Nowo\PhoneInputBundle\Form\Type\PhoneType;
+use Nowo\PhoneInputBundle\Form\ValueFormat;
+use Nowo\PhoneInputBundle\Validation\PhoneValidationMode;
 use Override;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,38 +20,53 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * Account profile: display name and email.
+ * Account profile: display name, email, phone (PhoneInput + country), Slack id.
+ *
+ * Phone uses nowo-tech/phone-input-bundle with country prefix (E.164 → User.phone).
  */
 final class AccountProfileType extends FormKitAbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->withBuilder($builder, function () use ($builder): void {
+        $this->withBuilder($builder, function (): void {
             $this->addTextField('displayName', [
                 'constraints' => [new NotBlank(), new Length(max: 120)],
             ]);
             $this->addEmailField('email', [
                 'constraints' => [new NotBlank(), new Email(), new Length(max: 180)],
             ]);
-            $builder->add('currentPassword', PasswordType::class, [
-                'mapped' => false,
-                'required' => false,
-                'label' => 'user_preferences.current_password.label',
-                'help' => 'user_preferences.current_password.help_email_change',
-                'translation_domain' => 'messages',
-                'attr' => ['autocomplete' => 'current-password'],
-            ]);
+            $this->boundBuilder()->add(
+                'currentPassword',
+                PasswordType::class,
+                $this->mergeFieldOptions('currentPassword', 'password', [
+                    'mapped' => false,
+                    'required' => false,
+                    'help' => 'user_preferences.current_password.help_sensitive_change',
+                    'attr' => ['autocomplete' => 'current-password'],
+                ]),
+            );
+            $this->boundBuilder()->add(
+                'phone',
+                PhoneType::class,
+                $this->mergeFieldOptions('phone', 'tel', [
+                    'required' => false,
+                    'country_prefix_selector' => true,
+                    'value_format' => ValueFormat::CONCATENATED,
+                    'default_country' => 'ES',
+                    'preferred_countries' => ['ES', 'PT', 'FR', 'GB', 'DE', 'IT', 'US', 'MX', 'AR', 'CL', 'CO', 'PE'],
+                    'prefix_display' => PrefixDisplay::FLAG_AND_PREFIX,
+                    'flag_display' => FlagDisplay::CSS_ICON,
+                    'prefix_search' => true,
+                    'phone_validation' => PhoneValidationMode::COUNTRY,
+                    'container_classes' => ['nowo-phone-input'],
+                    'prefix_selector_classes' => ['nowo-phone-input__prefix'],
+                    'national_number_classes' => ['input', 'nowo-phone-input__number'],
+                    'constraints' => [new Length(max: 32)],
+                ]),
+            );
             $this->addTextField('slackUserId', [
                 'required' => false,
-                'label' => 'preferences.profile.slack_user_id',
-                'help' => 'preferences.profile.slack_user_id_help',
                 'constraints' => [new Length(max: 64)],
-            ]);
-            $this->addTextField('phone', [
-                'required' => false,
-                'label' => 'preferences.profile.phone',
-                'help' => 'preferences.profile.phone_help',
-                'constraints' => [new Length(max: 32)],
             ]);
         });
     }

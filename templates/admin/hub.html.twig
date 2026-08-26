@@ -1,30 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration — {{ site_appearance.brandName }}{% endblock %}
+{% block title %}{{ 'admin.hub.title'|trans }} — {{ site_appearance.brandName }}{% endblock %}
 
 {% block body %}
 <div class="mb-6">
-    <h1 class="text-3xl font-bold">Administration</h1>
-    <p class="mt-1 text-sm text-[var(--color-ink)]/65">Manage this platform and its access controls.</p>
+    <h1 class="text-3xl font-bold">{{ 'admin.hub.title'|trans }}</h1>
+    <p class="mt-1 text-sm text-[var(--color-ink)]/65">{{ 'admin.hub.intro'|trans }}</p>
 </div>
-<div class="grid gap-4 sm:grid-cols-2">
-    {% for item in [
-        {route: 'admin_users', label: 'Users', testid: 'admin-users'},
-        {route: 'admin_groups', label: 'Groups', testid: 'admin-groups'},
-        {route: 'settings_appearance', label: 'Appearance', testid: 'admin-appearance'},
-        {route: 'settings_mailer', label: 'Mailer', testid: 'admin-mailer'},
-        {route: 'admin_social_login', label: 'Social login', testid: 'admin-social-login'},
-        {route: 'settings_instance_config', label: 'Instance config', testid: 'admin-instance-config'},
-        {route: 'nowo_site_backup_setup', label: 'Site backup', testid: 'admin-site-backup'},
-        {route: 'nowo_dashboard_menu_dashboard_index', label: 'Menus', testid: 'admin-menus'},
-        {route: 'nowo_breadcrumb_kit_dashboard_collections_index', label: 'Breadcrumbs', testid: 'admin-breadcrumbs'},
-        {route: 'admin_cookie_consent', label: 'Cookie consent', testid: 'admin-cookie-consent'},
-        {route: 'nowo_routing_kit_panel', label: 'Locale routes', testid: 'admin-routing-kit'},
-        {route: 'nowo_http_log_admin_index', label: 'HTTP log', testid: 'admin-http-log'}
-    ] %}
-        <a class="panel no-underline transition hover:border-[var(--color-moss)]" href="{{ path(item.route) }}" data-testid="{{ item.testid }}">
-            <h2 class="text-lg font-semibold text-[var(--color-ink)]">{{ item.label }}</h2>
-        </a>
+
+{% set hub_sections = [
+    {
+        heading: 'admin.hub.section.access',
+        tiles: [
+            {route: 'admin_users', label: 'nav.users', testid: 'admin-users'},
+            {route: 'admin_groups', label: 'nav.groups', testid: 'admin-groups'},
+            {route: 'admin_roles', label: 'nav.roles', testid: 'admin-roles'},
+            {route: 'admin_permissions', label: 'nav.permissions', testid: 'admin-permissions'},
+        ],
+    },
+    {
+        heading: 'admin.hub.section.instance',
+        tiles: [
+            {route: 'settings_appearance', label: 'nav.appearance', testid: 'admin-appearance'},
+            {route: 'settings_mailer', label: 'nav.mailer', testid: 'admin-mailer'},
+            {route: 'admin_social_login', label: 'nav.social_login', testid: 'admin-social-login'},
+            {route: 'settings_instance_config', label: 'nav.instance_config', testid: 'admin-instance-config'},
+            {route: 'nowo_site_backup_setup', label: 'nav.setup', testid: 'admin-site-backup'},
+            {route: 'nowo_maintenance_mode_panel_index', label: 'nav.maintenance', testid: 'admin-maintenance'},
+        ],
+    },
+    {
+        heading: 'admin.hub.section.navigation',
+        tiles: [
+            {route: 'nowo_dashboard_menu_dashboard_index', label: 'nav.menus', testid: 'admin-menus'},
+            {route: 'nowo_breadcrumb_kit_dashboard_collections_index', label: 'nav.breadcrumbs', testid: 'admin-breadcrumbs'},
+            {route: 'admin_cookie_consent', label: 'nav.cookie_consent', testid: 'admin-cookie-consent'},
+            {route: 'nowo_routing_kit_panel', label: 'nav.routing', testid: 'admin-routing-kit'},
+        ],
+    },
+    {
+        heading: 'admin.hub.section.observability',
+        tiles: [
+            {route: 'nowo_http_log_admin_index', label: 'nav.http_log', testid: 'admin-http-log'},
+            {route: 'nowo_maintenance_mode_preview', label: 'nav.maintenance_preview', testid: 'admin-maintenance-preview'},
+        ],
+    },
+] %}
+
+<div class="flex flex-col gap-8">
+    {% for section in hub_sections %}
+        <section>
+            <h2 class="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--color-ink)]/45">{{ section.heading|trans }}</h2>
+            <div class="grid gap-4 sm:grid-cols-2">
+                {% for item in section.tiles %}
+                    <a class="panel no-underline transition hover:border-[var(--color-moss)]" href="{{ path(item.route) }}" data-testid="{{ item.testid }}">
+                        <h2 class="text-lg font-semibold text-[var(--color-ink)]">{{ item.label|trans }}</h2>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
     {% endfor %}
 </div>
+{% include '_product_tour.html.twig' %}
 {% endblock %}

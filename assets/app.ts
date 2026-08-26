@@ -1,6 +1,9 @@
 import './styles/fonts.css';
 import './styles/tailwind.css';
 import './styles/app.scss';
+// CookieConsent ≥1.9 kit CSS in the Vite bundle — ad blockers often strip
+// `/bundles/nowocookieconsent/nowo-cookie-consent.css` by URL pattern.
+import '../vendor/nowo-tech/cookie-consent-bundle/src/Resources/public/nowo-cookie-consent.css';
 import './stimulus_bootstrap';
 
 document.documentElement.dataset.assets = 'ts+scss+tailwind+stimulus';

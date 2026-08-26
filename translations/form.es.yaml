@@ -1,0 +1,406 @@
+# Host FormKit catalogue (REQ-FORMKIT-003). Domain: form
+# Keys: {block_prefix}.{field}.label|placeholder|help + static choice maps.
+user_filter:
+  q:
+    label: Buscar
+    placeholder: Buscar por nombre o email…
+    help: Filtra el directorio de usuarios por nombre visible o email.
+
+group_filter:
+  q:
+    label: Buscar
+    placeholder: Buscar por nombre, slug o descripción…
+    help: Filtra grupos por nombre, slug o descripción.
+
+role_filter:
+  q:
+    label: Buscar
+    placeholder: Buscar por nombre o código…
+    help: Filtra roles por nombre visible o código.
+
+permission_filter:
+  q:
+    label: Buscar
+    placeholder: Buscar por clave, nombre, categoría…
+    help: Filtra permisos por clave, nombre o categoría.
+
+admin_user:
+  email:
+    label: Email
+    placeholder: nombre@ejemplo.com
+    help: Email de acceso de esta cuenta.
+  display_name:
+    label: Nombre visible
+    placeholder: Ana Pérez
+    help: Se muestra en el directorio de admin y en la actividad.
+  password:
+    label: Contraseña
+    placeholder: Al menos 8 caracteres
+    help: Al menos 8 caracteres.
+  role:
+    label: Rol
+    placeholder: Selecciona un rol
+    help: Rol de instancia (usuario o admin).
+  enabled:
+    label: Cuenta activa (puede iniciar sesión)
+    placeholder: ''
+    help: Si está desactivada, el usuario no puede iniciar sesión.
+
+admin_instance_role:
+  name:
+    label: Nombre
+    placeholder: Soporte
+    help: Respaldo en base de datos del nombre visible. La UI prefiere roles.catalog.<slug>.name si esa
+      clave está traducida (slug = código en minúsculas).
+  code:
+    label: Código
+    placeholder: ROLE_SUPPORT
+    help: Código estilo Symfony (p. ej. ROLE_SUPPORT). Id de máquina — no se traduce.
+  description:
+    label: Cuándo usarlo
+    placeholder: Guía breve opcional…
+    help: Guía breve sobre cuándo asignar este rol. Prefiere roles.catalog.<slug>.description; este campo
+      es el respaldo en BD.
+  enabled:
+    label: Activo
+    help: Si está desactivado, este rol no se puede asignar de nuevo.
+
+admin_instance_permission:
+  key:
+    label: Clave del permiso
+    help: Nombre máquina en notación con puntos en minúsculas para isGranted('project.view'). No se traduce.
+    placeholder: p. ej. project.custom.manage
+  category:
+    label: Categoría
+    help: Elige una categoría. Las etiquetas siguen el idioma de la UI; en BD se guarda el slug máquina.
+    placeholder: Elige una categoría…
+  name:
+    help_default: Obligatorio para el idioma predeterminado (%locale%). Se guarda por idioma; la UI usa
+      el locale activo, luego el catálogo y luego este valor.
+    help_locale: Opcional para %locale%. Sobrescribe el nombre del catálogo si se indica.
+  description:
+    help_locale: Opcional para %locale%. Sobrescribe la descripción del catálogo si se indica.
+  name_en:
+    label: Nombre visible
+  description_en:
+    label: Descripción
+  name_es:
+    label: Nombre visible
+  description_es:
+    label: Descripción
+  name_de:
+    label: Nombre visible
+  description_de:
+    label: Descripción
+  name_fr:
+    label: Nombre visible
+  description_fr:
+    label: Descripción
+  name_it:
+    label: Nombre visible
+  description_it:
+    label: Descripción
+  name_nl:
+    label: Nombre visible
+  description_nl:
+    label: Descripción
+  name_pt:
+    label: Nombre visible
+  description_pt:
+    label: Descripción
+
+site_appearance:
+  brand_name:
+    label: Nombre de marca
+    placeholder: symfony-shell
+    help: Se muestra en la cabecera y en la página de acceso.
+  brand_eyebrow:
+    label: Etiqueta de marca
+    placeholder: Shell de plataforma
+    help: Texto corto encima de la marca en la pantalla de acceso.
+  accent_color:
+    label: Acento
+    placeholder: '#1f6f54'
+    help: Acento principal (botones, enlaces) en modo día.
+  accent_deep_color:
+    label: Acento (hover)
+    placeholder: '#134736'
+    help: Acento más oscuro para hover en modo día.
+  accent_color_dark:
+    label: Acento (noche)
+    placeholder: '#4aad7f'
+    help: Acento principal en modo noche.
+  accent_deep_color_dark:
+    label: Acento hover (noche)
+    placeholder: '#6bc49a'
+    help: Acento más claro para hover en modo noche.
+  danger_color:
+    label: Peligro
+    placeholder: '#b42318'
+    help: Acento de error / destructivo en modo día.
+  danger_color_dark:
+    label: Peligro (noche)
+    placeholder: '#f97066'
+    help: Acento de error / destructivo en modo noche.
+  warn_color:
+    label: Aviso
+    placeholder: '#b54708'
+    help: Acento de aviso / precaución en modo día.
+  warn_color_dark:
+    label: Aviso (noche)
+    placeholder: '#fdb022'
+    help: Acento de aviso / precaución en modo noche.
+  paper_color:
+    label: Papel
+    placeholder: '#f3f6f4'
+    help: Fondo de página en modo día.
+  paper_color_dark:
+    label: Papel (noche)
+    placeholder: '#0c1210'
+    help: Fondo de página en modo noche.
+  ink_color:
+    label: Tinta
+    placeholder: '#0f1c18'
+    help: Color de texto principal en modo día.
+  ink_color_dark:
+    label: Tinta (noche)
+    placeholder: '#e6eee9'
+    help: Color de texto principal en modo noche.
+  surface_color:
+    label: Superficie
+    placeholder: '#ffffff'
+    help: Paneles y tarjetas en modo día.
+  surface_color_dark:
+    label: Superficie (noche)
+    placeholder: '#151c19'
+    help: Paneles y tarjetas en modo noche.
+  footer_fixed:
+    label: Footer fijo
+    help: Mantiene el pie legal fijado al borde inferior del viewport mientras el contenido hace scroll.
+  corner_style:
+    label: Estilo de esquinas
+    help: Las tarjetas usan un radio mayor; inputs y botones quedan más sutiles.
+    choice:
+      sharp: Afilado
+      soft: Suave (por defecto)
+      rounded: Redondeado
+  border_strength:
+    label: Definición de bordes
+    help: Qué tan definidos se ven los bordes en modo claro y oscuro (paneles, inputs, chrome).
+    choice:
+      subtle: Sutil
+      medium: Media (por defecto)
+      strong: Fuerte
+  color:
+    invalid: 'Usa un color hexadecimal como #1f6f54.'
+
+instance_mailer:
+  plain_mailer_dsn:
+    label: DSN de Mailer
+    help: Déjalo vacío para conservar el valor cifrado actual. Ejemplo smtp://user:pass@mail.example:587
+      — null:// se rechaza (usa Borrar DSN guardado).
+    placeholder: smtp://user:pass@mail.example:587
+    invalid: Introduce un DSN de Symfony Mailer válido (por ejemplo smtp://user:pass@host:587).
+    null_transport: null:// no puede entregar correo. Pega un DSN SMTP (u otro) real,
+      o usa Borrar DSN guardado para volver al entorno.
+    scheme_not_allowed: Ese esquema de DSN de Mailer no está permitido. Usa smtp,
+      smtps o un proveedor soportado (Mailgun, Postmark, SES, …).
+  clear_mailer_dsn:
+    label: Borrar DSN guardado
+    help: Elimina el DSN de la base de datos y vuelve a MAILER_DSN del entorno hasta que guardes uno nuevo.
+  mailer_from:
+    label: Dirección From
+    help: Remitente para magic login y notificaciones por email. Por defecto beacon@localhost si está
+      vacío.
+    placeholder: beacon@example.com
+
+user_preferences:
+  display_name:
+    label: Nombre visible
+    placeholder: Tu nombre
+    help: Se muestra en el menú del avatar y en las listas de miembros.
+  email:
+    label: Correo
+    placeholder: tu@ejemplo.com
+    help: Se usa para iniciar sesión.
+  slack_user_id:
+    placeholder: U012ABCDEF
+  phone:
+    placeholder: '600 111 222'
+  preferred_locale:
+    label: Idioma
+    placeholder: Automático
+    help: Idioma preferido de la interfaz para esta cuenta.
+  preferred_theme:
+    label: Tema
+    placeholder: Automático
+    help: Apariencia preferida día o noche.
+  preferred_content_width:
+    label: Ancho del contenido
+    placeholder: Contenido
+    help: Columna centrada, o estirar el área principal a todo el ancho.
+  preferred_ui_density:
+    label: Densidad de la interfaz
+    placeholder: Cómoda
+    help: Espaciado cómodo, o un layout de operador más compacto.
+  preferred_font_scale:
+    label: Tamaño del texto
+    placeholder: Mediano
+    help: Escala el texto de la interfaz más pequeño o más grande.
+  preferred_contrast:
+    label: Contraste
+    placeholder: Sistema
+    help: Seguir el contraste del dispositivo, o forzar texto y bordes más marcados.
+  preferred_sidebar:
+    label: Barra lateral
+    placeholder: Expandida
+    help: Estado inicial en escritorio cuando este navegador aún no tiene preferencia guardada.
+  preferred_motion:
+    label: Movimiento
+    placeholder: Sistema
+    help: Seguir el dispositivo, reducir animaciones, o mantener el movimiento completo.
+  preferred_collapsed_issue_panels:
+    label: Paneles de incidencia colapsados por defecto
+    placeholder: Seleccionar paneles…
+    help: Los paneles marcados empiezan colapsados en el detalle de incidencia/evento. El navegador
+      recuerda si los abres o cierras a mano.
+  current_password:
+    label: Contraseña actual
+    placeholder: Contraseña actual
+    help: Solo necesaria al establecer una nueva contraseña.
+    help_email_change: Obligatoria al cambiar tu dirección de correo (inicio de sesión y destino del restablecimiento).
+    help_required: Confirma tu contraseña actual para establecer una nueva.
+  plain_password:
+    label: Nueva contraseña
+    placeholder: Nueva contraseña
+    help: Elige una contraseña segura que cumpla los requisitos siguientes.
+    mismatch: Las contraseñas no coinciden.
+    strength_invalid: La contraseña no cumple los requisitos de fortaleza (%missing%).
+    second:
+      label: Confirmar nueva contraseña
+    first:
+      label: Nueva contraseña
+  plain_password_confirm:
+    label: Confirmar nueva contraseña
+    placeholder: Confirmar nueva contraseña
+    help: Vuelve a introducir la nueva contraseña.
+
+social_login_credential:
+  authorize_url:
+    help: Opcional para proveedores integrados; obligatorio para IdP personalizados.
+    label: URL de autorización
+  client_id:
+    label: Client ID
+  client_secret:
+    label: Client secret
+    help_new: Secreto OAuth de la app registrada en el IdP.
+    help_edit: Déjalo en blanco para conservar el secreto actual.
+  enabled:
+    help: Los proveedores desactivados permanecen en la base de datos pero no se muestran en el login.
+    label: Activado
+  enterprise_sso:
+    help: Mostrar bajo «Iniciar sesión con tu organización» en lugar de los botones sociales de consumidor
+      (IdP OIDC).
+    label: SSO empresarial
+  label:
+    help: Texto del botón Continuar con en la página de login.
+    label: Etiqueta del botón
+  provider:
+    help: Slug en minúsculas (google, github, microsoft o personalizado).
+    label: Clave del proveedor
+    invalid: Usa un slug en minúsculas que empiece por letra (a-z, dígitos, _ o -).
+  scopes:
+    help: Scopes OAuth opcionales separados por espacios o comas.
+    label: Scopes
+  token_url:
+    help: Opcional para proveedores integrados; obligatorio para IdP personalizados.
+    label: URL de token
+  userinfo_url:
+    help: Opcional para proveedores integrados; obligatorio para IdP personalizados.
+    label: URL de userinfo
+
+admin_group_member_add:
+  email:
+    label: Email del miembro
+    placeholder: usuario@ejemplo.com
+
+admin_role_user_add:
+  email:
+    label: Email del usuario
+    placeholder: usuario@ejemplo.com
+
+groups:
+  description_label: Descripción
+  name_label: Nombre
+
+instance_config_import:
+  config:
+    label: Archivo de configuración
+
+mailer_test:
+  to:
+    label: Destinatario
+    placeholder: tu@ejemplo.com
+
+admin:
+  ops:
+    filter_project: Filtro de proyecto
+
+users:
+  role:
+    admin: Admin
+    user: Usuario
+
+preferences:
+  theme_light: Día
+  theme_dark: Noche
+  width_content: Contenido (centrado)
+  width_full: Ancho completo
+  density_comfortable: Cómoda
+  density_compact: Compacta
+  font_scale_sm: Pequeño
+  font_scale_md: Mediano
+  font_scale_lg: Grande
+  contrast_system: Sistema (seguir dispositivo)
+  contrast_more: Más contraste
+  sidebar_expanded: Expandida
+  sidebar_collapsed: Colapsada
+  motion_system: Sistema (seguir dispositivo)
+  motion_reduce: Reducir movimiento
+  motion_full: Movimiento completo
+
+admin_group:
+  name:
+    label: Nombre
+    placeholder: Equipo de soporte
+    help: Nombre corto del grupo en listados de administración.
+  description:
+    label: Descripción
+    placeholder: Notas opcionales…
+    help: Descripción opcional para operadores.
+
+permissions:
+  key_invalid: Usa segmentos en minúsculas con puntos (al menos dos), p. ej. project.custom.manage.
+  category:
+    access:
+      name: Acceso
+      description: Acceso a cuentas y administración de identidad (usuarios, grupos, roles, permisos).
+    overview:
+      name: Resumen
+      description: Hub de administración y vistas de resumen ops.
+    instance:
+      name: Instancia
+      description: Configuración de instancia (apariencia, correo, login social, setup, backups).
+    navigation:
+      name: Navegación y legal
+      description: Menús, migas de pan, rutas públicas y consentimiento de cookies.
+    observability:
+      name: Observabilidad
+      description: Log HTTP y documentación de API.
+    general:
+      name: General
+      description: Claves de permiso sin categorizar o heredadas.
+    custom:
+      name: Personalizado
+      description: Claves definidas por el operador fuera del catálogo sembrado.
+

@@ -7,7 +7,7 @@ namespace App\Shared\Appearance\Form;
 use App\Shared\Appearance\AppearanceSettingsSection;
 use App\Shared\Appearance\AppearanceSettingsSubtab;
 use App\Shared\Appearance\Entity\SiteAppearance;
-use Nowo\FormKitBundle\Form\FormKitAbstractType;
+use App\Shared\Form\FormKitAbstractType;
 use Override;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -56,6 +56,12 @@ final class SiteAppearanceType extends FormKitAbstractType
         $resolver->setAllowedTypes('subtab', ['null', AppearanceSettingsSubtab::class]);
     }
 
+    #[Override]
+    public function getBlockPrefix(): string
+    {
+        return 'site_appearance';
+    }
+
     private function addBrandFields(): void
     {
         $this->addTextField('brandName', [
@@ -77,7 +83,7 @@ final class SiteAppearanceType extends FormKitAbstractType
                 'site_appearance.corner_style.choice.soft' => SiteAppearance::CORNER_SOFT,
                 'site_appearance.corner_style.choice.rounded' => SiteAppearance::CORNER_ROUNDED,
             ],
-            'choice_translation_domain' => 'messages',
+            'choice_translation_domain' => 'form',
             'required' => true,
             'placeholder' => false,
         ]);
@@ -87,7 +93,7 @@ final class SiteAppearanceType extends FormKitAbstractType
                 'site_appearance.border_strength.choice.medium' => SiteAppearance::BORDER_MEDIUM,
                 'site_appearance.border_strength.choice.strong' => SiteAppearance::BORDER_STRONG,
             ],
-            'choice_translation_domain' => 'messages',
+            'choice_translation_domain' => 'form',
             'required' => true,
             'placeholder' => false,
         ]);

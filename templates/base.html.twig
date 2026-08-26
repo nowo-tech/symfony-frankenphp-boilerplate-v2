@@ -2,6 +2,7 @@
 <html
     lang="{{ app.request.locale|default('en') }}"
     {% if site_appearance.footerFixed %}data-footer-fixed="1"{% endif %}
+    data-nowo-cookie-consent-external-css="true"
     {% if app.user and app.user.preferredTheme in ['light', 'dark'] %}data-theme="{{ app.user.preferredTheme|e('html_attr') }}"{% endif %}
     {% if app.user %}data-user-theme="{{ app.user.preferredTheme|e('html_attr') }}"{% endif %}
     {% if app.user %}
@@ -29,7 +30,7 @@
             {{ vite_entry_link_tags('app') }}
         {% endblock %}
         {# After app CSS so site palette / radius / border tokens win the cascade. #}
-        <style>{{ site_appearance.cssOverrides|raw }}</style>
+        <style{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %}>{{ site_appearance.cssOverrides|raw }}</style>
         {% block javascripts %}
             {{ vite_entry_script_tags('app') }}
             <script src="{{ asset('js/nowo-ui-orb.js', 'nowo_ui_kit') }}" defer></script>
@@ -122,6 +123,6 @@
         {% endif %}
 
         {# Modal available site-wide for footer “Cookie settings”; no floating bubble here. #}
-        {{ render(path('nowo_cookie_consent.show')) }}
+        {{ nowo_cookie_consent_render() }}
     </body>
 </html>

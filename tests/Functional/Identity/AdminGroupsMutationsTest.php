@@ -42,10 +42,8 @@ final class AdminGroupsMutationsTest extends DatabaseWebTestCase
         self::assertSelectorTextContains('h1', 'Platform Team');
 
         $crawler = $client->request(Request::METHOD_GET, '/admin/groups/'.$group->getUuid());
-        $token = $crawler->filter('form[action$="/delete"] input[name="_token"]')->attr('value');
-        $client->request(Request::METHOD_POST, '/admin/groups/'.$group->getUuid().'/delete', [
-            '_token' => $token,
-        ]);
+        $deleteForm = $crawler->filter('form[action$="/delete"]')->form();
+        $client->submit($deleteForm);
         self::assertResponseRedirects('/admin/groups');
 
         $em->clear();
@@ -79,21 +77,17 @@ final class AdminGroupsMutationsTest extends DatabaseWebTestCase
         $this->login($client, $admin);
         $crawler = $client->request(Request::METHOD_GET, '/admin/groups/'.$group->getUuid());
 
-        $addToken = $crawler->filter('form[action$="/members"] input[name="_token"]')->attr('value');
-        $client->request(Request::METHOD_POST, '/admin/groups/'.$group->getUuid().'/members', [
-            '_token' => $addToken,
+        $addForm = $crawler->filter('form[action$="/members"]')->form([
             'email' => 'missing-user@example.com',
         ]);
+        $client->submit($addForm);
         self::assertResponseRedirects('/admin/groups/'.$group->getUuid());
         $client->followRedirect();
         self::assertSelectorTextContains('.flash', 'No user exists with that email');
 
         $crawler = $client->request(Request::METHOD_GET, '/admin/groups/'.$group->getUuid());
-        $removeForm = $crawler->filter('form[action$="/members/'.$member->getUuid().'/remove"]');
-        $token = $removeForm->filter('input[name="_token"]')->attr('value');
-        $client->request(Request::METHOD_POST, '/admin/groups/'.$group->getUuid().'/members/'.$member->getUuid().'/remove', [
-            '_token' => $token,
-        ]);
+        $removeForm = $crawler->filter('form[action$="/members/'.$member->getUuid().'/remove"]')->form();
+        $client->submit($removeForm);
         self::assertResponseRedirects('/admin/groups/'.$group->getUuid());
         $client->followRedirect();
         self::assertSelectorTextContains('body', 'No members in this group yet');

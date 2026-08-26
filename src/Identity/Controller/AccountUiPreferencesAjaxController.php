@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Identity\Controller;
 
 use App\Identity\Entity\User;
+use App\Shared\Controller\RequiresValidFormTrait;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,8 +23,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class AccountUiPreferencesAjaxController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly CsrfOnlyFormFactory $csrfOnlyFormFactory,
     ) {
     }
 
@@ -80,9 +85,12 @@ final class AccountUiPreferencesAjaxController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$this->isCsrfTokenValid('account_product_tour_replay', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $form = $this->csrfOnlyFormFactory->createNamed(
+            $this->generateUrl('account_product_tour_replay'),
+            'account_product_tour_replay',
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         $user->clearProductTourSeen();
         $this->entityManager->flush();

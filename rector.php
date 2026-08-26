@@ -7,6 +7,16 @@ use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 use Rector\Symfony\Set\SymfonySetList;
 
+/*
+ * Rector — semantic upgrades only (PHP 8.5, dead code, types, Symfony attributes).
+ *
+ * Formatting, imports, native `\fn()`, union order (`string|null`), and PER-CS /
+ * Symfony style belong to PHP-CS-Fixer. Do not enable SetList::CODING_STYLE,
+ * withImportNames(), or CS-Fixer @PHP*Migration sets (Rector owns language level).
+ *
+ * Always apply CS Fixer after Rector (`make rector-fix` / composer rector-fix).
+ */
+
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/src',

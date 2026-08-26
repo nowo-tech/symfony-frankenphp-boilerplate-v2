@@ -9,6 +9,29 @@
 7. Read [docs/ARCHITECTURE.md](ARCHITECTURE.md) before structural changes. This repo is the **platform boilerplate** (`Identity`, `Shared`, `Setup` only). Product domains belong in product apps built from this starter, not here.
 8. Install git hooks: `make setup-hooks` (strips Cursor co-author trailers).
 9. Verify Spec Kit locally with `make specify-check` when changing `.specify/` or Cursor skills.
+10. **Platform checkboxes** — native checks use class `checkbox` (or `.checkbox-label` / `.nowo-ui-check`); FormKit `field_types.checkbox.attr.class: checkbox` (`086-platform-form-chrome`).
+**FormKit profiles** — platform host forms extend `App\Shared\Form\FormKitAbstractType` (profile `shell`). GET / list filters extend `App\Shared\Form\AbstractGetFilterType` (profile `filter`, `#[FormKitConfig('filter')]`, CSRF off, method GET). Do not mix: filter types must not extend `FormKitAbstractType` directly, and host forms must not carry `#[FormKitConfig('filter')]`. See `config/packages/nowo_form_kit.yaml`.
+**`getBlockPrefix()`** — all host and filter form types must have a non-empty `getBlockPrefix()`. CSRF-only kit types (`Nowo\FormKitBundle\Form\Type\CsrfOnlyType`, `HiddenFieldsCsrfType`) intentionally use empty `''` (no catalogue keys).
+11. **Password toggle** — host SCSS owns flex + gap (eye on the right); `nowo_password_toggle.button_classes` include `input-group-text` (no Tailwind flex/gap on the container).
+12. **CSRF via Symfony Forms** — host mutable HTML POSTs use kit `CsrfOnlyFormFactory` / Twig `csrf_action_form()` / `search_query_form()` / `flat_hidden_fields()` (FormKit **≥2.4**) with `form_start` / `form_end`. Prefer factory `createNamed()` for nested `csrf_only[_token]`; use `create()` / `named: false` only when the consumer must see a flat `_token`. Do not add new hand-rolled Twig `csrf_token('…')` hidden fields for product/admin host forms. **Intentional exceptions** (keep `csrf_token()` / header tokens):
+    - AJAX `data-*-token` / `X-CSRF-TOKEN` (theme, content-width, product-tour mark in `base.html.twig` / `_product_tour.html.twig`): product tour mark-seen at `/account/product-tour/seen` sends `X-CSRF-TOKEN: csrf_token('account_product_tour')` because the driver.js controller runs outside a Symfony form. This is a one-way AJAX write with SameSite protection — acceptable for low-risk UI state.
+    - AuthKit logout `_csrf_token` (`_user_menu.html.twig`)
+    - Kit modal `data-token` deletes (DashboardMenu, BreadcrumbKit overrides)
+    - CookieConsent kit admin table fork (`templates/bundles/NowoCookieConsentBundle/…`)
+    - HttpLog kit fork export/purge/delete (`templates/bundles/NowoHttpLogBundle/…` — leave until kit ships FormKit CSRF)
+
+## QA gates
+
+Run `make qa` (Docker) or `composer qa` (local) before opening a PR. This runs CS-fix, Twig-CS, PHPStan, Rector, module-boundary check, and unit tests.
+
+| Gate | Command | Hard floor |
+|------|---------|-----------|
+| PHP unit tests + coverage | `make test-coverage` | **100%** statements (`COVERAGE_MIN`) |
+| TypeScript unit coverage | `make test-unit-js-coverage` | **100%** lines/statements |
+| E2E (Playwright) | `make test-e2e` | Informational on PR; required before release |
+| Module boundaries | `make check-module-boundaries` | Always required |
+
+Coverage floors are enforced by `.scripts/check-coverage-threshold.sh` and the CI matrix. Do not bypass with `COVERAGE_MIN=0` on PRs.
 
 ## Spec Kit workflow
 

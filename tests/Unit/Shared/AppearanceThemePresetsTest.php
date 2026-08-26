@@ -61,4 +61,32 @@ final class AppearanceThemePresetsTest extends TestCase
         self::assertNotEmpty($dark);
         self::assertSame(\count(AppearanceThemePresets::all()), \count($light) + \count($dark));
     }
+
+    public function testGetUnknownAndApplyFalse(): void
+    {
+        self::assertNull(AppearanceThemePresets::get('not-a-real-preset'));
+        self::assertFalse(AppearanceThemePresets::apply(SiteAppearance::defaults(), 'not-a-real-preset'));
+    }
+
+    public function testMatchIdPrefersLightThenDark(): void
+    {
+        $appearance = SiteAppearance::defaults();
+        AppearanceThemePresets::apply($appearance, 'ocean');
+        self::assertSame('ocean', AppearanceThemePresets::matchId($appearance));
+
+        $appearance->setAccentColor('#abcdef');
+        AppearanceThemePresets::apply($appearance, 'midnight');
+        self::assertSame('midnight', AppearanceThemePresets::matchId($appearance));
+    }
+
+    public function testMatchForModeDispatches(): void
+    {
+        $appearance = SiteAppearance::defaults();
+        AppearanceThemePresets::apply($appearance, 'ocean');
+        AppearanceThemePresets::apply($appearance, 'midnight');
+
+        self::assertSame('ocean', AppearanceThemePresets::matchForMode($appearance, 'light'));
+        self::assertSame('midnight', AppearanceThemePresets::matchForMode($appearance, 'dark'));
+        self::assertSame('ocean', AppearanceThemePresets::matchForMode($appearance, 'other'));
+    }
 }

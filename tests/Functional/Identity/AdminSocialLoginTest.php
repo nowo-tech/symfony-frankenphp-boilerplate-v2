@@ -98,10 +98,8 @@ final class AdminSocialLoginTest extends DatabaseWebTestCase
         self::assertTrue($updated->isEnabled());
 
         $crawler = $client->request(Request::METHOD_GET, '/admin/social-login');
-        $token = $crawler->filter('form[action$="/admin/social-login/google/delete"] input[name="_token"]')->attr('value');
-        $client->request(Request::METHOD_POST, '/admin/social-login/google/delete', [
-            '_token' => $token,
-        ]);
+        $deleteForm = $crawler->filter('form[action$="/admin/social-login/google/delete"]')->form();
+        $client->submit($deleteForm);
         self::assertResponseRedirects('/admin/social-login');
 
         $em->clear();

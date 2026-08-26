@@ -7,9 +7,11 @@ namespace App\Shared\Settings\Controller;
 use App\Identity\Entity\User;
 use App\Identity\Service\UserActionRecorder;
 use App\Identity\UserActionType;
+use App\Shared\Controller\RequiresValidFormTrait;
 use App\Shared\Mailer\ConfiguredMailer;
 use App\Shared\Mailer\MailerDsnAudit;
 use App\Shared\Settings\Form\InstanceMailerSettingsType;
+use App\Shared\Settings\Form\MailerTestType;
 use App\Shared\Settings\Repository\InstanceSettingsRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +29,8 @@ use Throwable;
 #[IsGranted('ROLE_ADMIN')]
 final class MailerSettingsController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly InstanceSettingsRepository $repository,
         private readonly ConfiguredMailer $configuredMailer,
@@ -66,9 +70,14 @@ final class MailerSettingsController extends AbstractController
 
         $user = $this->getUser();
         $defaultSampleTo = $user instanceof User ? $user->getEmail() : '';
+        $sampleForm = $this->createForm(MailerTestType::class, ['to' => $defaultSampleTo], [
+            'action' => $this->generateUrl('settings_mailer_test'),
+            'csrf_token_id' => 'mailer_sample',
+        ]);
 
         return $this->render('settings/mailer.html.twig', [
             'form' => $form,
+            'sampleForm' => $sampleForm->createView(),
             'settings' => $settings,
             'usingDatabaseDsn' => $this->configuredMailer->isConfiguredFromDatabase(),
             'envFallbackActive' => !$this->configuredMailer->isConfiguredFromDatabase(),
@@ -80,9 +89,14 @@ final class MailerSettingsController extends AbstractController
     #[Route('/settings/mailer/test', name: 'settings_mailer_test', methods: ['POST'])]
     public function sendSample(Request $request): RedirectResponse
     {
-        if (!$this->isCsrfTokenValid('mailer_sample', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException();
-        }
+        $user = $this->getUser();
+        $defaultSampleTo = $user instanceof User ? $user->getEmail() : '';
+        $form = $this->createForm(MailerTestType::class, ['to' => $defaultSampleTo], [
+            'action' => $this->generateUrl('settings_mailer_test'),
+            'csrf_token_id' => 'mailer_sample',
+        ]);
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         if (!$this->configuredMailer->isMagicLoginAvailable()) {
             $this->addFlash('error', 'flash.mailer.sample_unavailable');
@@ -90,10 +104,11 @@ final class MailerSettingsController extends AbstractController
             return $this->redirectToRoute('settings_mailer');
         }
 
-        $to = trim($request->request->getString('to'));
+        /** @var array{to?: string} $data */
+        $data = $form->getData();
+        $to = trim((string) ($data['to'] ?? ''));
         if ('' === $to) {
-            $user = $this->getUser();
-            $to = $user instanceof User ? $user->getEmail() : '';
+            $to = $defaultSampleTo;
         }
 
         if ('' === $to || false === filter_var($to, \FILTER_VALIDATE_EMAIL)) {

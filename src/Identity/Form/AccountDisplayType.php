@@ -6,7 +6,7 @@ namespace App\Identity\Form;
 
 use App\Identity\Entity\User;
 use InvalidArgumentException;
-use Nowo\FormKitBundle\Form\FormKitAbstractType;
+use App\Shared\Form\FormKitAbstractType;
 use Override;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,13 +27,13 @@ final class AccountDisplayType extends FormKitAbstractType
         }
         $this->withBuilder($builder, function () use ($choices): void {
             $this->addChoiceField('preferredLocale', ['choices' => $choices, 'required' => true, 'placeholder' => false]);
-            $this->addChoiceField('preferredTheme', ['choices' => ['preferences.theme_light' => 'light', 'preferences.theme_dark' => 'dark'], 'choice_translation_domain' => 'messages', 'required' => true, 'placeholder' => false]);
-            $this->addChoiceField('preferredContentWidth', ['choices' => ['preferences.width_content' => 'content', 'preferences.width_full' => 'full'], 'choice_translation_domain' => 'messages', 'required' => true, 'placeholder' => false]);
-            $this->addChoiceField('preferredUiDensity', ['choices' => ['preferences.density_comfortable' => 'comfortable', 'preferences.density_compact' => 'compact'], 'choice_translation_domain' => 'messages', 'required' => true, 'placeholder' => false]);
-            $this->addChoiceField('preferredFontScale', ['choices' => ['preferences.font_scale_sm' => 'sm', 'preferences.font_scale_md' => 'md', 'preferences.font_scale_lg' => 'lg'], 'choice_translation_domain' => 'messages', 'required' => true, 'placeholder' => false]);
-            $this->addChoiceField('preferredContrast', ['choices' => ['preferences.contrast_system' => 'system', 'preferences.contrast_more' => 'more'], 'choice_translation_domain' => 'messages', 'required' => true, 'placeholder' => false]);
-            $this->addChoiceField('preferredSidebar', ['choices' => ['preferences.sidebar_expanded' => 'expanded', 'preferences.sidebar_collapsed' => 'collapsed'], 'choice_translation_domain' => 'messages', 'required' => true, 'placeholder' => false]);
-            $this->addChoiceField('preferredMotion', ['choices' => ['preferences.motion_system' => 'system', 'preferences.motion_reduce' => 'reduce', 'preferences.motion_full' => 'full'], 'choice_translation_domain' => 'messages', 'required' => true, 'placeholder' => false]);
+            $this->addChoiceField('preferredTheme', ['choices' => ['preferences.theme_light' => 'light', 'preferences.theme_dark' => 'dark'], 'choice_translation_domain' => 'form', 'required' => true, 'placeholder' => false]);
+            $this->addChoiceField('preferredContentWidth', ['choices' => ['preferences.width_content' => 'content', 'preferences.width_full' => 'full'], 'choice_translation_domain' => 'form', 'required' => true, 'placeholder' => false]);
+            $this->addChoiceField('preferredUiDensity', ['choices' => ['preferences.density_comfortable' => 'comfortable', 'preferences.density_compact' => 'compact'], 'choice_translation_domain' => 'form', 'required' => true, 'placeholder' => false]);
+            $this->addChoiceField('preferredFontScale', ['choices' => ['preferences.font_scale_sm' => 'sm', 'preferences.font_scale_md' => 'md', 'preferences.font_scale_lg' => 'lg'], 'choice_translation_domain' => 'form', 'required' => true, 'placeholder' => false]);
+            $this->addChoiceField('preferredContrast', ['choices' => ['preferences.contrast_system' => 'system', 'preferences.contrast_more' => 'more'], 'choice_translation_domain' => 'form', 'required' => true, 'placeholder' => false]);
+            $this->addChoiceField('preferredSidebar', ['choices' => ['preferences.sidebar_expanded' => 'expanded', 'preferences.sidebar_collapsed' => 'collapsed'], 'choice_translation_domain' => 'form', 'required' => true, 'placeholder' => false]);
+            $this->addChoiceField('preferredMotion', ['choices' => ['preferences.motion_system' => 'system', 'preferences.motion_reduce' => 'reduce', 'preferences.motion_full' => 'full'], 'choice_translation_domain' => 'form', 'required' => true, 'placeholder' => false]);
         });
     }
 

@@ -7,9 +7,10 @@ namespace App\Shared\Settings\Controller;
 use App\Identity\Entity\User;
 use App\Identity\Service\UserActionRecorder;
 use App\Identity\UserActionType;
+use App\Shared\Http\JsonUploadReader;
+use App\Shared\Settings\Form\InstanceConfigImportType;
 use App\Shared\Settings\Service\InstanceConfigPortability;
 use InvalidArgumentException;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -33,7 +34,13 @@ final class InstanceConfigController extends AbstractController
     #[Route('/settings/instance-config', name: 'settings_instance_config', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->render('settings/instance_config.html.twig');
+        return $this->render('settings/instance_config.html.twig', [
+            'importForm' => $this->createForm(InstanceConfigImportType::class, null, [
+                'action' => $this->generateUrl('settings_instance_config_import'),
+                'method' => 'POST',
+                'csrf_token_id' => 'instance_config_import',
+            ])->createView(),
+        ]);
     }
 
     #[Route('/settings/instance-config/export', name: 'settings_instance_config_export', methods: ['GET'])]
@@ -63,28 +70,27 @@ final class InstanceConfigController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$this->isCsrfTokenValid('instance_config_import', $request->request->getString('_token'))) {
+        $form = $this->createForm(InstanceConfigImportType::class, null, [
+            'csrf_token_id' => 'instance_config_import',
+        ]);
+        $form->handleRequest($request);
+        if (!$form->isSubmitted() || !$form->isValid()) {
             $this->addFlash('error', 'settings.instance_config.invalid_csrf');
 
             return $this->redirectToRoute('settings_instance_config');
         }
 
-        $file = $request->files->get('config');
-        if (!$file instanceof UploadedFile || !$file->isValid()) {
-            $this->addFlash('error', 'settings.instance_config.missing_file');
-
-            return $this->redirectToRoute('settings_instance_config');
-        }
-
+        $file = $form->get('config')->getData();
         try {
-            /** @var array<string, mixed> $payload */
-            $payload = json_decode((string) file_get_contents($file->getPathname()), true, 512, \JSON_THROW_ON_ERROR);
-            if (!\is_array($payload)) {
-                throw new InvalidArgumentException('invalid_json');
-            }
+            $payload = JsonUploadReader::decodeObject($file instanceof UploadedFile ? $file : null);
             $applied = $this->portability->import($payload);
-        } catch (JsonException|InvalidArgumentException) {
-            $this->addFlash('error', 'settings.instance_config.import_failed');
+        } catch (InvalidArgumentException $e) {
+            $key = match ($e->getMessage()) {
+                'missing_file' => 'settings.instance_config.missing_file',
+                'too_large' => 'settings.instance_config.file_too_large',
+                default => 'settings.instance_config.import_failed',
+            };
+            $this->addFlash('error', $key);
 
             return $this->redirectToRoute('settings_instance_config');
         }

@@ -34,7 +34,8 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * Admin directory with AuditKit blame users eager-loaded (avoids N+1).
+     * Admin directory with AuditKit blame + instanceRoles eager-loaded (avoids N+1
+     * when Twig checks `user.roles` / {@see User::getRoles()}).
      *
      * @return list<User>
      */
@@ -43,6 +44,7 @@ class UserRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('u')
             ->leftJoin('u.createdBy', 'cb')->addSelect('cb')
             ->leftJoin('u.updatedBy', 'ub')->addSelect('ub')
+            ->leftJoin('u.instanceRoles', 'ir')->addSelect('ir')
             ->orderBy('u.email', 'ASC');
 
         if (null !== $query && '' !== trim($query)) {

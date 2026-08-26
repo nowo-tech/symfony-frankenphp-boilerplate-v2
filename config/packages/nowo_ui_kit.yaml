@@ -7,4 +7,4 @@ nowo_ui_kit:
     css_framework: tailwind
     icon_set: ux_icon
     # Table/list row actions: icon only (label is visually hidden + aria-label/title).
-    row_actions_display: icon
+    row_actions_display: text

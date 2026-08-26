@@ -1,5 +1,6 @@
 security:
   password_hashers:
+    # Hash a plaintext password: php bin/console security:hash-password
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: auto
   providers:
     app_user_provider:
@@ -13,6 +14,10 @@ security:
     main:
       lazy: true
       provider: app_user_provider
+      # Wire UserKit AccountStatusUserChecker (≥1.1.6) so Security::login() (AuthKit magic/social/QR)
+      # and form login reject disabled accounts. Tag-only registration is not enough: Symfony's
+      # default firewall checker stays InMemoryUserChecker until user_checker is set explicitly.
+      user_checker: Nowo\UserKitBundle\Security\AccountStatusUserChecker
       form_login:
         login_path: nowo_auth_kit_login
         check_path: nowo_auth_kit_login
@@ -34,7 +39,8 @@ security:
         failure_path: nowo_auth_kit_magic_login_request
       remember_me:
         secret: '%kernel.secret%'
-        lifetime: 604800
+        # 30 days when “Remember me” is checked at login.
+        lifetime: 2592000
         path: /
         remember_me_parameter: 'login_form[_remember_me]'
       login_throttling:
@@ -84,6 +90,9 @@ security:
       roles: PUBLIC_ACCESS
     - path: ^/health/(live|ready)$
       roles: PUBLIC_ACCESS
+    # Device Intelligence collect (guest AuthKit pages call this before login).
+    - path: ^/_device/
+      roles: PUBLIC_ACCESS
     # SiteBackupBundle: cold-start setup + panel (panel uses its own password gate)
     - path: ^/setup
       roles: PUBLIC_ACCESS
@@ -91,14 +100,15 @@ security:
       roles: PUBLIC_ACCESS
     - path: ^/_site_backup
       roles: PUBLIC_ACCESS
-    # Framework error page previews (/_error/{code}) in dev/test
-    - path: ^/_error
+    # MaintenanceMode 503 preview + framework error previews (dev/test)
+    - path: ^/_(maintenance_preview|error)
       roles: PUBLIC_ACCESS
-    # RoutingKitBundle admin panel (in-bundle ROLE_ADMIN + firewall)
-    - path: ^/admin/_routing
+    # Bundle admin UIs (in-bundle ROLE_ADMIN / access_checker as well)
+    - path: ^/admin
       roles: ROLE_ADMIN
-    # HttpLogBundle admin UI (in-bundle ROLE_ADMIN gate)
-    - path: ^/admin/http-log
+    - path: ^/cookie-consent-config
+      roles: ROLE_ADMIN
+    - path: ^/breadcrumb-kit-admin
       roles: ROLE_ADMIN
     - path: ^/
       roles: ROLE_USER

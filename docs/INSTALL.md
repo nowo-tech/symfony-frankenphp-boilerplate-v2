@@ -1,7 +1,7 @@
 # Install
 
 ```bash
-cp .env.dist .env
+cp .env.dist .env.local
 make up
 make bootstrap   # migrate + app:seed-platform (menus, breadcrumbs, cookie consent)
 make seed        # demo admin admin@nowo-shell.local / admin123

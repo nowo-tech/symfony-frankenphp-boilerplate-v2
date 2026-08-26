@@ -6,10 +6,12 @@ namespace App\Identity\Controller;
 
 use App\Identity\Entity\User;
 use App\Identity\Exception\AccountAnonymizeException;
+use App\Identity\Form\TypeToConfirmType;
 use App\Identity\Service\AccountAnonymizer;
 use App\Identity\Service\AccountDataExporter;
 use App\Identity\Service\UserActionRecorder;
 use App\Identity\UserActionType;
+use App\Shared\Controller\RequiresValidFormTrait;
 use JsonException;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,6 +28,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class AccountPrivacyController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly AccountDataExporter $accountDataExporter,
         private readonly AccountAnonymizer $accountAnonymizer,
@@ -45,6 +49,19 @@ final class AccountPrivacyController extends AbstractController
             'is_last_admin' => $this->accountAnonymizer->isLastAdmin($user),
             'can_anonymize' => !$user->isAnonymized()
                 && !$this->accountAnonymizer->isLastAdmin($user),
+            'anonymizeForm' => $this->createForm(TypeToConfirmType::class, [
+                'confirmation' => '',
+            ], [
+                'action' => $this->generateUrl('account_privacy_anonymize'),
+                'method' => 'POST',
+                'csrf_token_id' => 'account_privacy_anonymize',
+                'confirmation_attr' => [
+                    'id' => 'privacy-anonymize-confirm-input',
+                    'class' => 'input w-full',
+                    'autocomplete' => 'off',
+                    'data-confirm-dialog-target' => 'confirmInput',
+                ],
+            ])->createView(),
         ]);
     }
 
@@ -70,9 +87,11 @@ final class AccountPrivacyController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$this->isCsrfTokenValid('account_privacy_anonymize', $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->createForm(TypeToConfirmType::class, null, [
+            'csrf_token_id' => 'account_privacy_anonymize',
+        ]);
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         try {
             $this->accountAnonymizer->anonymize($user, $user);

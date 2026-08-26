@@ -1,5 +1,11 @@
 # nowo-tech/site-backup-bundle — backup panel + cold-start setup wizard
 # Docs: https://github.com/nowo-tech/SiteBackupBundle/blob/main/docs/SETUP-WIZARD.md
+#
+# REQ-SETUP-009: YAML fallback keeps the token gate on when SITE_SETUP_TOKEN is unset.
+# Must match App\Setup\SiteBackupSecurityDefaultsGuard::LOCAL_DEV_SETUP_TOKEN (prod refuses it).
+parameters:
+    app.local_setup_token: 'app-local-setup'
+
 nowo_site_backup:
     enabled: true
     # Host CSS stack hint (Twig global nowo_site_backup_css_framework) — REQ-UI-001 / v1.6+
@@ -50,6 +56,8 @@ nowo_site_backup:
             - /api/
             - /_wdt
             - /_profiler
+            - /admin/maintenance
+            - /_maintenance_preview
             - /build/
             - /assets/
             - /login
@@ -62,9 +70,12 @@ nowo_site_backup:
             - /cookie-consent/
             - /admin/_routing
             - /_error
+            - /_device
         patterns:
             - '#^/(en|es|de|nl|fr|it|pt)/(login|register|logout|reset-password|legal|setup)(/|$|\?)#'
             - '#^/(manifest\.webmanifest|sw\.js|offline)$#'
+            - '#^/admin/maintenance(/|$|\?)#'
+            - '#^/_maintenance_preview(/|$|\?)#'
     setup:
         enabled: true
         path_prefix: '/setup'
@@ -76,14 +87,29 @@ nowo_site_backup:
             unlocalized: serve
         # Host chrome only — wizard/done/token stay in the package (SiteBackup 1.4+).
         layout_template: 'kit/site_backup_setup_layout.html.twig'
-        # Shared secret for /setup (?token= or X-Setup-Token). Empty = open (dev only).
-        # Production MUST set a non-default value (SiteBackupSecurityDefaultsGuard).
-        setup_token: '%env(default::SITE_SETUP_TOKEN)%'
+        # Shared secret for /setup (?token= or X-Setup-Token). Parameter fallback keeps gate on when env is empty.
+        setup_token: '%env(default:app.local_setup_token:SITE_SETUP_TOKEN)%'
         # Existing installs without setup.done stay usable; empty schema / setup.required still gate.
         # Fresh clones that must block the app until wizard finishes: set true.
         require_done_marker: false
-        # JSON + DBAL; load prefers DB so wiping var/ keeps mid-wizard progress.
-        progress_storage: chain
+        # SiteBackup 1.13.7+: skip detectors on every request once setup.done / durable store is true.
+        short_circuit_when_done: true
+        # SiteBackup 1.12+: durable done via InstanceSettingsDurableSetupDoneStore + cold-start gate.
+        durable_done:
+            enabled: true
+            redirect_target: '/'
+        cold_start:
+            enabled: true
+            stop_propagation: true
+            mysql_host: '%env(MYSQL_HOST)%'
+            mysql_user: '%env(MYSQL_USER)%'
+            mysql_password: '%env(MYSQL_PASSWORD)%'
+            mysql_database: '%env(MYSQL_DATABASE)%'
+        # Doctrine + Redis (cache.app) until DBAL writes — no var/ JSON progress.
+        # SiteBackup 1.13+: progress_storage cache_doctrine; empty schema stays cold-start.
+        progress_storage: cache_doctrine
+        progress_cache_pool: cache.app
+        progress_step_rows: true
         brand_name: 'Nowo Shell'
         admin_provisioner: App\Setup\AdminUserProvisioner
         # One Continuar click per auto step in the UI (CLI still chains automatically).
@@ -150,6 +176,15 @@ nowo_site_backup:
                     - { type: admin_user, roles: ['ROLE_ADMIN'], skip_if_admin_exists: true }
                     - { type: marker, write_done: true }
 
+when@prod:
+    nowo_site_backup:
+        security:
+            allow_unauthenticated: false
+            access_roles: [ROLE_ADMIN]
+            password_protection: true
+        setup:
+            enabled: false
+
 when@test:
     nowo_site_backup:
         security:
@@ -160,6 +195,9 @@ when@test:
             setup_token: 'test-setup-token'
             # PHPUnit seeds catalogs / schema; avoid redirecting every request to /setup.
             require_done_marker: false
+            # Cold-start probes MySQL application tables; PHPUnit uses per-PID SQLite.
+            cold_start:
+                enabled: false
             detectors:
                 marker: false
                 doctrine_connect: false

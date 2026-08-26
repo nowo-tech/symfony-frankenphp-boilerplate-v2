@@ -12,7 +12,7 @@ Include the affected commit, impact, reproduction steps, and any proposed disclo
 
 ## Operational notes
 
-Protect `.env`, `APP_SECRET`, the field-encryption material under `var/secrets/`, Mailer credentials, and SiteBackup credentials. In production, configure unique `SITE_SETUP_TOKEN` and `SITE_BACKUP_PASSWORD_HASH`; documented local defaults must never be deployed.
+Protect `.env`, `APP_SECRET`, the field-encryption material under `var/secrets/`, Mailer credentials, and SiteBackup credentials. In production, configure unique `SITE_SETUP_TOKEN`, `SITE_BACKUP_PASSWORD_HASH`, and `APP_SECRET`; documented local defaults (including `ChangeMePleaseUseARealSecret`) must never be deployed — `SiteBackupSecurityDefaultsGuard` refuses boot outside `dev`/`test`.
 
 Magic-login and password-reset mail depends on a configured Mailer DSN. Run the project secret scan before publishing changes:
 

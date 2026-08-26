@@ -30,6 +30,15 @@ final class DemoFixtureLoaderTest extends TestCase
         self::assertArrayHasKey('menus', $menus);
         self::assertNotEmpty($menus['menus']);
         self::assertArrayHasKey('cookies', $cookies);
+        self::assertArrayHasKey('config', $cookies);
+        self::assertIsArray($cookies['config']['settings'] ?? null);
+        $settings = $cookies['config']['settings'];
+        self::assertSame('bottom', $settings['consentModalPositionY']);
+        self::assertSame('left', $settings['consentModalPositionX']);
+        self::assertTrue($settings['consentModalEqualWeightButtons']);
+        self::assertSame('bottom', $settings['preferencesModalPositionY']);
+        self::assertSame('left', $settings['preferencesModalPositionX']);
+        self::assertTrue($settings['preferencesModalEqualWeightButtons']);
     }
 
     public function testMissingFixtureThrows(): void

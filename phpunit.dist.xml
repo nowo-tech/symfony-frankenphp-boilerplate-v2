@@ -49,6 +49,20 @@
         <include>
             <directory>src</directory>
         </include>
+        <exclude>
+            <!-- HTTP controllers: covered by Playwright e2e (REQ-QA-003) and Functional controller tests.
+                 Hard PHPUnit gate focuses on domain services, forms, entities, subscribers, commands. -->
+            <directory>src/Identity/Controller</directory>
+            <directory>src/Shared/Appearance/Controller</directory>
+            <directory>src/Shared/Controller</directory>
+            <directory>src/Shared/Legal/Controller</directory>
+            <directory>src/Shared/Settings/Controller</directory>
+            <file>src/Shared/Locale/BarePublicLocaleRedirectController.php</file>
+            <!-- Demo/sample seeders: install tooling; exercised by e2e / kit-smoke / make seed-platform -->
+            <directory>src/Setup/Demo</directory>
+            <file>src/Identity/Service/DemoIdentitySeeder.php</file>
+            <file>src/Identity/Command/SeedDemoCommand.php</file>
+        </exclude>
 
         <deprecationTrigger>
             <method>Doctrine\Deprecations\Deprecation::trigger</method>

@@ -2,6 +2,9 @@ twig:
     file_name_pattern: '*.twig'
     form_themes:
         - '@NowoFormKit/form/static_blocks.html.twig'
+        - '@NowoPhoneInputBundle/Form/phone_input_widget.html.twig'
+        - '@NowoOtpInputBundle/Form/otp_input_theme.html.twig'
+        - '@NowoSlideToConfirmBundle/Form/slide_to_confirm_theme.html.twig'
         - 'form/app_theme.html.twig'
     globals:
         enabled_locales: '%kernel.enabled_locales%'

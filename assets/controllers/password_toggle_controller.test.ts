@@ -59,4 +59,40 @@ describe('password-toggle controller', () => {
     controller.keydown(new KeyboardEvent('keydown', { key: 'Enter' }));
     expect(input.type).toBe('text');
   });
+
+  it('toggles on Space keydown and ignores other keys', async () => {
+    await Promise.resolve();
+    const input = document.getElementById('pwd') as HTMLInputElement;
+    const button = document.getElementById('toggle') as HTMLButtonElement;
+    const controller = application.getControllerForElementAndIdentifier(
+      button,
+      'password-toggle',
+    ) as PasswordToggleController;
+
+    controller.keydown(new KeyboardEvent('keydown', { key: 'Tab' }));
+    expect(input.type).toBe('password');
+
+    controller.keydown(new KeyboardEvent('keydown', { key: ' ' }));
+    expect(input.type).toBe('text');
+  });
+
+  it('no-ops when previous sibling is not an input', async () => {
+    document.body.innerHTML = `
+      <div id="not-input"></div>
+      <button type="button" id="toggle" data-controller="password-toggle" aria-label="Show"></button>
+    `;
+    application.stop();
+    application = Application.start();
+    application.register('password-toggle', PasswordToggleController);
+    await Promise.resolve();
+
+    const button = document.getElementById('toggle') as HTMLButtonElement;
+    const controller = application.getControllerForElementAndIdentifier(
+      button,
+      'password-toggle',
+    ) as PasswordToggleController;
+    controller.toggle();
+    expect(button.getAttribute('aria-label')).toBe('Show');
+  });
 });
+

@@ -6,8 +6,6 @@ namespace App\Identity;
 
 /**
  * Allowlisted {@see UserActionType} values for Admin identity audit timelines (`036`).
- *
- * Project ops and issue navigation noise are excluded from user/group admin pages.
  */
 final class AdminIdentityAudit
 {
@@ -29,14 +27,9 @@ final class AdminIdentityAudit
             UserActionType::UserAnonymized,
             UserActionType::GroupMemberAdded,
             UserActionType::GroupMemberRemoved,
-            UserActionType::ProjectMemberAdded,
-            UserActionType::ProjectMemberRoleChanged,
-            UserActionType::ProjectMemberRemoved,
-            UserActionType::ProjectOwnershipTransferred,
             UserActionType::MagicLoginRequested,
             UserActionType::MagicLoginConsumed,
             UserActionType::PasswordResetRequested,
-            UserActionType::ProjectShareLinkOpened,
         ];
     }
 
@@ -53,9 +46,6 @@ final class AdminIdentityAudit
             UserActionType::GroupDeleted,
             UserActionType::GroupMemberAdded,
             UserActionType::GroupMemberRemoved,
-            UserActionType::ProjectGroupLinked,
-            UserActionType::ProjectGroupRoleChanged,
-            UserActionType::ProjectGroupUnlinked,
         ];
     }
 }

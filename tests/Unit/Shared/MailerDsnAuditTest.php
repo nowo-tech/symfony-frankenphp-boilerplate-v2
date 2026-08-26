@@ -18,5 +18,7 @@ final class MailerDsnAuditTest extends TestCase
         self::assertSame(['scheme' => null, 'host' => null], MailerDsnAudit::redact(null));
         self::assertSame(['scheme' => null, 'host' => null], MailerDsnAudit::redact(''));
         self::assertSame(['scheme' => 'sendmail', 'host' => 'default'], MailerDsnAudit::redact('sendmail://default'));
+        self::assertSame(['scheme' => null, 'host' => null], MailerDsnAudit::redact('://'));
+        self::assertSame(['scheme' => null, 'host' => null], MailerDsnAudit::redact('not-a-url'));
     }
 }

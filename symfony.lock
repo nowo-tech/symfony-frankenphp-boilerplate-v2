@@ -47,24 +47,14 @@
             ".php-cs-fixer.dist.php"
         ]
     },
-    "nelmio/api-doc-bundle": {
-        "version": "5.10",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "main",
-            "version": "3.0",
-            "ref": "c8e0c38e1a280ab9e37587a8fa32b251d5bc1c94"
-        },
-        "files": [
-            "config/packages/nelmio_api_doc.yaml",
-            "config/routes/nelmio_api_doc.yaml"
-        ]
-    },
     "nowo-tech/audit-kit-bundle": {
         "version": "v1.1.1"
     },
     "nowo-tech/auth-kit-bundle": {
         "version": "v1.5.1"
+    },
+    "nowo-tech/beacon-bundle": {
+        "version": "v1.7.0"
     },
     "nowo-tech/breadcrumb-kit-bundle": {
         "version": "v2.0.2"
@@ -74,6 +64,9 @@
     },
     "nowo-tech/dashboard-menu-bundle": {
         "version": "v0.3.45"
+    },
+    "nowo-tech/device-intelligence-bundle": {
+        "version": "v1.1.0"
     },
     "nowo-tech/doctrine-encrypt-bundle": {
         "version": "v2.3.1"
@@ -87,8 +80,14 @@
     "nowo-tech/login-throttle-bundle": {
         "version": "v2.2.0"
     },
+    "nowo-tech/maintenance-mode-bundle": {
+        "version": "v1.4.1"
+    },
     "nowo-tech/migrations-kit-bundle": {
         "version": "v2.0.17"
+    },
+    "nowo-tech/otp-input-bundle": {
+        "version": "v1.4.4"
     },
     "nowo-tech/password-policy-bundle": {
         "version": "v1.2.3"
@@ -98,6 +97,9 @@
     },
     "nowo-tech/password-toggle-bundle": {
         "version": "v2.0.4"
+    },
+    "nowo-tech/phone-input-bundle": {
+        "version": "v1.2.1"
     },
     "nowo-tech/pwa-bundle": {
         "version": "v1.1.2"
@@ -109,6 +111,9 @@
         "version": "v1.4.11"
     },
     "nowo-tech/site-backup-bundle": {
+        "version": "v1.1.0"
+    },
+    "nowo-tech/slide-to-confirm-bundle": {
         "version": "v1.1.0"
     },
     "nowo-tech/tag-input-bundle": {
@@ -131,18 +136,6 @@
             "version": "6.5",
             "ref": "3a6673f248f8fc1dd364dadfef4c5b381d1efab6"
         }
-    },
-    "php-http/discovery": {
-        "version": "1.20",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "1.18",
-            "ref": "f45b5dd173a27873ab19f5e3180b2f661c21de02"
-        },
-        "files": [
-            "config/packages/http_discovery.yaml"
-        ]
     },
     "phpstan/phpstan": {
         "version": "2.2.5"
@@ -229,18 +222,6 @@
         },
         "files": [
             "config/packages/mailer.yaml"
-        ]
-    },
-    "symfony/mercure-bundle": {
-        "version": "0.4",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "0.4",
-            "ref": "b141b8c8f13bc8c31d718a5488039b712c0d3592"
-        },
-        "files": [
-            "config/packages/mercure.yaml"
         ]
     },
     "symfony/messenger": {

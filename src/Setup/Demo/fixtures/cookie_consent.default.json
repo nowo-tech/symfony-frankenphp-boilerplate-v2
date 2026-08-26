@@ -11,6 +11,16 @@
       "preferencesBubblePosition": "bottom-right",
       "preferencesBubbleIcon": "<img class=\"nowo-cookie-consent__preferences-bubble-svg\" src=\"/illustrations/cookie-consent-bubble.svg\" alt=\"\" width=\"62\" height=\"62\" decoding=\"async\">",
       "preferencesBubbleBorderColor": "#EE922D",
+      "consentModalLayout": "box",
+      "consentModalVariant": "wide",
+      "consentModalPositionY": "bottom",
+      "consentModalPositionX": "left",
+      "consentModalEqualWeightButtons": true,
+      "preferencesModalLayout": "box",
+      "preferencesModalVariant": "wide",
+      "preferencesModalPositionY": "bottom",
+      "preferencesModalPositionX": "left",
+      "preferencesModalEqualWeightButtons": true,
       "autoShow": true,
       "autoShowRouteMode": "only",
       "autoShowRoutes": [
@@ -96,8 +106,8 @@
   },
   "cookies": [
     {
-      "name": "PHPSESSID",
-      "duration": "Session",
+      "name": "NOWO_SHELL_SESSID",
+      "duration": "1 day",
       "category": "required",
       "type": "first_party",
       "sortOrder": 0,
@@ -105,11 +115,11 @@
       "translations": {
         "en": {
           "provider": "App (first-party)",
-          "purpose": "Maintains the authenticated HTTP session required to access protected areas of the service."
+          "purpose": "Maintains the authenticated HTTP session required to access protected areas of the service (up to 1 day without Remember me)."
         },
         "es": {
           "provider": "App (primera parte)",
-          "purpose": "Mantiene la sesión HTTP autenticada necesaria para acceder a las áreas protegidas del servicio."
+          "purpose": "Mantiene la sesión HTTP autenticada necesaria para acceder a las áreas protegidas del servicio (hasta 1 día sin Recordarme)."
         },
         "de": {
           "provider": "App (First-Party)",
@@ -135,7 +145,7 @@
     },
     {
       "name": "REMEMBERME",
-      "duration": "7 days",
+      "duration": "30 days",
       "category": "required",
       "type": "first_party",
       "sortOrder": 10,
@@ -143,11 +153,11 @@
       "translations": {
         "en": {
           "provider": "App (first-party)",
-          "purpose": "Enables persistent authentication when the user selects “Remember me” at sign-in (secure token; limited lifetime)."
+          "purpose": "Enables persistent authentication when the user selects “Remember me” at sign-in (secure token; up to 30 days)."
         },
         "es": {
           "provider": "App (primera parte)",
-          "purpose": "Permite la autenticación persistente cuando el usuario selecciona «Recordarme» al iniciar sesión (token seguro; duración limitada)."
+          "purpose": "Permite la autenticación persistente cuando el usuario selecciona «Recordarme» al iniciar sesión (token seguro; hasta 30 días)."
         },
         "de": {
           "provider": "App (First-Party)",
@@ -358,6 +368,44 @@
         "pt": {
           "provider": "App (primeira parte)",
           "purpose": "Armazena se a categoria de preferências foi aceite ou recusada (mecanismo de consentimento)."
+        }
+      }
+    },
+    {
+      "name": "di_obs",
+      "duration": "1 hour",
+      "category": "required",
+      "type": "first_party",
+      "sortOrder": 60,
+      "allowedByDefault": true,
+      "translations": {
+        "en": {
+          "provider": "App (first-party)",
+          "purpose": "HttpOnly device-observation pointer used to recognise returning browsers for account security (abuse prevention). It is not a login credential."
+        },
+        "es": {
+          "provider": "App (primera parte)",
+          "purpose": "Puntero HttpOnly de observación de dispositivo para reconocer navegadores conocidos (seguridad de la cuenta). No es una credencial de acceso."
+        },
+        "de": {
+          "provider": "App (First-Party)",
+          "purpose": "HttpOnly-Zeiger zur Gerätebeobachtung, um bekannte Browser für Kontosicherheit zu erkennen. Kein Anmelde-Geheimnis."
+        },
+        "nl": {
+          "provider": "App (first-party)",
+          "purpose": "HttpOnly apparaatobservatie-pointer om terugkerende browsers te herkennen (accountbeveiliging). Dit is geen inloggegeven."
+        },
+        "fr": {
+          "provider": "App (première partie)",
+          "purpose": "Pointeur HttpOnly d’observation d’appareil pour reconnaître les navigateurs connus (sécurité du compte). Ce n’est pas un identifiant de connexion."
+        },
+        "it": {
+          "provider": "App (prima parte)",
+          "purpose": "Puntatore HttpOnly di osservazione dispositivo per riconoscere browser noti (sicurezza dell’account). Non è una credenziale di accesso."
+        },
+        "pt": {
+          "provider": "App (primeira parte)",
+          "purpose": "Ponteiro HttpOnly de observação de dispositivo para reconhecer browsers conhecidos (segurança da conta). Não é uma credencial de início de sessão."
         }
       }
     }

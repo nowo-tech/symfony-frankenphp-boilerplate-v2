@@ -1,0 +1,57 @@
+# nowo-tech/beacon-bundle — client SDK for Symfony Beacon (Envelope ingest)
+# https://github.com/nowo-tech/BeaconBundle
+#
+# Point BEACON_DSN at any Symfony Beacon instance (host / port / project).
+# Empty DSN disables reporting without code changes.
+#
+# Format: {scheme}://{public_key}:{secret}@{host}[:{port}]/{project_id}
+# Example (Docker → Beacon HTTP ingest):
+#   http://PUBLIC:SECRET@host.docker.internal:9081/1
+nowo_beacon:
+    enabled: true
+    dsn: '%env(string:default::BEACON_DSN)%'
+    environment: '%kernel.environment%'
+    release: '%env(string:default::BEACON_RELEASE)%'
+    server_name: null
+    verify_peer: true
+    timeout: 5.0
+    transport:
+        mode: async
+    register_error_listener: true
+    register_console_listener: true
+    register_messenger_listener: true
+    include_scheduler_context: true
+    auto_http_transaction: false
+    instrumentation:
+        doctrine: false
+        http_client: false
+    ignore_exceptions:
+        - Symfony\Component\Security\Core\Exception\AccessDeniedException
+        - Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+    send:
+        environment: true
+        release: true
+        server_name: true
+        stacktrace: true
+        request: true
+        user: false
+        runtime: true
+        framework: true
+        os: true
+    monolog_handler:
+        enabled: false
+        level: error
+
+when@dev:
+    nowo_beacon:
+        # Local Beacon often uses self-signed TLS on :9444; HTTP ingest needs no TLS.
+        verify_peer: false
+
+when@test:
+    nowo_beacon:
+        # Keep enabled: true so beacon-bundle 1.7.3 registers BeaconTraceMiddleware (prepended on
+        # messenger.bus.default). Empty BEACON_DSN still uses NullBeaconClient at runtime.
+        register_error_listener: false
+        register_console_listener: false
+        register_messenger_listener: false
+        auto_http_transaction: false

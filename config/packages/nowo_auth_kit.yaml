@@ -25,9 +25,38 @@ nowo_auth_kit:
                 - email
                 - displayName
                 - password
+                - name: terms
+                  type: checkbox
+                  required: true
+                  slide_to_confirm: true
+
+            # AuthKit 1.18 — optional nowo-tech/slide-to-confirm-bundle (UX only; CSRF/authz stay on the form).
+            slide_to_confirm:
+                enabled: true
+                registration_consent: gate
+                # QR Approve stays a button while qr_login.mode is disabled (AUTH-005).
+                qr_login_approve: false
+
+            # AuthKit 1.19 — optional nowo-tech/device-intelligence-bundle (Device ID is not a credential).
+            device_intelligence:
+                enabled: true
+                collect_on_auth_pages: true
+                collect_endpoint: /_device/collect
+                new_device_notify: true
+                device_rate_limit: true
+                qr_login:
+                    # Requires an explicit trust grant; AuthKit never auto-trusts after login.
+                    approve_require_trusted: false
+
+            # AuthKit 1.20 — nowo-tech/otp-input-bundle on /reset-password/complete (UX only).
+            otp_input:
+                enabled: true
+                password_reset_code: true
+
             remember_me:
                 enabled: true
-                lifetime: 604800
+                # Keep in sync with security.firewalls.main.remember_me.lifetime (30 days).
+                lifetime: 2592000
                 path: /
             password_strength:
                 enabled: true
@@ -40,18 +69,24 @@ nowo_auth_kit:
                 token_ttl: 3600
                 token_field: passwordResetToken
                 token_expires_field: passwordResetExpiresAt
+                # Drives OtpType length / numeric_only when otp_input is enabled.
+                code_length: 6
+                code_charset: numeric
             magic_login:
                 mode: enabled
                 lifetime: 600
                 max_uses: 1
+                # Pair with security.login_link.check_post_only (AuthKit 1.16+).
+                confirm_interstitial: true
             # OAuth buttons appear only when mode=enabled AND ≥1 enabled row in auth_kit_social_credential.
             # create_user_if_missing:false — link existing users by email (avoids ROLE_ADMIN social sign-ups).
             social_login:
                 mode: enabled
                 create_user_if_missing: false
-            # QR phone login (AuthKit 1.12). Requires User.phone + phoneVerifiedAt.
+            # QR phone login (AuthKit 1.12). Disabled until a real phone OTP / verification
+            # path sets User.phoneVerifiedAt (profile save only clears or restores it).
             qr_login:
-                mode: enabled
+                mode: disabled
                 challenge_ttl: 90
                 approve_requires: session
                 desktop_binding: strict
@@ -65,11 +100,13 @@ nowo_auth_kit:
             templates:
                 layout: '@NowoAuthKitBundle/layout.html.twig'
                 form_theme:
+                    - '@NowoOtpInputBundle/Form/otp_input_theme.html.twig'
                     - form/password_strength_app_theme.html.twig
                     - form/auth_kit_theme.html.twig
                 login: '@NowoAuthKitBundle/security/login.html.twig'
                 register: '@NowoAuthKitBundle/security/register.html.twig'
                 magic_login_request: '@NowoAuthKitBundle/security/magic_login_request.html.twig'
+                magic_login_confirm: security/magic_login_confirm.html.twig
                 reset_request: '@NowoAuthKitBundle/security/reset_request.html.twig'
                 reset_password: '@NowoAuthKitBundle/security/reset_password.html.twig'
                 reset_password_code: '@NowoAuthKitBundle/security/reset_password_code.html.twig'
@@ -98,6 +135,9 @@ nowo_auth_kit:
                 magic_login_check:
                     path: /login/magic/check
                     name: nowo_auth_kit_magic_login_check
+                magic_login_confirm:
+                    path: /login/magic/confirm
+                    name: nowo_auth_kit_magic_login_confirm
                 social_login_start:
                     path: /login/social/{provider}
                     name: nowo_auth_kit_social_login_start

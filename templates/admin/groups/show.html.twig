@@ -13,16 +13,15 @@
     </div>
     <div class="flex flex-wrap gap-2">
         <a class="btn-ghost no-underline" href="{{ path('admin_groups_edit', {id: group.uuid}) }}">{{ 'groups.edit'|trans }}</a>
-        <form
-            method="post"
-            action="{{ path('admin_groups_delete', {id: group.uuid}) }}"
-            data-controller="confirm-submit"
-            data-confirm-submit-message-value="{{ 'groups.delete_confirm'|trans|e('html_attr') }}"
-            data-action="submit->confirm-submit#confirm"
-        >
-            <input type="hidden" name="_token" value="{{ csrf_token('admin_group_delete_' ~ group.id) }}">
+        {{ form_start(deleteForm, {
+            attr: {
+                'data-controller': 'confirm-submit',
+                'data-confirm-submit-message-value': 'groups.delete_confirm'|trans|e('html_attr'),
+                'data-action': 'submit->confirm-submit#confirm',
+            }
+        }) }}
             <button class="btn-danger" type="submit">{{ 'groups.delete'|trans }}</button>
-        </form>
+        {{ form_end(deleteForm) }}
     </div>
 </div>
 
@@ -55,21 +54,19 @@
                     <div class="font-medium">{{ membership.user.displayName }}</div>
                     <div class="text-xs text-[var(--color-ink)]/55">{{ membership.user.email }}</div>
                 </div>
-                <form method="post" action="{{ path('admin_groups_members_remove', {groupId: group.uuid, userId: membership.user.uuid}) }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token('admin_group_member_remove_' ~ membership.id) }}">
+                {{ form_start(removeMemberForms[membership.id]) }}
                     <button class="btn-ghost" type="submit">{{ 'groups.remove_member'|trans }}</button>
-                </form>
+                {{ form_end(removeMemberForms[membership.id]) }}
             </li>
         {% else %}
             <li class="text-[var(--color-ink)]/55">{{ 'groups.members_empty'|trans }}</li>
         {% endfor %}
     </ul>
 
-    <form method="post" action="{{ path('admin_groups_members_add', {id: group.uuid}) }}" class="mt-4 flex flex-wrap gap-2">
-        <input type="hidden" name="_token" value="{{ csrf_token('admin_group_member_add_' ~ group.id) }}">
+    {{ form_start(addMemberForm, {attr: {class: 'mt-4 flex flex-wrap gap-2'}}) }}
         <input class="input min-w-56 flex-1" type="email" name="email" required placeholder="{{ 'groups.member_email_placeholder'|trans }}" autocomplete="off">
         <button class="btn-primary" type="submit">{{ 'groups.add_member'|trans }}</button>
-    </form>
+    {{ form_end(addMemberForm) }}
     <p class="mt-2 text-xs text-[var(--color-ink)]/55">{{ 'groups.add_member_help'|trans }}</p>
 </section>
 {% endblock %}

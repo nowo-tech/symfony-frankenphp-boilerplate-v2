@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Identity\Controller;
 
 use App\Identity\Entity\User;
+use App\Shared\Controller\RequiresValidFormTrait;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use App\Shared\Http\SafeInternalRedirect;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,8 +21,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class AccountLocaleController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly CsrfOnlyFormFactory $csrfOnlyFormFactory,
     ) {
     }
 
@@ -41,9 +46,13 @@ final class AccountLocaleController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        if (!$this->isCsrfTokenValid('account_locale', (string) $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->csrfOnlyFormFactory->createWithFields(
+            $this->generateUrl('account_locale_switch', ['locale' => $locale]),
+            'account_locale',
+            ['redirect' => ''],
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         $user->setPreferredLocale($locale);
         $this->entityManager->flush();
@@ -52,7 +61,9 @@ final class AccountLocaleController extends AbstractController
         $request->setLocale($locale);
         $request->getSession()->set('_locale', $locale);
 
-        $target = $request->request->getString('redirect');
+        /** @var array{redirect?: string} $data */
+        $data = $form->getData();
+        $target = (string) ($data['redirect'] ?? '');
         if ('' === $target) {
             $target = $request->headers->get('Referer') ?? $this->generateUrl('dashboard_home');
         }

@@ -35,7 +35,9 @@ nowo_cookie_consent:
         access_roles: [ROLE_ADMIN]
         allow_unauthenticated: false
 
-    # Skin follows Nowo Shell via CSS (`assets/styles/_cookie_consent.scss`) + data-theme sync.
+    # Skin: CookieConsent ≥1.9 ships CSP-safe `nowo-cookie-consent.css` (imported in Vite app bundle;
+    # layouts set data-nowo-cookie-consent-external-css). Modal layout/position (bottom-left, equal-weight
+    # buttons) lives on the DB profile seeded from src/Setup/Demo/fixtures/cookie_consent.default.json.
     color_theme: light
     dark_mode_enabled: false
     disable_page_interaction: true
@@ -47,18 +49,36 @@ nowo_cookie_consent:
     preferences_bubble_icon: '<img class="nowo-cookie-consent__preferences-bubble-svg" src="/illustrations/cookie-consent-bubble.svg" alt="" width="62" height="62" decoding="async">'
     preferences_bubble_border_color: '#EE922D'
 
-    # Auto-open the consent modal only on auth entry points
+    # Auto-open the consent modal only on public auth entry points (guest shell).
     route_targeting_mode: only
     target_routes:
         - nowo_auth_kit_login
+        - nowo_auth_kit_login_unlocalized
         - nowo_auth_kit_register
+        - nowo_auth_kit_register_unlocalized
+        - nowo_auth_kit_magic_login_request
+        - nowo_auth_kit_magic_login_request_unlocalized
+        - nowo_auth_kit_reset_password_request
+        - nowo_auth_kit_reset_password_request_unlocalized
+        - nowo_auth_kit_qr_login_start
+        - nowo_auth_kit_qr_login_start_unlocalized
 
-    # Do not auto-open the modal on legal pages
+    # Do not auto-open the modal on legal pages (still render for “Manage cookies”).
     disabled_routes:
         - legal_privacy
         - legal_notice
         - legal_terms
         - legal_cookies
+
+    # CookieConsent ≥1.6.3: whitelist public HTML shells only (deny list empty — whitelist is enough).
+    # Authenticated product/admin/kit routes never match → no consent markup / inventory queries.
+    render_routes:
+        - legal_*
+        - nowo_auth_kit_*
+        - nowo_site_backup_setup*
+        - guest_locale_switch
+        - app_home_redirect
+    skip_render_routes: []
 
     # CSRF enabled: modal JS (bundle ≥1.4.8) prepares Symfony SameOrigin double-submit
     # for XHR (native submit never fires). Keep aligned with framework.csrf_protection.
@@ -72,30 +92,30 @@ nowo_cookie_consent:
     # First-party cookies used by this Nowo Shell instance (YAML fallback when DB inventory is empty).
     # Names must match CookieConsentBundle CookieNameEnum + Symfony session / remember_me / CSRF.
     cookie_inventory:
-        - name: PHPSESSID
-          duration: Session
+        - name: NOWO_SHELL_SESSID
+          duration: 1 day
           category: required
           type: first_party
           sort_order: 0
           translations:
               en:
                   provider: App (first-party)
-                  purpose: Maintains the authenticated HTTP session required to access protected areas of the service.
+                  purpose: Maintains the authenticated HTTP session required to access protected areas of the service (up to 1 day without Remember me).
               es:
                   provider: App (primera parte)
-                  purpose: Mantiene la sesión HTTP autenticada necesaria para acceder a las áreas protegidas del servicio.
+                  purpose: Mantiene la sesión HTTP autenticada necesaria para acceder a las áreas protegidas del servicio (hasta 1 día sin Recordarme).
         - name: REMEMBERME
-          duration: 7 days
+          duration: 30 days
           category: required
           type: first_party
           sort_order: 10
           translations:
               en:
                   provider: App (first-party)
-                  purpose: Enables persistent authentication when the user selects “Remember me” at sign-in (secure token; limited lifetime).
+                  purpose: Enables persistent authentication when the user selects “Remember me” at sign-in (secure token; up to 30 days).
               es:
                   provider: App (primera parte)
-                  purpose: Permite la autenticación persistente cuando el usuario selecciona «Recordarme» al iniciar sesión (token seguro; duración limitada).
+                  purpose: Permite la autenticación persistente cuando el usuario selecciona «Recordarme» al iniciar sesión (token seguro; hasta 30 días).
         - name: csrf-token_*
           duration: Session
           category: required
@@ -156,3 +176,15 @@ nowo_cookie_consent:
               es:
                   provider: App (primera parte)
                   purpose: Almacena si la categoría de preferencias fue aceptada o rechazada (mecanismo de consentimiento).
+        - name: di_obs
+          duration: 1 hour
+          category: required
+          type: first_party
+          sort_order: 60
+          translations:
+              en:
+                  provider: App (first-party)
+                  purpose: HttpOnly device-observation pointer used to recognise returning browsers for account security (abuse prevention). It is not a login credential.
+              es:
+                  provider: App (primera parte)
+                  purpose: Puntero HttpOnly de observación de dispositivo para reconocer navegadores conocidos (seguridad de la cuenta). No es una credencial de acceso.

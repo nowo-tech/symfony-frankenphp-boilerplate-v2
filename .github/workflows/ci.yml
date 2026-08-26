@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  COMPOSE_ENV_FILES: .env.local
   APP_ENV: test
   APP_SECRET: ChangeMePleaseUseARealSecret
   DEFAULT_URI: http://localhost
@@ -122,7 +123,7 @@ jobs:
 
       - name: Prepare environment
         run: |
-          cp .env.dist .env
+          cp .env.dist .env.local
           php -r '
             $pdo = new PDO("mysql:host=127.0.0.1;port=3306", "root", "!ChangeMeRoot!");
             $pdo->exec("CREATE DATABASE IF NOT EXISTS app_test");
@@ -150,7 +151,7 @@ jobs:
           php bin/console cache:warmup --env=test
           vendor/bin/phpunit
 
-  # Informational coverage (PCOV). Soft gate only when COVERAGE_MIN is set (never 100% by default).
+  # Coverage (PCOV) with hard statement-% floor. COVERAGE_MIN=100 on includable src/ (REQ-QA-002); see docs/COVERAGE.md.
   coverage:
     name: Coverage (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
@@ -159,8 +160,8 @@ jobs:
       matrix:
         php: ["8.5"]
     env:
-      # Soft statement-% floor (specs/033 + remediation F0.3). Raise only after reviewing Clover; never 100%.
-      COVERAGE_MIN: "35"
+      # Hard statement-% floor at 100% on includable src/ (docs/COVERAGE.md).
+      COVERAGE_MIN: "100"
 
     services:
       mysql:
@@ -221,7 +222,7 @@ jobs:
 
       - name: Prepare environment
         run: |
-          cp .env.dist .env
+          cp .env.dist .env.local
           php -r '
             $pdo = new PDO("mysql:host=127.0.0.1;port=3306", "root", "!ChangeMeRoot!");
             $pdo->exec("CREATE DATABASE IF NOT EXISTS app_test");
@@ -239,7 +240,7 @@ jobs:
             --coverage-clover var/coverage/clover.xml \
             --coverage-html var/coverage-html
 
-      - name: Soft coverage threshold
+      - name: Coverage threshold
         run: sh .scripts/check-coverage-threshold.sh var/coverage/clover.xml
 
       - name: Upload coverage artifacts
@@ -256,9 +257,10 @@ jobs:
   e2e:
     name: E2E (Playwright)
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       PLAYWRIGHT_BASE_URL: https://localhost:9444
+      PLAYWRIGHT_MAILPIT_URL: http://127.0.0.1:18025
       COMPOSER_ALLOW_SUPERUSER: "1"
 
     steps:
@@ -269,7 +271,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Prepare environment
-        run: cp .env.dist .env
+        run: cp .env.dist .env.local
 
       - name: Build and start Compose stack
         run: |
@@ -285,7 +287,7 @@ jobs:
             pnpm install --frozen-lockfile
           test -x node_modules/.bin/vite
           test -d node_modules/@playwright/test
-          docker compose up -d
+          docker compose --profile mail up -d
           # Entrypoint migrates when DB is ready; wait for TLS health.
           for i in $(seq 1 90); do
             if curl -kfsS https://localhost:9444/health/live >/dev/null 2>&1; then
@@ -303,6 +305,11 @@ jobs:
           docker compose ps || true
           docker compose logs --tail=200
           exit 1
+
+      - name: Ensure host can write node_modules
+        run: |
+          # Compose entrypoint may create root-/frankenphp-owned node_modules; reclaim for host pnpm.
+          sudo chown -R "$(id -u):$(id -g)" node_modules vendor public/build 2>/dev/null || true
 
       - name: Build frontend assets
         run: make vite-build

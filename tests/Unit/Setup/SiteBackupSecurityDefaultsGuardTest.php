@@ -21,6 +21,7 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             'dev',
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_SETUP_TOKEN,
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_PANEL_PASSWORD_HASH,
+            SiteBackupSecurityDefaultsGuard::LOCAL_DEV_APP_SECRET,
         );
         $guard->assertProductionSecretsSafe();
         $this->addToAssertionCount(1);
@@ -32,6 +33,7 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             'test',
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_SETUP_TOKEN,
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_PANEL_PASSWORD_HASH,
+            SiteBackupSecurityDefaultsGuard::LOCAL_DEV_APP_SECRET,
         );
         $guard->assertProductionSecretsSafe();
         $this->addToAssertionCount(1);
@@ -40,7 +42,12 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
     #[DataProvider('nonLocalEnvironmentsProvider')]
     public function testNonLocalRejectsEmptySetupToken(string $environment): void
     {
-        $guard = new SiteBackupSecurityDefaultsGuard($environment, '', '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+        $guard = new SiteBackupSecurityDefaultsGuard(
+            $environment,
+            '',
+            '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'production-grade-app-secret-32',
+        );
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('SITE_SETUP_TOKEN must be set');
         $guard->assertProductionSecretsSafe();
@@ -53,6 +60,7 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             $environment,
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_SETUP_TOKEN,
             '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'production-grade-app-secret-32',
         );
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('documented local default');
@@ -66,9 +74,38 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             $environment,
             'unique-production-setup-token',
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_PANEL_PASSWORD_HASH,
+            'production-grade-app-secret-32',
         );
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('SITE_BACKUP_PASSWORD_HASH');
+        $guard->assertProductionSecretsSafe();
+    }
+
+    #[DataProvider('nonLocalEnvironmentsProvider')]
+    public function testNonLocalRejectsDocumentedAppSecret(string $environment): void
+    {
+        $guard = new SiteBackupSecurityDefaultsGuard(
+            $environment,
+            'unique-production-setup-token',
+            '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            SiteBackupSecurityDefaultsGuard::LOCAL_DEV_APP_SECRET,
+        );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('APP_SECRET is still the documented local default');
+        $guard->assertProductionSecretsSafe();
+    }
+
+    #[DataProvider('nonLocalEnvironmentsProvider')]
+    public function testNonLocalRejectsShortAppSecret(string $environment): void
+    {
+        $guard = new SiteBackupSecurityDefaultsGuard(
+            $environment,
+            'unique-production-setup-token',
+            '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'tooshort',
+        );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('APP_SECRET must be at least 16 characters');
         $guard->assertProductionSecretsSafe();
     }
 
@@ -79,6 +116,7 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             $environment,
             'unique-production-setup-token',
             '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'production-grade-app-secret-32',
         );
         $guard->assertProductionSecretsSafe();
         $this->addToAssertionCount(1);
@@ -91,6 +129,7 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             'prod',
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_SETUP_TOKEN,
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_PANEL_PASSWORD_HASH,
+            SiteBackupSecurityDefaultsGuard::LOCAL_DEV_APP_SECRET,
         );
         $command = $this->createStub(Command::class);
         $command->method('getName')->willReturn($commandName);
@@ -109,6 +148,7 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             'prod',
             SiteBackupSecurityDefaultsGuard::LOCAL_DEV_SETUP_TOKEN,
             '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'production-grade-app-secret-32',
         );
         $command = $this->createStub(Command::class);
         $command->method('getName')->willReturn('doctrine:migrations:migrate');

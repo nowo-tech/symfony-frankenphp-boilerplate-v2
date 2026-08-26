@@ -1,14 +1,37 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
-    session: true
+    # Session auth without Remember me: keep login for 1 day (cookie + server GC).
+    # Cookie name: %app.session_cookie_name% (config/parameters.yaml).
+    # handler_id accepts a Redis DSN — shared across FrankenPHP workers / replicas.
+    session:
+        name: '%app.session_cookie_name%'
+        handler_id: '%env(REDIS_URL)%'
+        cookie_lifetime: 86400
+        gc_maxlifetime: 86400
+        cookie_samesite: lax
+        cookie_httponly: true
     form: true
     csrf_protection: true
     validation: { enable_attributes: true }
     ide: 'cursor://file/%%f:%%l'
+    cache:
+        # Isolate keys when several apps share one Redis (server share / little-vps).
+        prefix_seed: 'nowo-shell'
+        app: cache.adapter.redis
+        default_redis_provider: '%env(REDIS_URL)%'
+
+when@prod:
+    framework:
+        session:
+            cookie_secure: true
 
 when@test:
     framework:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+            handler_id: null
+        cache:
+            app: cache.adapter.array
+            default_redis_provider: ~

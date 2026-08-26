@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Shared;
 
+use App\Identity\Entity\InstancePermission;
 use App\Identity\Entity\User;
 use App\Identity\Repository\UserRepository;
+use App\Identity\Security\Permission;
 use App\Tests\Support\DatabaseWebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -22,9 +24,11 @@ final class SeedPlatformCommandTest extends DatabaseWebTestCase
 
         $tester->execute([]);
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay());
+        self::assertStringContainsString('already up to date', $tester->getDisplay());
 
         $tester->execute([]);
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay());
+        self::assertStringContainsString('already up to date', $tester->getDisplay());
 
         $users = self::getContainer()->get(UserRepository::class)->findBy([
             'email' => 'admin@nowo-shell.local',
@@ -44,5 +48,11 @@ final class SeedPlatformCommandTest extends DatabaseWebTestCase
             'SELECT COUNT(d.id) FROM Nowo\CookieConsentBundle\Entity\CookieDefinition d',
         )->getSingleScalarResult();
         self::assertGreaterThanOrEqual(4, $definitionCount);
+
+        $permissionCount = (int) $em->createQuery(
+            'SELECT COUNT(p.id) FROM '.InstancePermission::class.' p',
+        )->getSingleScalarResult();
+        self::assertSame(\count(Permission::allValues()), $permissionCount);
+        self::assertStringContainsString('Instance permission catalog', $tester->getDisplay());
     }
 }

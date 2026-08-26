@@ -1,0 +1,65 @@
+# Shared MySQL + Redis via external network (compose.infra / server/).
+#   make up-shared
+# Requires MYSQL_HOST=mysql-9.7-primary and REDIS_HOST=redis-8.10.0 (asserted by Make).
+
+services:
+  database:
+    profiles: ["standalone-db"]
+
+  redis:
+    profiles: ["standalone-redis"]
+
+  php:
+    depends_on:
+      database:
+        condition: service_healthy
+        required: false
+      redis:
+        condition: service_healthy
+        required: false
+    networks:
+      - default
+      - shared
+
+  messenger:
+    depends_on:
+      database:
+        condition: service_healthy
+        required: false
+      redis:
+        condition: service_healthy
+        required: false
+      php:
+        condition: service_started
+    networks:
+      - default
+      - shared
+
+  messenger-notify:
+    depends_on:
+      database:
+        condition: service_healthy
+        required: false
+      redis:
+        condition: service_healthy
+        required: false
+      php:
+        condition: service_started
+    networks:
+      - default
+      - shared
+
+  vite:
+    networks:
+      - default
+      - shared
+
+  mailer:
+    networks:
+      - default
+      - shared
+
+networks:
+  shared:
+    name: ${SHARED_DOCKER_NETWORK:-server_network}
+    external: true

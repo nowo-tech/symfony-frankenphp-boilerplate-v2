@@ -28,6 +28,8 @@ final readonly class PlatformBootstrapState
 
     public function needsPlatformSeed(): bool
     {
+        $this->menuRepository->reset();
+
         return !$this->hasRequiredMenus()
             || !$this->hasDefaultBreadcrumbs()
             || !$this->hasDefaultCookieConsent();

@@ -352,7 +352,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     },
  *     serializer?: bool|array{ // Serializer configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         enable_attributes?: bool|Param, // Default: true
  *         name_converter?: scalar|Param|null,
  *         circular_reference_handler?: scalar|Param|null,
@@ -416,7 +416,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         log_channel?: scalar|Param|null, // The channel of log message. Null to let Symfony decide. // Default: null
  *     }>,
  *     web_link?: bool|array{ // Web links configuration
- *         enabled?: bool|Param, // Default: true
+ *         enabled?: bool|Param, // Default: false
  *     },
  *     lock?: Param|bool|string|array{ // Lock configuration
  *         enabled?: bool|Param, // Default: false
@@ -783,8 +783,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 MultipleActiveResultSets?: bool|Param, // Configuring MultipleActiveResultSets for the pdo_sqlsrv driver
  *                 instancename?: scalar|Param|null, // Optional parameter, complete whether to add the INSTANCE_NAME parameter in the connection. It is generally used to connect to an Oracle RAC server to select the name of a particular instance.
  *                 connectstring?: scalar|Param|null, // Complete Easy Connect connection descriptor, see https://docs.oracle.com/database/121/NETAG/naming.htm.When using this option, you will still need to provide the user and password parameters, but the other parameters will no longer be used. Note that when using this parameter, the getHost and getPort methods from Doctrine\DBAL\Connection will no longer function as expected.
+ *                 ...<string, mixed>
  *             }>,
+ *             ...<string, mixed>
  *         }>,
+ *         ...<string, mixed>
  *     },
  *     orm?: array{
  *         default_entity_manager?: scalar|Param|null,
@@ -819,6 +822,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                         }>,
  *                     }>,
  *                 }>,
+ *                 ...<string, mixed>
  *             },
  *             connection?: scalar|Param|null,
  *             class_metadata_factory_name?: scalar|Param|null, // Default: "Doctrine\\ORM\\Mapping\\ClassMetadataFactory"
@@ -879,10 +883,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 class?: scalar|Param|null,
  *                 enabled?: bool|Param, // Default: false
  *                 parameters?: array<string, mixed>,
+ *                 ...<string, mixed>
  *             }>,
  *             identity_generation_preferences?: array<string, scalar|Param|null>,
  *         }>,
  *         resolve_target_entities?: array<string, scalar|Param|null>,
+ *         ...<string, mixed>
  *     },
  * }
  * @psalm-type DoctrineMigrationsConfig = array{
@@ -915,6 +921,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         id?: scalar|Param|null,
  *         type?: scalar|Param|null,
  *         value?: mixed,
+ *         ...<string, mixed>
  *     }>,
  *     autoescape_service?: scalar|Param|null, // Default: null
  *     autoescape_service_method?: scalar|Param|null, // Default: null
@@ -1305,7 +1312,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             domain?: scalar|Param|null, // Default: null
  *             secure?: true|false|"auto"|Param, // Default: false
  *             httponly?: bool|Param, // Default: true
- *             samesite?: null|"lax"|"strict"|"none"|Param, // Default: null
+ *             samesite?: null|"lax"|"strict"|"none"|Param, // Default: "lax"
  *             always_remember_me?: bool|Param, // Default: false
  *             remember_me_parameter?: scalar|Param|null, // Default: "_remember_me"
  *         },
@@ -1349,9 +1356,25 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     reduced_motion?: bool|Param, // Respect reduced motion (accessibility). When true or system prefers-reduced-motion, animations are minimized. // Default: false
  *     keyboard_shortcut?: scalar|Param|null, // Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T"). Empty to disable. // Default: "Ctrl+Shift+T"
  * }
+ * @psalm-type NowoHotReloadConfig = array{
+ *     enabled?: bool|Param, // Master switch. When false, nothing is injected even if FRANKENPHP_HOT_RELOAD is set. // Default: true
+ *     auto_inject?: bool|Param, // When true, HotReloadResponseSubscriber injects assets into HTML responses. // Default: true
+ *     require_frankenphp_env?: bool|Param, // When true (default), inject only if FRANKENPHP_HOT_RELOAD is set or mercure_url is configured. // Default: true
+ *     allow_production?: bool|Param, // When false (default), enabling this bundle in the prod environment raises InvalidConfigurationException. // Default: false
+ *     mercure_url?: scalar|Param|null, // Optional Mercure hub URL. When null, uses $_SERVER['FRANKENPHP_HOT_RELOAD'] when present. // Default: null
+ *     idiomorph?: bool|Param, // When true, include Idiomorph for DOM morphing instead of a full page reload. // Default: true
+ *     idiomorph_script_url?: scalar|Param|null, // URL of the Idiomorph script (classic script tag). Prefer a version-pinned CDN URL. // Default: "https://cdn.jsdelivr.net/npm/idiomorph@0.7.4"
+ *     hot_reload_script_url?: scalar|Param|null, // URL of the frankenphp-hot-reload ESM module. Prefer a version-pinned CDN URL. // Default: "https://cdn.jsdelivr.net/npm/frankenphp-hot-reload@1.0.1/+esm"
+ *     preserve_selectors?: list<scalar|Param|null>,
+ *     preserve_observe?: bool|Param, // When true, the preserve boot script also uses MutationObserver for late-injected toolbar nodes. // Default: true
+ *     csp_nonce_request_attribute?: scalar|Param|null, // Request attribute name that holds the CSP nonce (e.g. "_csp_nonce"). Applied to the inline preserve boot script. // Default: null
+ *     csp_augment_script_src?: bool|Param, // When true, append CDN hosts to an existing Content-Security-Policy script-src on the response after injection. // Default: true
+ *     csp_script_src_hosts?: list<scalar|Param|null>,
+ * }
  * @psalm-type NowoAuthKitConfig = array{
  *     default_profile?: scalar|Param|null, // Profile name used when no profile is specified explicitly. // Default: "default"
  *     outbound_mail_ready_checker?: scalar|Param|null, // Optional service id implementing OutboundMailReadyCheckerInterface for password-reset and magic-login UI hints. // Default: null
+ *     login_throttle_required?: bool|Param, // When true, container compilation fails if nowo-tech/login-throttle-bundle is not registered (production hardening). // Default: false
  *     profiles?: array<string, array{ // Default: []
  *         user_class?: scalar|Param|null, // FQCN of the application user entity (must implement UserInterface). // Default: null
  *         user_identifier_field?: scalar|Param|null, // Entity property used as the security user identifier (form_login username). // Default: "email"
@@ -1370,6 +1393,25 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             level?: scalar|Param|null, // Policy level passed to PasswordStrengthType and PasswordStrength validator. // Default: "medium"
  *             policy_mode?: "level"|"conditions"|Param, // Default: "level"
  *         },
+ *         slide_to_confirm?: array{ // Optional integration with nowo-tech/slide-to-confirm-bundle for registration consent and QR approve.
+ *             enabled?: bool|Param, // When true, uses SlideToConfirmType when that bundle is installed and a field/QR option requests it. // Default: false
+ *             registration_consent?: scalar|Param|null, // SlideToConfirm profile used when a registration field sets slide_to_confirm: true (typically gate). // Default: "gate"
+ *             qr_login_approve?: mixed, // SlideToConfirm profile for QR approve (e.g. danger), or false to keep the submit button. // Default: false
+ *         },
+ *         device_intelligence?: array{ // Optional integration with nowo-tech/device-intelligence-bundle (PHP 8.3+). Device ID is not a credential.
+ *             enabled?: bool|Param, // When true, AuthKit loads collect JS and honours the flags below if the bundle is installed. // Default: false
+ *             collect_on_auth_pages?: bool|Param, // Load device-intelligence.min.js on AuthKit layouts so collect() runs before login/register/QR. // Default: true
+ *             collect_endpoint?: scalar|Param|null, // POST path for Device Intelligence collect (default /_device/collect). // Default: "/_device/collect"
+ *             new_device_notify?: bool|Param, // After LoginSuccess, set session flag and call NewDeviceLoginNotifierInterface when the cluster is new. // Default: false
+ *             device_rate_limit?: bool|Param, // Extra AuthKitAttemptLimiter consume keyed by device ULID on register / reset / magic request. // Default: false
+ *             qr_login?: array{
+ *                 approve_require_trusted?: bool|Param, // When true, QR session_step_up requires an explicit trusted device (not auto-trust on login). // Default: false
+ *             },
+ *         },
+ *         otp_input?: array{ // Optional integration with nowo-tech/otp-input-bundle for the password-reset code field. UX only; server checks stay mandatory.
+ *             enabled?: bool|Param, // When true, uses OtpType when that bundle is installed and password_reset_code is true. // Default: false
+ *             password_reset_code?: bool|Param, // Replace the reset OTP TextType with OtpType (length/charset from password_reset). // Default: true
+ *         },
  *         registration_fields?: list<mixed>,
  *         templates?: array{
  *             layout?: scalar|Param|null, // Default: "@NowoAuthKitBundle/layout.html.twig"
@@ -1379,6 +1421,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             reset_password?: scalar|Param|null, // Default: "@NowoAuthKitBundle/security/reset_password.html.twig"
  *             reset_password_code?: scalar|Param|null, // Default: "@NowoAuthKitBundle/security/reset_password_code.html.twig"
  *             magic_login_request?: scalar|Param|null, // Default: "@NowoAuthKitBundle/security/magic_login_request.html.twig"
+ *             magic_login_confirm?: scalar|Param|null, // Default: "@NowoAuthKitBundle/security/magic_login_confirm.html.twig"
  *             form_theme?: list<scalar|Param|null>,
  *         },
  *         css?: array{
@@ -1413,6 +1456,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             max_uses?: int|Param, // How many times the signed login link can be used (Symfony login_link max_uses). // Default: 1
  *             request_rate_limit?: int|Param, // Max magic-login requests per client IP per window (0 = disabled). // Default: 5
  *             request_rate_window?: int|Param, // Seconds for request_rate_limit window. // Default: 900
+ *             confirm_interstitial?: bool|Param, // When true, magic_login_check GET renders a CSRF confirm form; POST goes to magic_login_confirm (consume login link after Form CSRF). Pair with login_link.check_post_only. // Default: false
  *         },
  *         social_login?: array{
  *             mode?: "disabled"|"enabled"|Param, // disabled: hide social login. enabled: OAuth buttons when provider credentials exist in the database. // Default: "disabled"
@@ -1464,6 +1508,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 path?: scalar|Param|null, // Default: "/magic-login/check"
  *                 name?: scalar|Param|null, // Default: "nowo_auth_kit_magic_login_check"
  *             },
+ *             magic_login_confirm?: array{
+ *                 path?: scalar|Param|null, // Default: "/magic-login/confirm"
+ *                 name?: scalar|Param|null, // Default: "nowo_auth_kit_magic_login_confirm"
+ *             },
  *             social_login_start?: array{
  *                 path?: scalar|Param|null, // Default: "/login/social/{provider}"
  *                 name?: scalar|Param|null, // Default: "nowo_auth_kit_social_login_start"
@@ -1509,6 +1557,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_locale?: scalar|Param|null, // Deprecated: use locale.default. // Default: "en"
  *     enabled_locales?: list<scalar|Param|null>,
  *     locale_in_path?: mixed, // Deprecated: use locale.in_path (never|always|both). Bool true/false still accepted. // Default: false
+ *     ...<string, mixed>
  * }
  * @psalm-type NowoPasswordStrengthConfig = array{
  *     form_theme?: scalar|Param|null, // Base Symfony form layout (must match twig.form_themes in the app). // Default: "form_div_layout.html.twig"
@@ -1723,6 +1772,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     form_action?: scalar|Param|null, // Optional route name used as the form action URL. // Default: null
  *     csrf_protection?: bool|Param, // Enable CSRF protection on the consent form. // Default: true
  *     disabled_routes?: list<scalar|Param|null>,
+ *     skip_render_routes?: list<scalar|Param|null>,
+ *     render_routes?: list<scalar|Param|null>,
  *     route_targeting_mode?: "all"|"only"|"except"|Param, // Controls where the modal auto-opens: all pages, only listed routes, or all except listed routes. // Default: "all"
  *     target_routes?: list<scalar|Param|null>,
  *     default_locale?: scalar|Param|null, // Fallback locale when no supported language can be detected. // Default: "en"
@@ -1830,13 +1881,20 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         defaults?: array{
  *             attr?: array<string, scalar|Param|null>,
  *             row_attr?: array<string, scalar|Param|null>,
+ *             help_attr?: array<string, scalar|Param|null>,
+ *             label?: scalar|Param|null, // Default label for every field (e.g. false to suppress). When set, overrides the {form}.{field}.label convention.
+ *             placeholder?: scalar|Param|null, // Default placeholder for every field (e.g. false to suppress). When set, overrides auto_placeholder convention.
+ *             help?: scalar|Param|null, // Default help for every field (e.g. false to suppress). When set, overrides auto_help convention.
+ *             required?: bool|Param, // Default required flag for every field. Overridable via field_types, by_form, or PHP options.
  *         },
  *         field_types?: array<string, array{ // Default: []
  *             attr?: array<string, scalar|Param|null>,
  *             row_attr?: array<string, scalar|Param|null>,
+ *             help_attr?: array<string, scalar|Param|null>,
  *             label?: scalar|Param|null,
  *             placeholder?: scalar|Param|null,
  *             help?: scalar|Param|null,
+ *             required?: bool|Param, // Default required flag for this field type / field. Overridable by later cascade layers or PHP options.
  *             translation_domain?: scalar|Param|null,
  *             constraints?: list<mixed>,
  *         }>,
@@ -1845,13 +1903,20 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             defaults?: array{
  *                 attr?: array<string, scalar|Param|null>,
  *                 row_attr?: array<string, scalar|Param|null>,
+ *                 help_attr?: array<string, scalar|Param|null>,
+ *                 label?: scalar|Param|null, // Default label for every field (e.g. false to suppress). When set, overrides the {form}.{field}.label convention.
+ *                 placeholder?: scalar|Param|null, // Default placeholder for every field (e.g. false to suppress). When set, overrides auto_placeholder convention.
+ *                 help?: scalar|Param|null, // Default help for every field (e.g. false to suppress). When set, overrides auto_help convention.
+ *                 required?: bool|Param, // Default required flag for every field. Overridable via field_types, by_form, or PHP options.
  *             },
  *             fields?: array<string, array{ // Default: []
  *                 attr?: array<string, scalar|Param|null>,
  *                 row_attr?: array<string, scalar|Param|null>,
+ *                 help_attr?: array<string, scalar|Param|null>,
  *                 label?: scalar|Param|null,
  *                 placeholder?: scalar|Param|null,
  *                 help?: scalar|Param|null,
+ *                 required?: bool|Param, // Default required flag for this field type / field. Overridable by later cascade layers or PHP options.
  *                 translation_domain?: scalar|Param|null,
  *                 constraints?: list<mixed>,
  *             }>,
@@ -1869,13 +1934,20 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     defaults?: array{
  *         attr?: array<string, scalar|Param|null>,
  *         row_attr?: array<string, scalar|Param|null>,
+ *         help_attr?: array<string, scalar|Param|null>,
+ *         label?: scalar|Param|null, // Default label for every field (e.g. false to suppress). When set, overrides the {form}.{field}.label convention.
+ *         placeholder?: scalar|Param|null, // Default placeholder for every field (e.g. false to suppress). When set, overrides auto_placeholder convention.
+ *         help?: scalar|Param|null, // Default help for every field (e.g. false to suppress). When set, overrides auto_help convention.
+ *         required?: bool|Param, // Default required flag for every field. Overridable via field_types, by_form, or PHP options.
  *     },
  *     field_types?: array<string, array{ // Default: []
  *         attr?: array<string, scalar|Param|null>,
  *         row_attr?: array<string, scalar|Param|null>,
+ *         help_attr?: array<string, scalar|Param|null>,
  *         label?: scalar|Param|null,
  *         placeholder?: scalar|Param|null,
  *         help?: scalar|Param|null,
+ *         required?: bool|Param, // Default required flag for this field type / field. Overridable by later cascade layers or PHP options.
  *         translation_domain?: scalar|Param|null,
  *         constraints?: list<mixed>,
  *     }>,
@@ -1884,17 +1956,25 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         defaults?: array{
  *             attr?: array<string, scalar|Param|null>,
  *             row_attr?: array<string, scalar|Param|null>,
+ *             help_attr?: array<string, scalar|Param|null>,
+ *             label?: scalar|Param|null, // Default label for every field (e.g. false to suppress). When set, overrides the {form}.{field}.label convention.
+ *             placeholder?: scalar|Param|null, // Default placeholder for every field (e.g. false to suppress). When set, overrides auto_placeholder convention.
+ *             help?: scalar|Param|null, // Default help for every field (e.g. false to suppress). When set, overrides auto_help convention.
+ *             required?: bool|Param, // Default required flag for every field. Overridable via field_types, by_form, or PHP options.
  *         },
  *         fields?: array<string, array{ // Default: []
  *             attr?: array<string, scalar|Param|null>,
  *             row_attr?: array<string, scalar|Param|null>,
+ *             help_attr?: array<string, scalar|Param|null>,
  *             label?: scalar|Param|null,
  *             placeholder?: scalar|Param|null,
  *             help?: scalar|Param|null,
+ *             required?: bool|Param, // Default required flag for this field type / field. Overridable by later cascade layers or PHP options.
  *             translation_domain?: scalar|Param|null,
  *             constraints?: list<mixed>,
  *         }>,
  *     }>,
+ *     ...<string, mixed>
  * }
  * @psalm-type NowoUiKitConfig = array{
  *     css_framework?: "bootstrap"|"bootstrap5"|"bootstrap4"|"tailwind"|"foundation"|"custom"|"tabler"|"none"|Param, // Host CSS stack: bootstrap5|bootstrap4|tailwind|foundation|custom|none|tabler (bootstrap alias → bootstrap5). // Default: "bootstrap5"
@@ -2177,6 +2257,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         blameable?: bool|Param, // When false, blame fields are not managed for this profile. // Default: true
  *         timestampable?: bool|Param, // When false, timestamp fields are not managed for this profile. // Default: true
  *     }>,
+ *     ...<string, mixed>
  * }
  * @psalm-type NowoUserKitConfig = array{
  *     default_profile?: scalar|Param|null, // Profile name used when no profile is specified explicitly. // Default: "default"
@@ -2195,6 +2276,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *     }>,
  *     twig?: bool|Param, // Register user_is_online Twig helper when Twig is installed. // Default: true
+ *     ...<string, mixed>
  * }
  * @psalm-type NowoDoctrineEncryptConfig = array{
  *     default_profile?: scalar|Param|null, // Profile name to use when #[Encrypted] has no alias or uses "default". // Default: "default"
@@ -2204,7 +2286,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         secret_directory_path?: scalar|Param|null, // Directory for the key file. Required unless secret_key_env_var is set. // Default: null
  *         secret_key_filename?: scalar|Param|null, // Optional custom key filename (e.g. .my_app.key). Only used when secret_directory_path is set. // Default: null
  *         secret_key_env_var?: scalar|Param|null, // Key content from env: use %env(APP_ENCRYPT_KEY)% so Symfony resolves it at config load and the bundle receives the value. When set, secret_directory_path and secret_key_filename are not allowed. // Default: null
+ *         ...<string, mixed>
  *     }>,
+ *     ...<string, mixed>
  * }
  * @psalm-type NowoMigrationsKitConfig = array{
  *     connection?: scalar|Param|null, // Doctrine connection name used by CreateTablesService when injected from the container // Default: "default"
@@ -2290,13 +2374,34 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         path_prefix?: scalar|Param|null, // Default: "/_setup"
  *         layout_template?: scalar|Param|null, // Host Twig layout for setup pages (extends pattern like CookieConsent layout_template). Must define block nowo_site_backup_content. Default uses the bundle standalone layout. // Default: null
  *         require_done_marker?: bool|Param, // When true, missing setup.done forces the wizard (fresh clones). Default false so adding the bundle does not lock existing apps. // Default: false
+ *         short_circuit_when_done?: bool|Param, // When true (default), SetupNeedEvaluator skips all detectors if setup.done exists or DurableSetupDoneStoreInterface::isDone() is true. Set false if a host detector must re-open the gate after done. // Default: true
  *         brand_name?: scalar|Param|null, // Default: "Site Setup"
  *         setup_token?: scalar|Param|null, // Optional shared secret for /_setup (?token= or X-Setup-Token). // Default: null
  *         progress_file?: scalar|Param|null, // Default: "%kernel.project_dir%/var/site-backup/setup-progress.json"
- *         progress_storage?: "filesystem"|"doctrine"|"chain"|Param, // filesystem = JSON in var/; doctrine = DBAL table; chain = write both, prefer DB on load (survives var/ wipe). // Default: "filesystem"
- *         progress_table?: scalar|Param|null, // DBAL table name when progress_storage is doctrine or chain. // Default: "nowo_site_backup_setup_progress"
+ *         progress_storage?: "filesystem"|"doctrine"|"chain"|"cache"|"cache_doctrine"|Param, // filesystem = JSON in var/; doctrine = DBAL; chain = JSON+DB; cache = PSR-6 pool; cache_doctrine = cache+DB (prefer DB on load). // Default: "filesystem"
+ *         progress_table?: scalar|Param|null, // DBAL table name when progress_storage is doctrine, chain, or cache_doctrine. // Default: "nowo_site_backup_setup_progress"
+ *         progress_step_rows?: bool|Param, // When true (default) and progress_storage uses Doctrine, upsert per-step rows (runtime DDL — not Symfony migrations; safe before host schema exists). // Default: true
+ *         progress_steps_table?: scalar|Param|null, // DBAL table for per-step journal when progress_step_rows is true. // Default: "nowo_site_backup_setup_step"
+ *         progress_cache_pool?: scalar|Param|null, // PSR-6 cache pool service id when progress_storage is cache or cache_doctrine (default cache.app). // Default: "cache.app"
+ *         progress_cache_key?: scalar|Param|null, // Default: "nowo_site_backup.setup_progress"
+ *         progress_cache_ttl?: int|Param, // TTL seconds for cache / cache_doctrine progress (default 86400). // Default: 86400
  *         required_marker_file?: scalar|Param|null, // Default: "%kernel.project_dir%/var/site-backup/setup.required"
  *         done_marker_file?: scalar|Param|null, // Default: "%kernel.project_dir%/var/site-backup/setup.done"
+ *         durable_done?: array{ // Close the wizard from a host durable store (survives var/ wipe).
+ *             enabled?: bool|Param, // Default: false
+ *             redirect_target?: scalar|Param|null, // Target when durable done closes the wizard (default /). // Default: "/"
+ *         },
+ *         cold_start?: array{ // Gate requests when the MySQL application schema is not reachable yet.
+ *             enabled?: bool|Param, // Default: false
+ *             stop_propagation?: bool|Param, // Default: true
+ *             require_application_tables?: bool|Param, // When true (default), an empty MySQL schema (only nowo_site_backup_* tables) stays cold-start until migrations create app tables. // Default: true
+ *             safe_path_prefixes?: list<scalar|Param|null>,
+ *             mysql_host?: scalar|Param|null, // Default: null
+ *             mysql_port?: int|Param, // Default: 3306
+ *             mysql_user?: scalar|Param|null, // Default: null
+ *             mysql_password?: scalar|Param|null, // Default: null
+ *             mysql_database?: scalar|Param|null, // Default: null
+ *         },
  *         php_binary?: scalar|Param|null, // Default: "php"
  *         admin_provisioner?: scalar|Param|null, // Service id implementing AdminUserProvisionerInterface. // Default: null
  *         trigger_after_restore?: bool|Param, // Default: true
@@ -2424,6 +2529,230 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     auto_invalidate_cache?: bool|Param, // Default: true
  *     register_unprefixed_default?: bool|Param, // Default: true
  *     seo_kit_bridge?: bool|Param, // When true and SeoKitBundle is installed, decorate SeoPathBuilderInterface with RoutingKit paths. // Default: true
+ *     ...<string, mixed>
+ * }
+ * @psalm-type NowoMaintenanceModeConfig = array{ // Nowo Maintenance Mode Bundle configuration.
+ *     enabled?: bool|Param, // Master switch: when false the subscriber never returns 503. // Default: true
+ *     default_message?: scalar|Param|null, // Default message shown on the public maintenance page. null = rely on Twig translation (maintenance.page.message). // Default: "We're making a few gentle improvements. Everything you care about is safe."
+ *     status_code?: int|Param, // HTTP status code for the maintenance response. // Default: 503
+ *     retry_after?: int|Param, // Retry-After header value in seconds. // Default: 3600
+ *     subscriber_priority?: int|Param, // kernel.request listener priority (default 31: after router so route/controller exclusions work). // Default: 31
+ *     preview?: array{ // Dev preview of the configured public maintenance page (like /_error/503).
+ *         enabled?: mixed, // null = enable when kernel.debug is true. Set false to disable even in debug. // Default: null
+ *         path?: scalar|Param|null, // URL path for the preview (auto-excluded from 503). // Default: "/_maintenance_preview"
+ *     },
+ *     panel?: array{ // Admin CRUD panel settings.
+ *         enabled?: bool|Param, // Expose the Twig CRUD panel controllers. // Default: true
+ *         path_prefix?: scalar|Param|null, // URL prefix for the panel routes (also auto-excluded from 503). // Default: "/_maintenance"
+ *     },
+ *     web_ui?: array{ // REQ-UI-001 look-and-feel for the admin panel (layout, CSS stack, icons).
+ *         enabled?: bool|Param, // When false, panel Twig globals still resolve but hosts may hide chrome; panel routes follow panel.enabled. // Default: true
+ *         layout_template?: scalar|Param|null, // Twig layout that panel pages extend (host apps SHOULD set their project layout). Syncs templates.panel_layout. // Default: "@NowoMaintenanceModeBundle/panel/layout.html.twig"
+ *         css_framework?: "bootstrap"|"bootstrap4"|"bootstrap5"|"tailwind"|"foundation"|"custom"|"tabler"|"none"|Param, // Host-chosen CSS stack for semantic nowo-ui-* markup. // Default: "custom"
+ *         icon_set?: "bootstrap-icons"|"tabler-icons"|"ux_icon"|"svg_inline"|"none"|Param, // Icon strategy for panel actions (panel uses text buttons by default). // Default: "none"
+ *     },
+ *     exclusions?: array{ // Requests matching any rule bypass the maintenance page.
+ *         paths?: list<scalar|Param|null>,
+ *         path_prefixes?: list<scalar|Param|null>,
+ *         routes?: list<scalar|Param|null>,
+ *         patterns?: list<scalar|Param|null>,
+ *         ips?: list<scalar|Param|null>,
+ *     },
+ *     security?: array{ // REQ-UI-002 roles + optional ops password gate / soft bypass. Password gate is additional to access_roles.
+ *         access_roles?: list<scalar|Param|null>,
+ *         access_checker?: scalar|Param|null, // Optional service id implementing MaintenanceModeAccessCheckerInterface. null = role-based default (or AllowAll when allow_unauthenticated). // Default: null
+ *         allow_unauthenticated?: bool|Param, // DEV/DEMO only: skip Symfony Security role check (password gate may still apply). Never true in production. // Default: false
+ *         password_protection?: bool|Param, // When false, the panel login section is disabled even if a hash is set (trusted networks only). // Default: true
+ *         password_hash?: scalar|Param|null, // password_hash() output (bcrypt / argon2id / sodium). Prefer env: MAINTENANCE_PASSWORD_HASH. // Default: null
+ *         access_gate?: scalar|Param|null, // FQCN or service id implementing MaintenanceAccessGateInterface. null = default password gate. // Default: null
+ *         bypass_token?: scalar|Param|null, // Optional shared secret: ?maintenance_bypass=TOKEN (or cookie) skips the 503 for QA without opening the panel. // Default: null
+ *         bypass_query_parameter?: scalar|Param|null, // Query parameter name for the soft bypass token. // Default: "maintenance_bypass"
+ *         bypass_cookie_name?: scalar|Param|null, // Cookie name set after a successful query bypass. // Default: "nowo_maintenance_bypass"
+ *         bypass_set_cookie?: bool|Param, // When true, a successful query bypass also sets a cookie for subsequent requests. // Default: true
+ *     },
+ *     storage?: array{ // Pluggable state / history backends (default: filesystem under var/).
+ *         state_file?: scalar|Param|null, // JSON or YAML file for MaintenanceState. // Default: "%kernel.project_dir%/var/maintenance/state.json"
+ *         history_file?: scalar|Param|null, // Append-only JSONL history file. // Default: "%kernel.project_dir%/var/maintenance/history.jsonl"
+ *         state_storage?: scalar|Param|null, // Override service id / FQCN for MaintenanceStateStorageInterface. // Default: null
+ *         history_storage?: scalar|Param|null, // Override service id / FQCN for MaintenanceHistoryStorageInterface. // Default: null
+ *     },
+ *     templates?: array{ // Overrideable Twig templates (REQ-TWIG).
+ *         page?: scalar|Param|null, // Default: "@NowoMaintenanceModeBundle/maintenance/page.html.twig"
+ *         panel_layout?: scalar|Param|null, // Default: "@NowoMaintenanceModeBundle/panel/layout.html.twig"
+ *         panel_index?: scalar|Param|null, // Default: "@NowoMaintenanceModeBundle/panel/index.html.twig"
+ *         panel_login?: scalar|Param|null, // Default: "@NowoMaintenanceModeBundle/panel/login.html.twig"
+ *         panel_history?: scalar|Param|null, // Default: "@NowoMaintenanceModeBundle/panel/history.html.twig"
+ *     },
+ * }
+ * @psalm-type NowoBeaconConfig = array{
+ *     enabled?: bool|Param, // Master switch. When false, no events are sent even if DSN is set. // Default: true
+ *     dsn?: scalar|Param|null, // Beacon DSN: https://PUBLIC_KEY:SECRET_KEY@host:port/PROJECT_ID_OR_UUID (empty disables sending). Prefer %env(default::BEACON_DSN)%. // Default: ""
+ *     environment?: scalar|Param|null, // Environment tag sent with events (e.g. prod, staging). // Default: "%kernel.environment%"
+ *     release?: scalar|Param|null, // Optional release / version string attached to events. // Default: null
+ *     server_name?: scalar|Param|null, // Hostname tag for events. Defaults to gethostname() when null. // Default: null
+ *     verify_peer?: bool|Param, // TLS certificate verification. Set false for local self-signed Beacon HTTPS (dev only). // Default: true
+ *     timeout?: float|Param, // HTTP timeout in seconds for ingest requests. // Default: 5.0
+ *     transport?: array{ // Outbound Envelope delivery mode.
+ *         mode?: "sync"|"async"|"messenger"|Param, // sync = block on HTTP; async = start HTTP and finalize on kernel/console terminate; messenger = queue via Symfony Messenger (requires symfony/messenger). // Default: "sync"
+ *     },
+ *     register_error_listener?: bool|Param, // When true, register a kernel.exception listener that reports uncaught exceptions. // Default: true
+ *     ignore_exceptions?: list<scalar|Param|null>,
+ *     ignore_paths?: list<scalar|Param|null>,
+ *     register_console_listener?: bool|Param, // When true, report uncaught console command errors (ConsoleEvents::ERROR). // Default: true
+ *     register_messenger_listener?: bool|Param, // When true and symfony/messenger is installed, report WorkerMessageFailedEvent failures that will not retry. // Default: true
+ *     register_fatal_handler?: bool|Param, // When true, register a shutdown function that reports fatal PHP errors (E_ERROR, E_PARSE, …). // Default: true
+ *     include_scheduler_context?: bool|Param, // When true and a Messenger failure envelope carries Symfony Scheduler ScheduledStamp, attach extra.scheduler (name, recurring id, trigger, triggered_at). Never attaches the message body. // Default: true
+ *     auto_http_transaction?: bool|Param, // When true, send a performance transaction for each main HTTP request (skips ignore_paths). // Default: false
+ *     before_send?: scalar|Param|null, // Optional service id of an invokable that receives the event/transaction payload array and returns the mutated array, or null to drop the send. // Default: null
+ *     instrumentation?: array{ // Opt-in automatic spans / breadcrumbs for Doctrine SQL and HttpClient requests.
+ *         doctrine?: bool|Param, // When true and doctrine/dbal is installed, record SQL query spans and breadcrumbs. // Default: false
+ *         http_client?: bool|Param, // When true, decorate http_client to record outbound HTTP spans and breadcrumbs (Beacon Envelope calls are skipped). // Default: false
+ *     },
+ *     monolog_handler?: array{ // Optional Monolog handler (requires monolog/monolog). Disabled by default.
+ *         enabled?: bool|Param, // Default: false
+ *         level?: scalar|Param|null, // Minimum Monolog level to forward (e.g. error, warning). // Default: "error"
+ *     },
+ *     send?: array{ // Opt-in/out switches for categories of context attached to outbound events.
+ *         environment?: bool|Param, // Send environment tag. // Default: true
+ *         release?: bool|Param, // Send release / code version when configured. // Default: true
+ *         server_name?: bool|Param, // Send server hostname tag. // Default: true
+ *         stacktrace?: bool|Param, // Send stack frames and culprit for exceptions, and current stack for captureMessage(). // Default: true
+ *         request?: bool|Param, // Attach current HTTP request (url/method/query) to events and transactions when a request is available. // Default: true
+ *         user?: bool|Param, // Send authenticated user summary (may include PII). Disabled by default. // Default: false
+ *         runtime?: bool|Param, // Send PHP runtime version in contexts.runtime. // Default: true
+ *         framework?: bool|Param, // Send Symfony version in contexts.framework when available. // Default: true
+ *         os?: bool|Param, // Send OS family/version in contexts.os. // Default: true
+ *         client?: bool|Param, // Attach client IP and User-Agent on HTTP events (PII). Disabled by default. // Default: false
+ *     },
+ * }
+ * @psalm-type NowoPhoneInputConfig = array{
+ *     country_prefix_selector?: bool|Param, // Enable country prefix selector by default // Default: true
+ *     default_country?: scalar|Param|null, // Default ISO 3166-1 alpha-2 country code // Default: "ES"
+ *     preferred_countries?: list<scalar|Param|null>,
+ *     allowed_countries?: list<scalar|Param|null>,
+ *     excluded_countries?: list<scalar|Param|null>,
+ *     value_format?: "CONCATENATED"|"SEPARATED"|"OBJECT"|Param, // Default model value format // Default: "CONCATENATED"
+ *     prefix_display?: "FULL"|"PREFIX_ONLY"|"FLAG_ONLY"|"FLAG_AND_PREFIX"|"ISO_AND_PREFIX"|Param, // How country prefixes are displayed in the selector // Default: "FLAG_AND_PREFIX"
+ *     show_flag?: bool|Param, // Show country flags in the prefix selector (set false for prefix-only UI) // Default: true
+ *     prefix_search?: bool|Param, // Show a search box in the visual prefix dropdown // Default: true
+ *     flag_display?: "EMOJI"|"CSS_ICON"|"UX_ICON"|"NONE"|Param, // How country flags are rendered in the prefix selector // Default: "CSS_ICON"
+ *     container_classes?: list<scalar|Param|null>,
+ *     prefix_selector_classes?: list<scalar|Param|null>,
+ *     national_number_classes?: list<scalar|Param|null>,
+ *     use_phone_form_theme?: bool|Param, // Use the bundle form theme for rendering // Default: true
+ *     trim?: bool|Param, // Trim whitespace from national number input // Default: true
+ *     invalid_message?: scalar|Param|null, // Default: "The phone number is invalid."
+ *     phone_validation?: "COUNTRY"|"PREFIX"|"NONE"|Param, // Validate national numbers using country ISO (COUNTRY), dial prefix (PREFIX) or disable (NONE) // Default: "COUNTRY"
+ *     use_libphonenumber?: bool|Param, // Use giggsey/libphonenumber-for-php when installed for validation // Default: true
+ * }
+ * @psalm-type NowoDeviceIntelligenceConfig = array{
+ *     enabled?: bool|Param, // Default: true
+ *     default_profile?: scalar|Param|null, // Default: "default"
+ *     profiles?: array<string, array{ // Default: {"default":[]}
+ *         collectors?: list<scalar|Param|null>,
+ *         matching?: array{
+ *             minimum_confidence?: float|Param, // Default: 0.75
+ *             weights?: array<string, float|Param>,
+ *             candidate_limit?: int|Param, // Default: 64
+ *             lookback?: scalar|Param|null, // Default: "P180D"
+ *             on_low_confidence?: "new_device"|"reject"|Param, // Default: "new_device"
+ *         },
+ *         risk?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             levels?: array{
+ *                 low?: int|Param, // Default: 0
+ *                 medium?: int|Param, // Default: 30
+ *                 high?: int|Param, // Default: 65
+ *                 critical?: int|Param, // Default: 90
+ *             },
+ *             decisions?: array{
+ *                 observe?: int|Param, // Default: 40
+ *                 step_up?: int|Param, // Default: 70
+ *                 block?: int|Param, // Default: 90
+ *             },
+ *             rules?: array<string, array{ // Default: {"new_device":{"enabled":true,"weight":null},"multiple_accounts":{"enabled":true,"weight":null},"rapid_account_creation":{"enabled":true,"weight":null},"device_velocity":{"enabled":true,"weight":null},"fingerprint_mutation":{"enabled":true,"weight":null},"automation":{"enabled":true,"weight":null},"suspicious_login":{"enabled":true,"weight":null},"impossible_travel":{"enabled":true,"weight":null},"session_change":{"enabled":true,"weight":null},"ip_change":{"enabled":true,"weight":null},"country_change":{"enabled":true,"weight":null},"trusted_device":{"enabled":true,"weight":null}}
+ *                 enabled?: bool|Param, // Default: true
+ *                 weight?: mixed, // Default: null
+ *             }>,
+ *         },
+ *         trusted_devices?: array{
+ *             enabled?: bool|Param, // Default: true
+ *             default_ttl?: scalar|Param|null, // Default: "P90D"
+ *         },
+ *         privacy?: array{
+ *             mode?: "strict"|"balanced"|"full"|Param, // Default: "balanced"
+ *             hash_ip?: bool|Param, // Default: true
+ *             store_raw_ip?: bool|Param, // Default: false
+ *             store_user_agent?: bool|Param, // Default: true
+ *             high_entropy_consent?: bool|Param, // Default: true
+ *         },
+ *         rate_limit?: array{
+ *             policies?: array<string, array{ // Default: {"collect":{"limit":60,"interval":"1 minute"}}
+ *                 limit?: int|Param, // Default: 60
+ *                 interval?: scalar|Param|null, // Default: "1 minute"
+ *             }>,
+ *         },
+ *     }>,
+ *     endpoint?: array{
+ *         enabled?: bool|Param, // Default: true
+ *         path?: scalar|Param|null, // Default: "/_device/collect"
+ *         csrf?: "origin"|"double_submit"|"none"|Param, // Default: "origin"
+ *         max_payload_bytes?: int|Param, // Default: 65536
+ *         timestamp_skew?: int|Param, // Default: 300
+ *         replay_protection?: bool|Param, // Default: true
+ *         allowed_origins?: list<scalar|Param|null>,
+ *         response?: array{
+ *             device_id?: bool|Param, // Default: false
+ *             confidence?: bool|Param, // Default: false
+ *             risk?: bool|Param, // Default: false
+ *             token?: bool|Param, // Default: true
+ *         },
+ *     },
+ *     doctrine?: array{
+ *         enabled?: bool|Param, // Default: true
+ *         table_prefix?: scalar|Param|null, // Default: "device_intelligence_"
+ *     },
+ *     cache?: array{
+ *         pool?: scalar|Param|null, // Default: "cache.app"
+ *     },
+ *     messenger?: array{
+ *         enabled?: bool|Param, // Default: false
+ *         transport?: scalar|Param|null, // Default: null
+ *     },
+ *     profiler?: bool|Param, // Default: true
+ *     observe_on_every_request?: bool|Param, // Default: false
+ *     token_cookie?: array{
+ *         name?: scalar|Param|null, // Default: "di_obs"
+ *         path?: scalar|Param|null, // Default: "/"
+ *         domain?: scalar|Param|null, // Default: null
+ *         secure?: scalar|Param|null, // Default: "auto"
+ *         httponly?: bool|Param, // Default: true
+ *         samesite?: "lax"|"strict"|"none"|Param, // Default: "lax"
+ *     },
+ *     token_ttl?: int|Param, // Default: 3600
+ *     ip_salt?: scalar|Param|null, // Default: ""
+ *     ...<string, mixed>
+ * }
+ * @psalm-type NowoOtpInputConfig = array{
+ *     length?: int|Param, // Default: 6
+ *     numeric_only?: bool|Param, // Default: true
+ *     uppercase?: bool|Param, // Default: true
+ *     form_theme?: scalar|Param|null, // Default: "form_div_layout.html.twig"
+ * }
+ * @psalm-type NowoSlideToConfirmConfig = array{
+ *     default_profile?: scalar|Param|null, // Name of the profile used when the form option profile is omitted. // Default: "default"
+ *     translation_domain?: scalar|Param|null, // Default translation domain for slider texts (bundle uses NowoSlideToConfirmBundle). // Default: "NowoSlideToConfirmBundle"
+ *     form_theme?: scalar|Param|null, // Base form layout template. Must match a Symfony form theme (e.g. bootstrap_5_layout.html.twig). // Default: "form_div_layout.html.twig"
+ *     debug?: bool|Param, // When true, the frontend logs debug messages to the console. // Default: false
+ *     profiles?: array<string, array{ // Default: {"default":{"text":"form.slide_to_confirm","confirmed_text":"form.confirmed","hint":"form.hint.default","variant":"default","threshold":0.85,"submit_on_confirm":true,"reset_on_release":true},"danger":{"text":"form.slide_to_delete","confirmed_text":"form.deleted","hint":"form.hint.danger","variant":"danger","threshold":0.92,"submit_on_confirm":true,"reset_on_release":true},"payment":{"text":"form.slide_to_pay","confirmed_text":"form.paid","hint":"form.hint.payment","variant":"payment","threshold":0.9,"submit_on_confirm":true,"reset_on_release":true},"legal":{"text":"form.slide_to_agree","confirmed_text":"form.agreed","hint":"form.hint.legal","variant":"legal","threshold":0.95,"submit_on_confirm":true,"reset_on_release":true},"publish":{"text":"form.slide_to_publish","confirmed_text":"form.published","hint":"form.hint.publish","variant":"success","threshold":0.85,"submit_on_confirm":true,"reset_on_release":true},"gate":{"text":"form.slide_to_unlock","confirmed_text":"form.unlocked","hint":"form.hint.gate","variant":"default","threshold":0.85,"submit_on_confirm":false,"reset_on_release":false}}
+ *         text?: scalar|Param|null, // Default: "form.slide_to_confirm"
+ *         confirmed_text?: scalar|Param|null, // Default: "form.confirmed"
+ *         hint?: scalar|Param|null, // Default: "form.hint.default"
+ *         variant?: scalar|Param|null, // Default: "default"
+ *         threshold?: float|Param, // Default: 0.85
+ *         submit_on_confirm?: bool|Param, // Default: true
+ *         reset_on_release?: bool|Param, // Default: true
+ *     }>,
  * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
@@ -2460,6 +2789,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     nowo_select_all_choice?: NowoSelectAllChoiceConfig,
  *     nowo_site_backup?: NowoSiteBackupConfig,
  *     nowo_routing_kit?: NowoRoutingKitConfig,
+ *     nowo_maintenance_mode?: NowoMaintenanceModeConfig,
+ *     nowo_beacon?: NowoBeaconConfig,
+ *     nowo_phone_input?: NowoPhoneInputConfig,
+ *     nowo_device_intelligence?: NowoDeviceIntelligenceConfig,
+ *     nowo_otp_input?: NowoOtpInputConfig,
+ *     nowo_slide_to_confirm?: NowoSlideToConfirmConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -2473,6 +2808,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         web_profiler?: WebProfilerConfig,
  *         nowo_twig_inspector?: NowoTwigInspectorConfig,
+ *         nowo_hot_reload?: NowoHotReloadConfig,
  *         nowo_auth_kit?: NowoAuthKitConfig,
  *         nowo_password_strength?: NowoPasswordStrengthConfig,
  *         nowo_password_toggle?: NowoPasswordToggleConfig,
@@ -2497,6 +2833,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nowo_select_all_choice?: NowoSelectAllChoiceConfig,
  *         nowo_site_backup?: NowoSiteBackupConfig,
  *         nowo_routing_kit?: NowoRoutingKitConfig,
+ *         nowo_maintenance_mode?: NowoMaintenanceModeConfig,
+ *         nowo_beacon?: NowoBeaconConfig,
+ *         nowo_phone_input?: NowoPhoneInputConfig,
+ *         nowo_device_intelligence?: NowoDeviceIntelligenceConfig,
+ *         nowo_otp_input?: NowoOtpInputConfig,
+ *         nowo_slide_to_confirm?: NowoSlideToConfirmConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -2533,6 +2875,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nowo_select_all_choice?: NowoSelectAllChoiceConfig,
  *         nowo_site_backup?: NowoSiteBackupConfig,
  *         nowo_routing_kit?: NowoRoutingKitConfig,
+ *         nowo_maintenance_mode?: NowoMaintenanceModeConfig,
+ *         nowo_beacon?: NowoBeaconConfig,
+ *         nowo_phone_input?: NowoPhoneInputConfig,
+ *         nowo_device_intelligence?: NowoDeviceIntelligenceConfig,
+ *         nowo_otp_input?: NowoOtpInputConfig,
+ *         nowo_slide_to_confirm?: NowoSlideToConfirmConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -2547,6 +2895,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         web_profiler?: WebProfilerConfig,
  *         nowo_twig_inspector?: NowoTwigInspectorConfig,
+ *         nowo_hot_reload?: NowoHotReloadConfig,
  *         nowo_auth_kit?: NowoAuthKitConfig,
  *         nowo_password_strength?: NowoPasswordStrengthConfig,
  *         nowo_password_toggle?: NowoPasswordToggleConfig,
@@ -2571,6 +2920,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nowo_select_all_choice?: NowoSelectAllChoiceConfig,
  *         nowo_site_backup?: NowoSiteBackupConfig,
  *         nowo_routing_kit?: NowoRoutingKitConfig,
+ *         nowo_maintenance_mode?: NowoMaintenanceModeConfig,
+ *         nowo_beacon?: NowoBeaconConfig,
+ *         nowo_phone_input?: NowoPhoneInputConfig,
+ *         nowo_device_intelligence?: NowoDeviceIntelligenceConfig,
+ *         nowo_otp_input?: NowoOtpInputConfig,
+ *         nowo_slide_to_confirm?: NowoSlideToConfirmConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

@@ -1,0 +1,46 @@
+{#
+    Shared shell for admin index/list pages: header, FormKit GET filter, table panel.
+
+    Expects: title, intro, search_route, filter_form (FormView from GetFilterFormFactory).
+    Optional: create_route, create_label.
+    Blocks: header_actions, search_extras, table_head, table_body, after_table.
+#}
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+        <h1 class="font-[family-name:var(--font-display)] text-3xl font-bold">{{ title|trans }}</h1>
+        <p class="mt-1 text-sm text-[var(--color-ink)]/65">{{ intro|trans }}</p>
+    </div>
+    {% block header_actions %}
+        {% if create_route is defined %}
+            <a class="btn-primary no-underline" href="{{ path(create_route) }}">{{ create_label|trans }}</a>
+        {% endif %}
+    {% endblock %}
+</div>
+
+{{ form_start(filter_form, {attr: {class: 'mb-4 flex flex-wrap items-end gap-2'}}) }}
+    {% for field in filter_form %}
+        {% if not field.rendered and 'hidden' not in field.vars.block_prefixes %}
+            {{ form_row(field, {
+                label: false,
+                attr: {
+                    class: 'input min-w-56 flex-1',
+                    autocomplete: 'off',
+                },
+                row_attr: {class: 'grow min-w-56'},
+            }) }}
+        {% endif %}
+    {% endfor %}
+    {% block search_extras %}{% endblock %}
+    <button class="btn-ghost" type="submit">{{ 'common.filter'|trans }}</button>
+    <a class="btn-ghost no-underline" href="{{ path(search_route) }}">{{ 'common.clear_filters'|trans }}</a>
+    {% include 'form/_fields.html.twig' with {form: filter_form} only %}
+{{ form_end(filter_form, {render_rest: false}) }}
+
+<section class="panel overflow-x-auto">
+    <table class="w-full text-left text-sm">
+        {% block table_head %}{% endblock %}
+        {% block table_body %}{% endblock %}
+    </table>
+</section>
+
+{% block after_table %}{% endblock %}

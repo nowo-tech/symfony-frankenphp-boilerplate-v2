@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Support;
 
 use App\Identity\Entity\User;
+use App\Identity\Service\InstanceRbacSeeder;
 use App\Setup\Demo\BreadcrumbDemoSeeder;
 use App\Setup\Demo\CookieConsentDemoSeeder;
 use App\Setup\Demo\DashboardMenuDemoSeeder;
@@ -12,6 +13,7 @@ use App\Shared\Settings\Repository\InstanceSettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use FilesystemIterator;
+use Nowo\DashboardMenuBundle\Repository\MenuRepository;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -28,7 +30,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 abstract class DatabaseWebTestCase extends WebTestCase
 {
     /**
-     * When true (default), menus/breadcrumbs/cookie consent are seeded after schema create so
+     * When true (default), menus/breadcrumbs/cookie consent/RBAC permissions are seeded after schema create so
      * {@see PlatformCatalogsSetupRedirectSubscriber} does not force HTML traffic to /setup.
      * Opt out in cold-start tests that need empty catalogs.
      */
@@ -180,13 +182,16 @@ abstract class DatabaseWebTestCase extends WebTestCase
     }
 
     /**
-     * Install menus / breadcrumbs / cookie consent so admin HTML is not forced to /setup.
+     * Install menus / breadcrumbs / cookie consent / RBAC permissions so admin HTML is not forced to /setup.
      */
     protected function seedPlatformCatalogs(): void
     {
         self::getContainer()->get(DashboardMenuDemoSeeder::class)->seedIfEmpty();
         self::getContainer()->get(BreadcrumbDemoSeeder::class)->seedIfEmpty();
         self::getContainer()->get(CookieConsentDemoSeeder::class)->seedIfEmpty();
+        self::getContainer()->get(InstanceRbacSeeder::class)->seedIfEmpty();
+        // MenuRepository memoizes misses; clear after seed so PlatformBootstrapState sees new rows.
+        self::getContainer()->get(MenuRepository::class)->reset();
     }
 
     /**

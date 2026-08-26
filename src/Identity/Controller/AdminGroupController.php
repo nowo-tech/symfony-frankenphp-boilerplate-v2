@@ -10,12 +10,16 @@ use App\Identity\Entity\User;
 use App\Identity\Entity\UserGroup;
 use App\Identity\Entity\UserGroupMembership;
 use App\Identity\Form\AdminGroupType;
+use App\Identity\Form\GroupFilterType;
 use App\Identity\Repository\UserActionRepository;
 use App\Identity\Repository\UserGroupMembershipRepository;
 use App\Identity\Repository\UserGroupRepository;
 use App\Identity\Repository\UserRepository;
 use App\Identity\Service\UserActionRecorder;
 use App\Identity\UserActionType;
+use App\Shared\Controller\RequiresValidFormTrait;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
+use Nowo\FormKitBundle\Form\GetFilterFormFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +37,8 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 #[IsGranted('ROLE_ADMIN')]
 final class AdminGroupController extends AbstractController
 {
+    use RequiresValidFormTrait;
+
     public function __construct(
         private readonly UserGroupRepository $groupRepository,
         private readonly UserGroupMembershipRepository $groupMembershipRepository,
@@ -40,6 +46,8 @@ final class AdminGroupController extends AbstractController
         private readonly UserActionRecorder $actionRecorder,
         private readonly UserActionRepository $userActionRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly CsrfOnlyFormFactory $csrfOnlyFormFactory,
+        private readonly GetFilterFormFactory $filterFormFactory,
     ) {
     }
 
@@ -47,7 +55,13 @@ final class AdminGroupController extends AbstractController
     #[Route('/admin/groups', name: 'admin_groups', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $query = $request->query->getString('q');
+        $filterForm = $this->filterFormFactory->create(GroupFilterType::class, [], [
+            'action' => $this->generateUrl('admin_groups'),
+        ]);
+        $filterForm->handleRequest($request);
+        $query = $filterForm->isSubmitted() && $filterForm->isValid()
+            ? (string) ($filterForm->get('q')->getData() ?? '')
+            : $request->query->getString('q');
         $groups = $this->groupRepository->findAllOrdered('' !== $query ? $query : null);
         $groupIds = [];
         foreach ($groups as $group) {
@@ -60,6 +74,7 @@ final class AdminGroupController extends AbstractController
         return $this->render('admin/groups/index.html.twig', [
             'groups' => $groups,
             'q' => $query,
+            'filter_form' => $filterForm->createView(),
             'member_counts' => $this->groupMembershipRepository->countByGroupIds($groupIds),
         ]);
     }
@@ -109,6 +124,22 @@ final class AdminGroupController extends AbstractController
         $auditActions = AdminIdentityAudit::groupTimelineActions();
         $audit = AdminAuditFilter::fromRequest($request, $auditActions);
 
+        $removeMemberForms = [];
+        foreach ($group->getMemberships() as $membership) {
+            $membershipId = $membership->getId();
+            $member = $membership->getUser();
+            if (null === $membershipId || null === $member) {
+                continue;
+            }
+            $removeMemberForms[$membershipId] = $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_groups_members_remove', [
+                    'groupId' => $group->getUuid(),
+                    'userId' => $member->getUuid(),
+                ]),
+                'admin_group_member_remove_'.$membershipId,
+            )->createView();
+        }
+
         return $this->render('admin/groups/show.html.twig', [
             'group' => $group,
             'groupAuditActions' => $auditActions,
@@ -121,6 +152,15 @@ final class AdminGroupController extends AbstractController
                 $audit['to'],
                 AdminIdentityAudit::TIMELINE_LIMIT,
             ),
+            'deleteForm' => $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_groups_delete', ['id' => $group->getUuid()]),
+                'admin_group_delete_'.$group->getId(),
+            )->createView(),
+            'addMemberForm' => $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_groups_members_add', ['id' => $group->getUuid()]),
+                'admin_group_member_add_'.$group->getId(),
+            )->createView(),
+            'removeMemberForms' => $removeMemberForms,
         ]);
     }
 
@@ -170,9 +210,12 @@ final class AdminGroupController extends AbstractController
         UserGroup $group,
         Request $request,
     ): RedirectResponse {
-        if (!$this->isCsrfTokenValid('admin_group_delete_'.$group->getId(), $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->csrfOnlyFormFactory->createNamed(
+            $this->generateUrl('admin_groups_delete', ['id' => $group->getUuid()]),
+            'admin_group_delete_'.$group->getId(),
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         $name = $group->getName();
         $uuid = $group->getUuid();
@@ -198,9 +241,12 @@ final class AdminGroupController extends AbstractController
         UserGroup $group,
         Request $request,
     ): RedirectResponse {
-        if (!$this->isCsrfTokenValid('admin_group_member_add_'.$group->getId(), $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->csrfOnlyFormFactory->createNamed(
+            $this->generateUrl('admin_groups_members_add', ['id' => $group->getUuid()]),
+            'admin_group_member_add_'.$group->getId(),
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         $user = $this->userRepository->findOneByEmail($request->request->getString('email'));
         if (!$user instanceof User) {
@@ -249,9 +295,15 @@ final class AdminGroupController extends AbstractController
         if (!$membership instanceof UserGroupMembership) {
             throw $this->createNotFoundException();
         }
-        if (!$this->isCsrfTokenValid('admin_group_member_remove_'.$membership->getId(), $request->request->getString('_token'))) {
-            throw $this->createAccessDeniedException('Invalid CSRF token.');
-        }
+        $form = $this->csrfOnlyFormFactory->createNamed(
+            $this->generateUrl('admin_groups_members_remove', [
+                'groupId' => $group->getUuid(),
+                'userId' => $user->getUuid(),
+            ]),
+            'admin_group_member_remove_'.$membership->getId(),
+        );
+        $form->handleRequest($request);
+        $this->requireValidCsrfForm($form);
 
         $group->removeMembership($membership);
         $this->entityManager->remove($membership);

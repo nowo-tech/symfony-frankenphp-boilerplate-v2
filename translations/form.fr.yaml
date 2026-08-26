@@ -1,0 +1,5 @@
+# Host FormKit catalogue (REQ-FORMKIT-003). Domain: form
+admin_role_user_add:
+  email:
+    label: E-mail de l’utilisateur
+    placeholder: utilisateur@exemple.com

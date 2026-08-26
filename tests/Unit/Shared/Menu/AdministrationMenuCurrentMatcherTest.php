@@ -1,0 +1,47 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Unit\Shared\Menu;
+
+use App\Shared\Menu\AdministrationMenuCurrentMatcher;
+use Nowo\DashboardMenuBundle\Entity\MenuItem;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
+
+final class AdministrationMenuCurrentMatcherTest extends TestCase
+{
+    #[Test]
+    public function marksKitPrefixRoutes(): void
+    {
+        $matcher = new AdministrationMenuCurrentMatcher();
+        $item = new MenuItem();
+        $item->setRouteName('nowo_http_log_admin_index');
+        $item->setItemType(MenuItem::ITEM_TYPE_LINK);
+
+        $request = Request::create('/admin/http-log/1');
+        $request->attributes->set('_route', 'nowo_http_log_admin_show');
+
+        self::assertTrue($matcher->isCurrent($item, $request, '/admin/http-log'));
+
+        $maintenance = new MenuItem();
+        $maintenance->setRouteName('nowo_maintenance_mode_panel_index');
+        $maintenance->setItemType(MenuItem::ITEM_TYPE_LINK);
+        $maintenanceRequest = Request::create('/admin/maintenance/history');
+        $maintenanceRequest->attributes->set('_route', 'nowo_maintenance_mode_panel_history');
+        self::assertTrue($matcher->isCurrent($maintenance, $maintenanceRequest, '/admin/maintenance'));
+    }
+
+    #[Test]
+    public function marksAppearanceOnSectionRoutes(): void
+    {
+        $matcher = new AdministrationMenuCurrentMatcher();
+
+        $appearance = new MenuItem();
+        $appearance->setRouteName('admin_appearance');
+        $appearanceRequest = Request::create('/admin/appearance/brand');
+        $appearanceRequest->attributes->set('_route', 'admin_appearance_section');
+        self::assertTrue($matcher->isCurrent($appearance, $appearanceRequest, '/admin/appearance'));
+    }
+}

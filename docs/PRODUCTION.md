@@ -32,7 +32,7 @@ CI already builds this target (`.github/workflows/ci.yml`).
 - `SITE_BACKUP_PASSWORD_HASH` — bcrypt/argon hash for `/_site_backup` (not the `.env.dist` local default)
 - Optional: `FRANKENPHP_MODE`, `FRANKENPHP_WORKER_NUM`, `FRANKENPHP_LOOP_MAX`, `FRANKENPHP_RESET_KERNEL`
 
-`App\Setup\SiteBackupSecurityDefaultsGuard` **refuses HTTP (and most console) boots outside local `dev`/`test`** (including `prod`, `staging`, and any other `APP_ENV`) if `SITE_SETUP_TOKEN` is empty/local or `SITE_BACKUP_PASSWORD_HASH` is still the documented local hash. `compose.prod.yaml` also requires both variables via `${VAR:?…}`.
+`App\Setup\SiteBackupSecurityDefaultsGuard` **refuses HTTP (and most console) boots outside local `dev`/`test`** (including `prod`, `staging`, and any other `APP_ENV`) if `SITE_SETUP_TOKEN` is empty/local, `SITE_BACKUP_PASSWORD_HASH` is still the documented local hash, or `APP_SECRET` is empty / still `ChangeMePleaseUseARealSecret` / shorter than 16 characters. `compose.prod.yaml` also requires SiteBackup secrets via `${VAR:?…}`. Generate `APP_SECRET` with `openssl rand -hex 32` before exposing the instance.
 
 Image builds (`frankenphp_prod` `composer post-install-cmd` → `cache:clear`) skip the guard for `cache:clear` / `cache:warmup` / `assets:install` only, so the Docker bake can warm caches without embedding runtime SiteBackup secrets. The first real HTTP request still fails closed until operators inject unique secrets.
 
@@ -56,7 +56,7 @@ docker run --rm -p 8080:80 -p 8443:443 \
 Optional Compose overlay for a full stack without bind-mounts:
 
 ```bash
-docker compose -f compose.prod.yaml --env-file .env up --build -d
+docker compose -f compose.prod.yaml --env-file .env.local up --build -d
 ```
 
 See [`compose.prod.yaml`](../compose.prod.yaml). Prefer a real secrets manager in production; do not reuse the `!ChangeMe!` placeholders from `.env.dist`.

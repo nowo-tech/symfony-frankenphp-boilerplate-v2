@@ -79,6 +79,96 @@ HTML;
         self::assertStringNotContainsString('<script>', $content);
     }
 
+    public function testRewritesBreadcrumbLayoutAssignments(): void
+    {
+        $html = <<<'HTML'
+<html><body>
+<script>
+window.__breadcrumbKitDashboard = window.__breadcrumbKitDashboard || {};
+window.__breadcrumbKitDashboard.cssFramework = 'bootstrap5';
+window.__breadcrumbKitDashboard.importPartialUrl = '/partial';
+window.__breadcrumbKitDashboard.dashboardBase = '/dash';
+</script>
+</body></html>
+HTML;
+
+        $content = (string) $this->dispatch($html)->getContent();
+        self::assertStringContainsString('data-kit="breadcrumb-kit"', $content);
+        self::assertStringContainsString('"cssFramework":"bootstrap5"', $content);
+        self::assertStringContainsString('"importPartialUrl":"/partial"', $content);
+        self::assertStringContainsString('"dashboardBase":"/dash"', $content);
+    }
+
+    public function testSkipsNonHtmlContentTypeEvenWithMarkers(): void
+    {
+        $html = '<script>window.__nowoDashboardMenuConfig = Object.assign(window.__nowoDashboardMenuConfig || {}, { menuId: 1 });</script>';
+        $response = $this->dispatch($html, contentType: 'application/json');
+        self::assertSame($html, $response->getContent());
+    }
+
+    public function testSkipsSubRequests(): void
+    {
+        $html = '<script>window.__nowoDashboardMenuConfig = Object.assign(window.__nowoDashboardMenuConfig || {}, { menuId: 1 });</script>';
+        $kernel = $this->createStub(KernelInterface::class);
+        $response = new Response($html, Response::HTTP_OK, ['Content-Type' => 'text/html']);
+        $event = new ResponseEvent($kernel, Request::create('/'), HttpKernelInterface::SUB_REQUEST, $response);
+        (new KitInlineConfigScriptSubscriber())($event);
+        self::assertSame($html, $response->getContent());
+    }
+
+    public function testEmptyContentIsIgnored(): void
+    {
+        $response = $this->dispatch('');
+        self::assertSame('', $response->getContent());
+    }
+
+    public function testDecodeJsValueBranchesAndMalformedObjectLiteral(): void
+    {
+        $html = <<<'HTML'
+<html><body>
+<script>
+window.__breadcrumbKitDashboard = window.__breadcrumbKitDashboard || {};
+window.__breadcrumbKitDashboard.cssFramework = true;
+window.__breadcrumbKitDashboard.importPartialUrl = false;
+window.__breadcrumbKitDashboard.dashboardBase = 1.5;
+</script>
+<script>
+window.__breadcrumbKitDashboard = window.__breadcrumbKitDashboard || {};
+window.__breadcrumbKitDashboard.cssFramework = 2;
+window.__breadcrumbKitDashboard.importPartialUrl = {"a":1};
+window.__breadcrumbKitDashboard.dashboardBase = bareWord;
+</script>
+<script>
+window.__nowoDashboardMenuConfig = Object.assign(window.__nowoDashboardMenuConfig || {}, { broken: function () {} });
+</script>
+</body></html>
+HTML;
+
+        $content = (string) $this->dispatch($html)->getContent();
+        self::assertStringContainsString('"cssFramework":true', $content);
+        self::assertStringContainsString('"importPartialUrl":false', $content);
+        self::assertStringContainsString('"dashboardBase":1.5', $content);
+        self::assertStringContainsString('"cssFramework":2', $content);
+        self::assertStringContainsString('"importPartialUrl":{"a":1}', $content);
+        self::assertStringContainsString('"dashboardBase":"bareWord"', $content);
+        self::assertStringContainsString('data-kit="dashboard-menu">{}</script>', $content);
+    }
+
+    public function testJsonEncodeFailureKeepsOriginalBreadcrumbScript(): void
+    {
+        $html = <<<'HTML'
+<html><body>
+<script>
+window.__breadcrumbKitDashboard = window.__breadcrumbKitDashboard || {};
+window.__breadcrumbKitDashboard.dashboardBase = 1.0e309;
+</script>
+</body></html>
+HTML;
+
+        $content = (string) $this->dispatch($html)->getContent();
+        self::assertStringContainsString('window.__breadcrumbKitDashboard.dashboardBase = 1.0e309', $content);
+    }
+
     #[DataProvider('untouchedProvider')]
     public function testLeavesUnrelatedHtmlAlone(string $html): void
     {
@@ -94,11 +184,11 @@ HTML;
         yield 'json island already' => ['<html><body><script type="application/json" id="x">{}</script></body></html>'];
     }
 
-    private function dispatch(string $html): Response
+    private function dispatch(string $html, string $contentType = 'text/html; charset=UTF-8'): Response
     {
         $kernel = $this->createStub(KernelInterface::class);
         $request = Request::create('/');
-        $response = new Response($html, Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
+        $response = new Response($html, Response::HTTP_OK, ['Content-Type' => $contentType]);
         $event = new ResponseEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST, $response);
         (new KitInlineConfigScriptSubscriber())($event);
 

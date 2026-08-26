@@ -2,6 +2,16 @@
 
 declare(strict_types=1);
 
+/*
+ * PHP-CS-Fixer — PER-CS 3.0 (PSR-12 successor) + official Symfony Coding Standards.
+ *
+ * This tool owns formatting, imports, native `\fn()`, and union/nullable style.
+ * Rector owns PHP 8.5 language upgrades, dead code, type inference, and attributes.
+ * Do not enable @PHP*Migration / @AutoPHPMigration here (would fight Rector withPhpSets).
+ *
+ * Run CS Fixer after Rector (`make rector-fix`).
+ */
+
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
     ->exclude([

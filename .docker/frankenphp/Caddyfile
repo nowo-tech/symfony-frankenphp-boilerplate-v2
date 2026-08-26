@@ -106,8 +106,27 @@ http://{$SERVER_NAME:localhost}, http://host.docker.internal, http://127.0.0.1 {
 		}
 	}
 
+	# Built-in Mercure (dev): required by php_server hot_reload (REQ-FP-007).
+	# Production uses Caddyfile.prod (no hot_reload). anonymous is OK for local only.
+	mercure {
+		anonymous
+	}
+
 	# classic: run PHP per request.
 	# worker:  if a worker is registered for ./public/index.php, requests to that
 	#          script are handled by the worker (no re-bootstrap).
-	php_server
+	# hot_reload: Caddy watches files and republishes via built-in Mercure; the
+	#             browser client (assets/frankenphp-hot-reload.ts) morphs the page.
+	#             Only in dev (this file). Never in Caddyfile.prod.
+	php_server {
+		hot_reload {
+			watch src/**/*.{php}
+			watch config/**/*.{php,yaml,yml}
+			watch templates/**/*.twig
+			watch translations/**/*.{yaml,yml,xlf}
+			watch assets/**/*.{ts,js,scss,css,json}
+			watch .env
+			watch composer.json
+		}
+	}
 }
