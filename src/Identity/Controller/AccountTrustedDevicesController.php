@@ -7,6 +7,7 @@ namespace App\Identity\Controller;
 use App\Identity\Entity\User;
 use App\Identity\Service\AccountTrustedDevices;
 use App\Shared\Controller\RequiresValidFormTrait;
+use Nowo\DeviceIntelligence\Device\Device;
 use Nowo\DeviceIntelligence\Device\DeviceId;
 use Nowo\DeviceIntelligence\Device\DeviceManager;
 use Nowo\DeviceIntelligence\Exception\InvalidValueException;
@@ -55,13 +56,13 @@ final class AccountTrustedDevicesController extends AbstractController
 
         $currentLabel = null;
         $currentId = $this->accountTrustedDevices->currentDeviceId($device);
-        if (null !== $device) {
+        if ($device instanceof DeviceContext) {
             $label = $device->device()->label;
             $currentLabel = '' !== $label ? $label : $currentId;
         }
 
         return $this->render('account/security_devices.html.twig', [
-            'has_current_device' => null !== $device,
+            'has_current_device' => $device instanceof DeviceContext,
             'current_trusted' => $device?->isTrusted() ?? false,
             'current_label' => $currentLabel,
             'current_id' => $currentId,
@@ -87,7 +88,7 @@ final class AccountTrustedDevicesController extends AbstractController
         $form->handleRequest($request);
         $this->requireValidCsrfForm($form);
 
-        if (null === $device) {
+        if (!$device instanceof DeviceContext) {
             $this->addFlash('error', 'flash.preferences.device_missing');
 
             return $this->redirectToRoute('account_security_devices');
@@ -130,7 +131,7 @@ final class AccountTrustedDevicesController extends AbstractController
         }
 
         $stored = $this->devices->get($id);
-        if (null === $stored) {
+        if (!$stored instanceof Device) {
             $this->addFlash('error', 'flash.preferences.device_unknown');
 
             return $this->redirectToRoute('account_security_devices');

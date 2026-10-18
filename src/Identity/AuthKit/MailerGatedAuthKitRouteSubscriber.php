@@ -28,7 +28,7 @@ final readonly class MailerGatedAuthKitRouteSubscriber implements EventSubscribe
     public function __construct(
         private ConfiguredMailer $mailer,
         private UrlGeneratorInterface $urlGenerator,
-        #[Autowire('%kernel.default_locale%')]
+        #[Autowire(param: 'kernel.default_locale')]
         private string $defaultLocale = 'en',
     ) {
     }

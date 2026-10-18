@@ -6,6 +6,7 @@ namespace App\Identity\Entity;
 
 use App\Identity\Repository\InstanceRoleRepository;
 use App\Shared\Doctrine\PublicUuidTrait;
+use App\Shared\Rbac\RbacRoleSubject;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,7 +22,7 @@ use Nowo\AuditKitBundle\Model\TimestampableTrait;
 #[ORM\Table(name: 'role')]
 #[ORM\UniqueConstraint(name: 'uniq_role_code', columns: ['code'])]
 #[ORM\UniqueConstraint(name: 'uniq_role_uuid', columns: ['uuid'])]
-class InstanceRole implements AuditableInterface
+class InstanceRole implements AuditableInterface, RbacRoleSubject
 {
     use PublicUuidTrait;
     use TimestampableTrait;

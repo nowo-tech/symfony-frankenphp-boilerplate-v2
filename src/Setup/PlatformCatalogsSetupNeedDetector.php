@@ -18,13 +18,13 @@ use Throwable;
  * Authenticated non-admins are not gated (Nowo Shell FR-006).
  */
 #[AsSetupNeedDetector(priority: 50)]
-final class PlatformCatalogsSetupNeedDetector implements SetupNeedDetectorInterface
+final readonly class PlatformCatalogsSetupNeedDetector implements SetupNeedDetectorInterface
 {
     public function __construct(
-        private readonly PlatformBootstrapState $platformBootstrapState,
-        private readonly AuthorizationCheckerInterface $authorizationChecker,
-        #[Autowire('%app.setup.check_platform_catalogs%')]
-        private readonly bool $enabled = true,
+        private PlatformBootstrapState $platformBootstrapState,
+        private AuthorizationCheckerInterface $authorizationChecker,
+        #[Autowire(param: 'app.setup.check_platform_catalogs')]
+        private bool $enabled = true,
     ) {
     }
 

@@ -616,11 +616,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, HasPass
         return $this;
     }
 
-    public function eraseCredentials(): void
-    {
-        $this->plainPassword = null;
-    }
-
     /**
      * @return Collection<int, InstanceRole>
      */
@@ -668,5 +663,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, HasPass
     public function setUpdatedBy(?object $updatedBy): void
     {
         $this->updatedBy = $updatedBy instanceof self ? $updatedBy : null;
+    }
+
+    /** Drops the transient plain password (Symfony 8 removed UserInterface::eraseCredentials()). */
+    public function clearPlainPassword(): void
+    {
+        $this->plainPassword = null;
     }
 }

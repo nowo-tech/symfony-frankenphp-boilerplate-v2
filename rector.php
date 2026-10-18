@@ -33,10 +33,11 @@ return RectorConfig::configure()
         SetList::CODE_QUALITY,
         SetList::DEAD_CODE,
         SetList::TYPE_DECLARATION,
-        SymfonySetList::SYMFONY_81,
         SymfonySetList::SYMFONY_CODE_QUALITY,
         SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
     ])
+    // Rector 2.x has no SymfonySetList::SYMFONY_8x: the Symfony sets follow composer.json's symfony/* versions.
+    ->withComposerBased(symfony: true)
     ->withAttributesSets(symfony: true, doctrine: true)
     ->withImportNames(removeUnusedImports: true)
 ;

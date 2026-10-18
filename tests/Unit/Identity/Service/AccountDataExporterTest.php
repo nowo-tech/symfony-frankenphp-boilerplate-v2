@@ -20,6 +20,7 @@ use Nowo\AuthKitBundle\Repository\SocialLoginAccountRepository;
 use Nowo\AuthKitBundle\SocialLogin\SocialLoginGate;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionProperty;
 
 final class AccountDataExporterTest extends TestCase
 {
@@ -67,10 +68,10 @@ final class AccountDataExporterTest extends TestCase
         $socialAccounts = new AccountSocialAccounts($this->unusedGate(), $socialRepo);
 
         // Persisted id required for linkedFor()
-        $id = new \ReflectionProperty(User::class, 'id');
+        $id = new ReflectionProperty(User::class, 'id');
         $id->setValue($user, 5);
 
-        $doc = (new AccountDataExporter($memberships, $actions, $socialAccounts))->export($user);
+        $doc = new AccountDataExporter($memberships, $actions, $socialAccounts)->export($user);
 
         self::assertSame('app-account-export/v1', $doc['schema']);
         self::assertSame('person@example.com', $doc['account']['email']);
@@ -97,7 +98,7 @@ final class AccountDataExporterTest extends TestCase
         $socialRepo->method('findBy')->willReturn([]);
         $socialAccounts = new AccountSocialAccounts($this->unusedGate(), $socialRepo);
 
-        $doc = (new AccountDataExporter($memberships, $actions, $socialAccounts))->export($user);
+        $doc = new AccountDataExporter($memberships, $actions, $socialAccounts)->export($user);
 
         self::assertSame([], $doc['group_memberships']);
         self::assertSame([], $doc['security_activity']);
@@ -109,6 +110,6 @@ final class AccountDataExporterTest extends TestCase
 
     private function unusedGate(): SocialLoginGate
     {
-        return (new ReflectionClass(SocialLoginGate::class))->newInstanceWithoutConstructor();
+        return new ReflectionClass(SocialLoginGate::class)->newInstanceWithoutConstructor();
     }
 }

@@ -7,8 +7,8 @@ namespace App\Identity\Form;
 use App\Identity\Entity\InstancePermission;
 use App\Identity\Security\Permission;
 use App\Identity\Service\InstancePermissionCategoryCatalog;
-use App\Shared\Rbac\RbacPermissionTranslator;
 use App\Shared\Form\FormKitAbstractType;
+use App\Shared\Rbac\RbacPermissionTranslator;
 use Nowo\FormKitBundle\Form\FormOptionsMerger;
 use Nowo\FormKitBundle\Form\FormTypeMap;
 use Override;
@@ -128,7 +128,7 @@ final class AdminInstancePermissionType extends FormKitAbstractType
             }
         });
 
-        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) use ($locales, $defaultLocale): void {
+        $builder->addEventListener(FormEvents::SUBMIT, static function (FormEvent $event) use ($locales, $defaultLocale): void {
             $permission = $event->getData();
             if (!$permission instanceof InstancePermission) {
                 return;
@@ -147,9 +147,9 @@ final class AdminInstancePermissionType extends FormKitAbstractType
                 }
             }
             $permission->syncTranslations($names, $descriptions);
-            $fallbackName = $names[$defaultLocale] ?? (array_values($names)[0] ?? $permission->getName());
+            $fallbackName = $names[$defaultLocale] ?? (array_first($names) ?? $permission->getName());
             $permission->setName($fallbackName);
-            $fallbackDescription = $descriptions[$defaultLocale] ?? (array_values($descriptions)[0] ?? null);
+            $fallbackDescription = $descriptions[$defaultLocale] ?? (array_first($descriptions) ?? null);
             $permission->setDescription($fallbackDescription);
         });
     }

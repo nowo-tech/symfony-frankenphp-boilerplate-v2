@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 final readonly class SetupAdvanceTimeLimitSubscriber
 {
     public function __construct(
-        #[Autowire('%nowo.site_backup.process_timeout%')]
+        #[Autowire(param: 'nowo.site_backup.process_timeout')]
         private int $processTimeoutSeconds,
     ) {
     }

@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 final readonly class UserDisplayPreferencesDefaultsListener
 {
     public function __construct(
-        #[Autowire('%default_locale%')]
+        #[Autowire(param: 'default_locale')]
         private string $defaultLocale,
     ) {
     }

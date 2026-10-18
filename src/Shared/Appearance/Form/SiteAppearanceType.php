@@ -11,6 +11,7 @@ use App\Shared\Form\FormKitAbstractType;
 use Override;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -100,7 +101,7 @@ final class SiteAppearanceType extends FormKitAbstractType
     }
 
     /**
-     * @param list<\Symfony\Component\Validator\Constraint> $hex
+     * @param list<Constraint> $hex
      */
     private function addColorFields(?AppearanceSettingsSubtab $subtab, array $hex): void
     {
@@ -113,7 +114,7 @@ final class SiteAppearanceType extends FormKitAbstractType
     }
 
     /**
-     * @param list<\Symfony\Component\Validator\Constraint> $hex
+     * @param list<Constraint> $hex
      */
     private function addAccentColorFields(array $hex): void
     {
@@ -124,7 +125,7 @@ final class SiteAppearanceType extends FormKitAbstractType
     }
 
     /**
-     * @param list<\Symfony\Component\Validator\Constraint> $hex
+     * @param list<Constraint> $hex
      */
     private function addStatusColorFields(array $hex): void
     {
@@ -135,7 +136,7 @@ final class SiteAppearanceType extends FormKitAbstractType
     }
 
     /**
-     * @param list<\Symfony\Component\Validator\Constraint> $hex
+     * @param list<Constraint> $hex
      */
     private function addSurfaceColorFields(array $hex): void
     {

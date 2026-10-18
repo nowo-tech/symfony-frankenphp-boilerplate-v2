@@ -13,6 +13,7 @@ use App\Shared\Appearance\Repository\SiteAppearanceRepository;
 use App\Shared\Appearance\SiteAppearanceProvider;
 use App\Shared\Controller\RequiresValidFormTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,7 +34,7 @@ final class AppearanceSettingsController extends AbstractController
     }
 
     #[Route('/settings/appearance', name: 'settings_appearance', methods: ['GET'])]
-    public function index(): Response
+    public function index(): RedirectResponse
     {
         return $this->redirectToRoute('settings_appearance_section', [
             'section' => AppearanceSettingsSection::Themes->value,
@@ -65,7 +66,7 @@ final class AppearanceSettingsController extends AbstractController
         }
 
         $subEnum = $this->resolveSubtab($sectionEnum, $sub);
-        if (null !== $sectionEnum->defaultSubtab() && null === $subEnum) {
+        if (null !== $sectionEnum->defaultSubtab() && !$subEnum instanceof AppearanceSettingsSubtab) {
             return $this->redirectToRoute('settings_appearance_section', [
                 'section' => $sectionEnum->value,
                 'sub' => $sectionEnum->defaultSubtab()->value,
@@ -145,7 +146,7 @@ final class AppearanceSettingsController extends AbstractController
     private function sectionParams(AppearanceSettingsSection $section, ?AppearanceSettingsSubtab $sub): array
     {
         $params = ['section' => $section->value];
-        if (null !== $sub) {
+        if ($sub instanceof AppearanceSettingsSubtab) {
             $params['sub'] = $sub->value;
         }
 

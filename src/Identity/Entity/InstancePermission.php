@@ -6,6 +6,8 @@ namespace App\Identity\Entity;
 
 use App\Identity\Repository\InstancePermissionRepository;
 use App\Shared\Doctrine\PublicUuidTrait;
+use App\Shared\Rbac\RbacPermissionCategorySubject;
+use App\Shared\Rbac\RbacPermissionSubject;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,7 +23,7 @@ use Nowo\AuditKitBundle\Model\TimestampableTrait;
 #[ORM\Table(name: 'permission')]
 #[ORM\UniqueConstraint(name: 'uniq_permission_key', columns: ['permission_key'])]
 #[ORM\UniqueConstraint(name: 'uniq_permission_uuid', columns: ['uuid'])]
-class InstancePermission implements AuditableInterface
+class InstancePermission implements AuditableInterface, RbacPermissionSubject, RbacPermissionCategorySubject
 {
     use PublicUuidTrait;
     use TimestampableTrait;

@@ -33,7 +33,7 @@ final class MessengerQueueHealthTest extends TestCase
 
     public function testFallsBackToDoctrineWhenTransportsCannotCount(): void
     {
-        $schema = $this->createStub(AbstractSchemaManager::class);
+        $schema = $this->createMock(AbstractSchemaManager::class);
         $schema->method('tablesExist')->willReturn(true);
         $connection = $this->createStub(Connection::class);
         $connection->method('createSchemaManager')->willReturn($schema);
@@ -43,14 +43,14 @@ final class MessengerQueueHealthTest extends TestCase
 
         self::assertSame(
             ['pending' => 3, 'available' => true, 'failed' => 1],
-            (new MessengerQueueHealth($em))->asyncPending(),
+            new MessengerQueueHealth($em)->asyncPending(),
         );
     }
 
     public function testAsyncPendingWhenTableMissing(): void
     {
-        $schema = $this->createStub(AbstractSchemaManager::class);
-        $schema->method('tablesExist')->with(['messenger_messages'])->willReturn(false);
+        $schema = $this->createMock(AbstractSchemaManager::class);
+        $schema->expects(self::atLeastOnce())->method('tablesExist')->with(['messenger_messages'])->willReturn(false);
 
         $connection = $this->createStub(Connection::class);
         $connection->method('createSchemaManager')->willReturn($schema);
@@ -60,13 +60,13 @@ final class MessengerQueueHealthTest extends TestCase
 
         self::assertSame(
             ['pending' => null, 'available' => false, 'failed' => null],
-            (new MessengerQueueHealth($em))->asyncPending(),
+            new MessengerQueueHealth($em)->asyncPending(),
         );
     }
 
     public function testAsyncPendingWhenFetchOneReturnsFalse(): void
     {
-        $schema = $this->createStub(AbstractSchemaManager::class);
+        $schema = $this->createMock(AbstractSchemaManager::class);
         $schema->method('tablesExist')->willReturn(true);
 
         $connection = $this->createStub(Connection::class);
@@ -78,7 +78,7 @@ final class MessengerQueueHealthTest extends TestCase
 
         self::assertSame(
             ['pending' => null, 'available' => false, 'failed' => null],
-            (new MessengerQueueHealth($em))->asyncPending(),
+            new MessengerQueueHealth($em)->asyncPending(),
         );
     }
 
@@ -89,7 +89,7 @@ final class MessengerQueueHealthTest extends TestCase
 
         self::assertSame(
             ['pending' => null, 'available' => false, 'failed' => null],
-            (new MessengerQueueHealth($em))->asyncPending(),
+            new MessengerQueueHealth($em)->asyncPending(),
         );
     }
 
@@ -107,7 +107,7 @@ final class MessengerQueueHealthTest extends TestCase
 
         self::assertSame(
             ['pending' => 4, 'available' => true, 'failed' => null],
-            (new MessengerQueueHealth($em, $this->countingTransport(4), $throwing))->asyncPending(),
+            new MessengerQueueHealth($em, $this->countingTransport(4), $throwing)->asyncPending(),
         );
     }
 

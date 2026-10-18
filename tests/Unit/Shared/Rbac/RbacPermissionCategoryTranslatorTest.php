@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Shared\Rbac;
 
+use App\Shared\Rbac\RbacPermissionCategorySubject;
 use App\Shared\Rbac\RbacPermissionCategoryTranslator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -39,7 +40,7 @@ final class RbacPermissionCategoryTranslatorTest extends TestCase
 
     public function testNameReturnsTranslationWhenKeyExists(): void
     {
-        $this->translator->method('trans')
+        $this->translator->expects(self::atLeastOnce())->method('trans')
             ->with('permissions.category.org.name')
             ->willReturn('Organization');
 
@@ -56,13 +57,13 @@ final class RbacPermissionCategoryTranslatorTest extends TestCase
 
     public function testNameAcceptsPermissionObject(): void
     {
-        $permission = new class {
+        $permission = new class implements RbacPermissionCategorySubject {
             public function getCategory(): string
             {
                 return 'instance';
             }
         };
-        $this->translator->method('trans')
+        $this->translator->expects(self::atLeastOnce())->method('trans')
             ->with('permissions.category.instance.name')
             ->willReturn('Instance');
 
@@ -71,7 +72,7 @@ final class RbacPermissionCategoryTranslatorTest extends TestCase
 
     public function testDescriptionReturnsTranslationWhenKeyExists(): void
     {
-        $this->translator->method('trans')
+        $this->translator->expects(self::atLeastOnce())->method('trans')
             ->with('permissions.category.navigation.description')
             ->willReturn('Menus, breadcrumbs, and cookie consent.');
 

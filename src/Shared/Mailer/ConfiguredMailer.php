@@ -28,9 +28,9 @@ final class ConfiguredMailer implements MailerInterface, ResetInterface
     public function __construct(
         private readonly InstanceSettingsRepository $settingsRepository,
         private readonly MailerDsnValidator $dsnValidator,
-        #[Autowire('%env(MAILER_DSN)%')]
+        #[Autowire(env: 'MAILER_DSN')]
         private readonly string $envMailerDsn,
-        #[Autowire('%kernel.environment%')]
+        #[Autowire(param: 'kernel.environment')]
         private readonly string $environment = 'prod',
     ) {
     }

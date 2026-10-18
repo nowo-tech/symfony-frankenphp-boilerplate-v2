@@ -24,7 +24,7 @@ final readonly class EnsureHaliteSecretsDirectoryListener
     private const int KEY_MODE = 0600;
 
     public function __construct(
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private string $projectDir,
     ) {
     }

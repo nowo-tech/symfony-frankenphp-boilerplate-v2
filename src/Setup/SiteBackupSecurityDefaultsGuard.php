@@ -48,15 +48,15 @@ final class SiteBackupSecurityDefaultsGuard implements EventSubscriberInterface
     private bool $checked = false;
 
     public function __construct(
-        #[Autowire('%kernel.environment%')]
+        #[Autowire(param: 'kernel.environment')]
         private readonly string $environment,
         #[Autowire('%env(default::SITE_SETUP_TOKEN)%')]
         private readonly ?string $setupToken,
         #[Autowire('%env(default::SITE_BACKUP_PASSWORD_HASH)%')]
         private readonly ?string $panelPasswordHash,
-        #[Autowire('%kernel.secret%')]
+        #[Autowire(param: 'kernel.secret')]
         private readonly string $appSecret = '',
-        #[Autowire('%env(REDIS_URL)%')]
+        #[Autowire(env: 'REDIS_URL')]
         private readonly string $redisUrl = '',
         #[Autowire('%env(default::REDIS_PASSWORD)%')]
         private readonly ?string $redisPassword = null,

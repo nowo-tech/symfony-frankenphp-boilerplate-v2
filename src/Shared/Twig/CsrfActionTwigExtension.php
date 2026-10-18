@@ -7,31 +7,19 @@ namespace App\Shared\Twig;
 use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use Nowo\FormKitBundle\Form\Type\HiddenFieldsCsrfType;
 use Nowo\FormKitBundle\Form\Type\SearchQueryType;
-use Override;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormView;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
 /**
  * Twig helpers for CSRF-only and GET search forms in shared includes / kit forks.
  */
-final class CsrfActionTwigExtension extends AbstractExtension
+final readonly class CsrfActionTwigExtension
 {
     public function __construct(
-        private readonly CsrfOnlyFormFactory $csrfOnlyFormFactory,
-        private readonly FormFactoryInterface $formFactory,
+        private CsrfOnlyFormFactory $csrfOnlyFormFactory,
+        private FormFactoryInterface $formFactory,
     ) {
-    }
-
-    #[Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('csrf_action_form', $this->csrfActionForm(...)),
-            new TwigFunction('search_query_form', $this->searchQueryForm(...)),
-            new TwigFunction('flat_hidden_fields', $this->flatHiddenFields(...)),
-        ];
     }
 
     /**
@@ -41,6 +29,7 @@ final class CsrfActionTwigExtension extends AbstractExtension
      * @param array<string, string>               $fieldTypes
      * @param array<string, array<string, mixed>> $fieldOptions
      */
+    #[AsTwigFunction(name: 'csrf_action_form')]
     public function csrfActionForm(
         string $action,
         string $csrfTokenId,
@@ -71,6 +60,7 @@ final class CsrfActionTwigExtension extends AbstractExtension
     /**
      * @param array<string, scalar|null> $fields
      */
+    #[AsTwigFunction(name: 'flat_hidden_fields')]
     public function flatHiddenFields(array $fields): FormView
     {
         $data = [];
@@ -87,6 +77,7 @@ final class CsrfActionTwigExtension extends AbstractExtension
     /**
      * @param array<string, scalar|null> $inputAttr
      */
+    #[AsTwigFunction(name: 'search_query_form')]
     public function searchQueryForm(string $action, string $q = '', array $inputAttr = []): FormView
     {
         return $this->formFactory->create(SearchQueryType::class, null, [

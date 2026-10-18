@@ -35,10 +35,7 @@ final readonly class RbacPermissionCategoryTranslator
         return 'permissions.category.'.$this->catalogSlug($category).'.description';
     }
 
-    /**
-     * @param string|object{getCategory(): string} $categoryOrPermission
-     */
-    public function name(string|object $categoryOrPermission): string
+    public function name(string|RbacPermissionCategorySubject $categoryOrPermission): string
     {
         $slug = $this->resolveSlug($categoryOrPermission);
         $key = $this->nameKey($slug);
@@ -50,10 +47,7 @@ final readonly class RbacPermissionCategoryTranslator
         return $translated;
     }
 
-    /**
-     * @param string|object{getCategory(): string} $categoryOrPermission
-     */
-    public function description(string|object $categoryOrPermission): ?string
+    public function description(string|RbacPermissionCategorySubject $categoryOrPermission): ?string
     {
         $slug = $this->resolveSlug($categoryOrPermission);
         $key = $this->descriptionKey($slug);
@@ -67,10 +61,7 @@ final readonly class RbacPermissionCategoryTranslator
         return '' === $value ? null : $value;
     }
 
-    /**
-     * @param string|object{getCategory(): string} $categoryOrPermission
-     */
-    private function resolveSlug(string|object $categoryOrPermission): string
+    private function resolveSlug(string|RbacPermissionCategorySubject $categoryOrPermission): string
     {
         if (\is_string($categoryOrPermission)) {
             return $this->catalogSlug($categoryOrPermission);

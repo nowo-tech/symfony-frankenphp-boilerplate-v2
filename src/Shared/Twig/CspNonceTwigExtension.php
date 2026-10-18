@@ -5,30 +5,21 @@ declare(strict_types=1);
 namespace App\Shared\Twig;
 
 use App\Shared\Http\ContentSecurityPolicySubscriber;
-use Override;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
 /**
  * Exposes the per-request CSP nonce for host {@code <style>} blocks.
  */
-final class CspNonceTwigExtension extends AbstractExtension
+final readonly class CspNonceTwigExtension
 {
     public function __construct(
-        private readonly RequestStack $requestStack,
+        private RequestStack $requestStack,
     ) {
     }
 
-    #[Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('csp_nonce', $this->nonce(...)),
-        ];
-    }
-
+    #[AsTwigFunction(name: 'csp_nonce')]
     public function nonce(): string
     {
         $request = $this->requestStack->getCurrentRequest();

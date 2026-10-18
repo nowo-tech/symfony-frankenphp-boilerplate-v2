@@ -26,7 +26,7 @@ final readonly class UserPreferredLocaleSubscriber implements EventSubscriberInt
     public function __construct(
         private TokenStorageInterface $tokenStorage,
         private TranslatorInterface $translator,
-        #[Autowire('%default_locale%')]
+        #[Autowire(param: 'default_locale')]
         private string $defaultLocale,
     ) {
     }

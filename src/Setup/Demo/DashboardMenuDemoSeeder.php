@@ -320,7 +320,7 @@ final readonly class DashboardMenuDemoSeeder
             $item->setTranslations($translations);
             $changed = true;
         }
-        if (null !== $item->getParent()) {
+        if ($item->getParent() instanceof MenuItem) {
             $item->setParent(null);
             $changed = true;
         }

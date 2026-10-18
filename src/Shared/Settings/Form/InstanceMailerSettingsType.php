@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Settings\Form;
 
+use App\Shared\Form\FormKitAbstractType;
 use App\Shared\Mailer\MailerDsnValidator;
 use App\Shared\Settings\Entity\InstanceSettings;
-use App\Shared\Form\FormKitAbstractType;
 use Nowo\FormKitBundle\Form\FormOptionsMerger;
 use Nowo\FormKitBundle\Form\FormTypeMap;
 use Nowo\PasswordToggleBundle\Form\Type\PasswordType;

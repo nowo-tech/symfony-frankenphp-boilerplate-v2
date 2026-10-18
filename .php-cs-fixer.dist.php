@@ -24,6 +24,9 @@ $finder = (new PhpCsFixer\Finder())
     ->notPath([
         'config/bundles.php',
         'config/reference.php',
+        // Shadows is_readable() / file_get_contents() inside App\Shared\Http: the leading `\` reaches the real
+        // functions, and native_function_invocation would strip it (infinite recursion).
+        'tests/Support/JsonUploadReaderFsOverrides.php',
     ])
 ;
 

@@ -7,7 +7,7 @@ namespace App\Shared\Controller;
 use Nowo\CookieConsentBundle\Entity\CookieConsentConfig;
 use Nowo\CookieConsentBundle\Repository\CookieConsentConfigRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -23,7 +23,7 @@ final class CookieConsentAdminEntryController extends AbstractController
     }
 
     #[Route('/admin/cookie-consent', name: 'admin_cookie_consent', methods: ['GET'])]
-    public function __invoke(): Response
+    public function __invoke(): RedirectResponse
     {
         $config = $this->configRepository->findDefaultEnabled();
         if (!$config instanceof CookieConsentConfig) {

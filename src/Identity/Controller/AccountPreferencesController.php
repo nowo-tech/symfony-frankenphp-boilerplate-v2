@@ -186,7 +186,7 @@ final class AccountPreferencesController extends AbstractController
             }
 
             $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-            $user->eraseCredentials();
+            $user->clearPlainPassword();
             $this->entityManager->flush();
             $this->addFlash('success', 'flash.preferences.password_saved');
 

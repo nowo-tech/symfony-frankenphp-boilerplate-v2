@@ -28,7 +28,6 @@ final class CsrfActionTwigExtensionTest extends TestCase
             ->willReturn($form);
 
         $ext = new CsrfActionTwigExtension(new CsrfOnlyFormFactory($formFactory), $formFactory);
-        self::assertCount(3, $ext->getFunctions());
         self::assertSame($view, $ext->csrfActionForm('/action', 'token-id'));
         self::assertSame($view, $ext->csrfActionForm('/action', 'token-id', fields: ['enabled' => '1']));
         self::assertSame($view, $ext->searchQueryForm('/search', 'q', ['placeholder' => 'Search']));

@@ -10,7 +10,6 @@ use App\Identity\Exception\AccountAnonymizeException;
 use App\Identity\Repository\UserRepository;
 use App\Identity\Service\AccountAnonymizer;
 use App\Identity\Service\UserActionRecorder;
-use App\Identity\UserActionType;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Nowo\AuthKitBundle\Entity\SocialLoginAccount;
@@ -50,7 +49,7 @@ final class AccountAnonymizerTest extends TestCase
         $em->expects(self::once())->method('flush');
 
         $users = $this->createMock(UserRepository::class);
-        $users->method('countAdmins')->with(true)->willReturn(2);
+        $users->expects(self::atLeastOnce())->method('countAdmins')->with(true)->willReturn(2);
 
         $socialRepo = $this->createMock(SocialLoginAccountRepository::class);
         $socialRepo->method('findBy')->willReturn([$social]);
@@ -60,7 +59,7 @@ final class AccountAnonymizerTest extends TestCase
 
         $recorder = new UserActionRecorder($em, new RequestStack());
 
-        (new AccountAnonymizer($em, $users, $socialRepo, $hasher, $recorder))->anonymize($subject, $actor);
+        new AccountAnonymizer($em, $users, $socialRepo, $hasher, $recorder)->anonymize($subject, $actor);
 
         self::assertTrue($subject->isAnonymized());
         self::assertFalse($subject->isEnabled());
@@ -97,13 +96,13 @@ final class AccountAnonymizerTest extends TestCase
         $this->expectException(AccountAnonymizeException::class);
         $this->expectExceptionMessage(AccountAnonymizeException::LAST_ADMIN);
 
-        (new AccountAnonymizer(
+        new AccountAnonymizer(
             $this->createMock(EntityManagerInterface::class),
             $users,
             $this->createMock(SocialLoginAccountRepository::class),
             $this->createMock(UserPasswordHasherInterface::class),
             new UserActionRecorder($this->createMock(EntityManagerInterface::class), new RequestStack()),
-        ))->anonymize($subject, new User());
+        )->anonymize($subject, new User());
     }
 
     public function testIsLastAdminFalseForNonAdmin(): void
@@ -136,7 +135,7 @@ final class AccountAnonymizerTest extends TestCase
 
         $recorder = new UserActionRecorder($em, new RequestStack());
 
-        (new AccountAnonymizer($em, $users, $socialRepo, $hasher, $recorder))
+        new AccountAnonymizer($em, $users, $socialRepo, $hasher, $recorder)
             ->anonymize($subject, new User());
 
         self::assertTrue($subject->isAnonymized());

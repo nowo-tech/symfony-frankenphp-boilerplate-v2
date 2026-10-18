@@ -11,11 +11,11 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Idempotent upsert of the built-in instance permission catalog.
  */
-final class InstanceRbacSeeder
+final readonly class InstanceRbacSeeder
 {
     public function __construct(
-        private readonly InstancePermissionRepository $permissionRepository,
-        private readonly EntityManagerInterface $entityManager,
+        private InstancePermissionRepository $permissionRepository,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 

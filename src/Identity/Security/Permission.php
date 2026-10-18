@@ -57,11 +57,7 @@ final class Permission
             return false;
         }
 
-        if (str_starts_with($attribute, 'ROLE_') || str_starts_with($attribute, 'IS_')) {
-            return false;
-        }
-
-        return true;
+        return !str_starts_with($attribute, 'ROLE_') && !str_starts_with($attribute, 'IS_');
     }
 
     /**

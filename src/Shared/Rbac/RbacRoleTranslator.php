@@ -34,10 +34,7 @@ final readonly class RbacRoleTranslator
         return 'roles.catalog.'.$this->catalogSlug($code).'.description';
     }
 
-    /**
-     * @param object{getCode(): string, getName(): string} $role
-     */
-    public function name(object $role): string
+    public function name(RbacRoleSubject $role): string
     {
         $key = $this->nameKey($role->getCode());
         $translated = $this->translator->trans($key);
@@ -48,10 +45,7 @@ final readonly class RbacRoleTranslator
         return $translated;
     }
 
-    /**
-     * @param object{getCode(): string, getDescription(): ?string} $role
-     */
-    public function description(object $role): ?string
+    public function description(RbacRoleSubject $role): ?string
     {
         $key = $this->descriptionKey($role->getCode());
         $translated = $this->translator->trans($key);

@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-require_once dirname(__DIR__, 3).'/Support/JsonUploadReaderFsOverrides.php';
+require_once \dirname(__DIR__, 3).'/Support/JsonUploadReaderFsOverrides.php';
 
 final class JsonUploadReaderTest extends TestCase
 {

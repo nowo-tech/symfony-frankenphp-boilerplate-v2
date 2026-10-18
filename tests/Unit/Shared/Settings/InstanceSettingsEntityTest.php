@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Shared\Settings;
 use App\Identity\Entity\User;
 use App\Shared\Settings\Entity\InstanceSettings;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class InstanceSettingsEntityTest extends TestCase
 {
@@ -40,7 +41,7 @@ final class InstanceSettingsEntityTest extends TestCase
         $user->setEmail('a@example.com');
         $user->setDisplayName('A');
         $settings->setCreatedBy($user);
-        $settings->setUpdatedBy(new \stdClass());
+        $settings->setUpdatedBy(new stdClass());
         self::assertSame($user, $settings->getCreatedBy());
         self::assertNull($settings->getUpdatedBy());
     }

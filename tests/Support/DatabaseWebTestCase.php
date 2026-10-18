@@ -36,6 +36,12 @@ abstract class DatabaseWebTestCase extends WebTestCase
      */
     protected bool $autoSeedPlatformCatalogs = true;
 
+    /**
+     * When true (default), InstanceSettings is marked setup-completed so the SiteBackup durable-done short-circuit
+     * sends `/setup` traffic home. Cold-start tests of the setup wizard / token gate opt out.
+     */
+    protected bool $markSetupCompleted = true;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -69,7 +75,9 @@ abstract class DatabaseWebTestCase extends WebTestCase
         if ([] !== $meta) {
             $schemaTool->createSchema($meta);
         }
-        $this->seedTestInstanceDefaults();
+        if ($this->markSetupCompleted) {
+            $this->seedTestInstanceDefaults();
+        }
         if ($this->autoSeedPlatformCatalogs) {
             $this->seedPlatformCatalogs();
         }
@@ -205,6 +213,17 @@ abstract class DatabaseWebTestCase extends WebTestCase
             $settings->markSetupCompleted();
             $repository->save($settings);
         }
+    }
+
+    /**
+     * Undo {@see seedTestInstanceDefaults()} for one test (setup wizard reachable again).
+     */
+    protected function clearSetupCompleted(): void
+    {
+        $repository = self::getContainer()->get(InstanceSettingsRepository::class);
+        $settings = $repository->getOrCreate();
+        $settings->clearSetupCompleted();
+        $repository->save($settings);
     }
 
     protected function login(KernelBrowser $client, User $user): void

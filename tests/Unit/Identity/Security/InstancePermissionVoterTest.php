@@ -11,6 +11,7 @@ use App\Identity\Repository\InstanceRoleRepository;
 use App\Identity\Security\InstancePermissionVoter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionProperty;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
@@ -52,14 +53,14 @@ final class InstancePermissionVoterTest extends TestCase
     public function testAssignedPermissionGranted(): void
     {
         $user = new User();
-        $ref = new \ReflectionProperty(User::class, 'id');
+        $ref = new ReflectionProperty(User::class, 'id');
         $ref->setValue($user, 7);
 
         $permission = new InstancePermission();
         $permission->setKey('admin.mailer.manage');
 
-        $this->permissions->method('findOneByKey')->with('admin.mailer.manage')->willReturn($permission);
-        $this->roles->method('findPermissionKeysForUserId')->with(7)->willReturn(['admin.mailer.manage']);
+        $this->permissions->expects(self::atLeastOnce())->method('findOneByKey')->with('admin.mailer.manage')->willReturn($permission);
+        $this->roles->expects(self::atLeastOnce())->method('findPermissionKeysForUserId')->with(7)->willReturn(['admin.mailer.manage']);
 
         $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
 

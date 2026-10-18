@@ -14,6 +14,7 @@ use App\Identity\Repository\InstanceRoleRepository;
 use App\Identity\Repository\UserGroupMembershipRepository;
 use App\Identity\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class IdentityRepositoryHelpersTest extends TestCase
@@ -147,9 +148,9 @@ final class IdentityRepositoryHelpersTest extends TestCase
      *
      * @param class-string<T> $class
      *
-     * @return T&\PHPUnit\Framework\MockObject\MockObject
+     * @return T&MockObject
      */
-    private function partialRepo(string $class): object
+    private function partialRepo(string $class): MockObject
     {
         return $this->getMockBuilder($class)
             ->disableOriginalConstructor()

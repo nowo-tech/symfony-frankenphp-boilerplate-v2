@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Identity\Entity;
 
 use App\Identity\Entity\InstancePermission;
-use App\Identity\Entity\InstancePermissionTranslation;
 use App\Identity\Entity\InstanceRole;
 use App\Identity\Entity\User;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class InstanceRoleTest extends TestCase
 {
@@ -62,7 +62,7 @@ final class InstanceRoleTest extends TestCase
         $user->setEmail('blame@example.com');
 
         $role->setCreatedBy($user);
-        $role->setUpdatedBy(new \stdClass());
+        $role->setUpdatedBy(new stdClass());
         self::assertSame($user, $role->getCreatedBy());
         self::assertNull($role->getUpdatedBy());
 

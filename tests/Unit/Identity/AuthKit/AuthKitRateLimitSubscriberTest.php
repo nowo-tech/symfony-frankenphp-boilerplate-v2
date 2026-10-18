@@ -38,7 +38,8 @@ final class AuthKitRateLimitSubscriberTest extends TestCase
 
         $subscriber->onKernelRequest($event);
         $subscriber->onKernelRequest($event);
-        self::assertTrue(true);
+        // No limiter hit and no exception: the subscriber let both requests through.
+        $this->addToAssertionCount(1);
     }
 
     public function testMagicLoginAllowsThenBlocks(): void
@@ -70,12 +71,13 @@ final class AuthKitRateLimitSubscriberTest extends TestCase
         $reset = new PasswordResetRateLimitSubscriber($factory, 'prod');
 
         $magic->onKernelRequest($this->postEvent('other_route'));
-        $magic->onKernelRequest($this->event(Request::create('/', 'GET'), 'nowo_auth_kit_magic_login_request'));
+        $magic->onKernelRequest($this->event(Request::create('/', Request::METHOD_GET), 'nowo_auth_kit_magic_login_request'));
         $reset->onKernelRequest($this->postEvent('other_route'));
 
         $subRequest = $this->postEvent('nowo_auth_kit_magic_login_request', HttpKernelInterface::SUB_REQUEST);
         $magic->onKernelRequest($subRequest);
-        self::assertTrue(true);
+        // No limiter hit and no exception: the subscriber let both requests through.
+        $this->addToAssertionCount(1);
     }
 
     private function factory(int $limit): RateLimiterFactory
@@ -90,7 +92,7 @@ final class AuthKitRateLimitSubscriberTest extends TestCase
 
     private function postEvent(string $route, int $requestType = HttpKernelInterface::MAIN_REQUEST): RequestEvent
     {
-        $request = Request::create('/', 'POST', server: ['REMOTE_ADDR' => '203.0.113.10']);
+        $request = Request::create('/', Request::METHOD_POST, server: ['REMOTE_ADDR' => '203.0.113.10']);
         $request->attributes->set('_route', $route);
 
         return $this->event($request, $route, $requestType);

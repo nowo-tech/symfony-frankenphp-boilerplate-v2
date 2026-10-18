@@ -62,7 +62,7 @@ final class AccountSocialAccountsTest extends TestCase
 
     private function unusedGate(): SocialLoginGate
     {
-        return (new ReflectionClass(SocialLoginGate::class))->newInstanceWithoutConstructor();
+        return new ReflectionClass(SocialLoginGate::class)->newInstanceWithoutConstructor();
     }
 
     private function disabledProfileRegistry(): ProfileRegistry

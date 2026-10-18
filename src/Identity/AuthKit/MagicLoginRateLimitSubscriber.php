@@ -13,7 +13,7 @@ final readonly class MagicLoginRateLimitSubscriber extends AuthKitRouteRateLimit
     public function __construct(
         #[Autowire(service: 'limiter.magic_login')]
         RateLimiterFactory $magicLoginLimiter,
-        #[Autowire('%kernel.environment%')]
+        #[Autowire(param: 'kernel.environment')]
         string $environment = 'prod',
     ) {
         parent::__construct(

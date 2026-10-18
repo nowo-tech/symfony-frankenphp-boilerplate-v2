@@ -8,6 +8,7 @@ use App\Identity\Entity\InstanceRole;
 use App\Identity\Entity\User;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class UserCoverageTest extends TestCase
 {
@@ -56,7 +57,7 @@ final class UserCoverageTest extends TestCase
 
         $user->setPlainPassword('secret');
         self::assertSame('secret', $user->getPlainPassword());
-        $user->eraseCredentials();
+        $user->clearPlainPassword();
         self::assertNull($user->getPlainPassword());
 
         $user->setPreferredUiDensity('compact');
@@ -88,7 +89,7 @@ final class UserCoverageTest extends TestCase
 
         $other = new User();
         $user->setCreatedBy($other);
-        $user->setUpdatedBy(new \stdClass());
+        $user->setUpdatedBy(new stdClass());
         self::assertSame($other, $user->getCreatedBy());
         self::assertNull($user->getUpdatedBy());
     }

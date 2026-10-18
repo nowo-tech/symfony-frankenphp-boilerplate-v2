@@ -64,6 +64,8 @@ final class PublicLocaleRoutingTest extends DatabaseWebTestCase
     public function testLocalizedSetupUrlIsReachableWithoutCanonicalRedirect(): void
     {
         $client = self::createClient();
+        // Setup not completed, so the wizard answers (the test DB is marked done by default).
+        $this->clearSetupCompleted();
         // PHPUnit DEFAULT_LOCALE=en — /en/setup is a valid localized twin (no force-redirect to bare).
         $client->request(Request::METHOD_GET, '/en/setup?token=test-setup-token');
         if ($client->getResponse()->isRedirection()) {

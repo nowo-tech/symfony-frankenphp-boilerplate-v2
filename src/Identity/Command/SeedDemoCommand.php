@@ -9,6 +9,7 @@ use App\Setup\Demo\BreadcrumbDemoSeeder;
 use App\Setup\Demo\CookieConsentDemoSeeder;
 use App\Setup\Demo\DashboardMenuDemoSeeder;
 use App\Shared\Settings\Repository\InstanceSettingsRepository;
+use DateTimeImmutable;
 use LogicException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -80,7 +81,7 @@ final class SeedDemoCommand extends Command
         }
 
         $settings = $this->instanceSettingsRepository->getOrCreate();
-        if (null === $settings->getSetupCompletedAt()) {
+        if (!$settings->getSetupCompletedAt() instanceof DateTimeImmutable) {
             $settings->markSetupCompleted();
             $this->instanceSettingsRepository->save($settings);
             $io->success('Marked instance setup as completed');

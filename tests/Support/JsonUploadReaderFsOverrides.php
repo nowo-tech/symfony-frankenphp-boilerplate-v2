@@ -17,6 +17,9 @@ function is_readable(string $filename): bool
     return \is_readable($filename);
 }
 
+/**
+ * @param resource|null $context
+ */
 function file_get_contents(string $filename, bool $use_include_path = false, $context = null, int $offset = 0, ?int $length = null): string|false
 {
     if (str_ends_with($filename, '.force-read-fail')) {

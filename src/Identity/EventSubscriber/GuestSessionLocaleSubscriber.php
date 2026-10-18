@@ -25,9 +25,9 @@ final readonly class GuestSessionLocaleSubscriber implements EventSubscriberInte
         private TokenStorageInterface $tokenStorage,
         private TranslatorInterface $translator,
         /** @var list<string> */
-        #[Autowire('%kernel.enabled_locales%')]
+        #[Autowire(param: 'kernel.enabled_locales')]
         private array $enabledLocales,
-        #[Autowire('%kernel.default_locale%')]
+        #[Autowire(param: 'kernel.default_locale')]
         private string $defaultLocale,
     ) {
     }

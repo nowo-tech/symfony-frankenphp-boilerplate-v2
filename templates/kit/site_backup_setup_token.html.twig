@@ -24,27 +24,21 @@
 
     <div class="setup-token-gate__panel">
         <h2 id="setup-token-heading" class="setup-token-gate__panel-title">{{ 'setup.token.field_label'|trans }}</h2>
-        {% set token_form = get_filter_form(
-            'App\\Setup\\Form\\SetupTokenGateType',
-            {token: app.request.query.get('token', '')},
-            {
-                action: pathPrefix,
-                method: 'GET',
-            }
-        ) %}
-        {% form_theme token_form with ['form/app_theme.html.twig'] %}
-        {{ form_start(token_form, {attr: {class: 'setup-token-gate__form'}}) }}
-            {{ form_row(token_form.token, {
-                label: false,
-                translation_domain: false,
-                attr: {
-                    'aria-labelledby': 'setup-token-heading',
-                    placeholder: 'setup.token.field_placeholder'|trans,
-                },
-            }) }}
+        {# SiteBackup 1.17 passes no form to this page: a plain GET form (no CSRF — read-only gate, token in the query). #}
+        <form class="setup-token-gate__form" method="get" action="{{ pathPrefix }}">
+            <input
+                class="input"
+                type="text"
+                name="token"
+                value="{{ app.request.query.get('token', '') }}"
+                aria-labelledby="setup-token-heading"
+                placeholder="{{ 'setup.token.field_placeholder'|trans }}"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+            >
             <button type="submit" class="setup-token-gate__submit">{{ 'setup.token.submit'|trans }}</button>
-            {% include 'form/_fields.html.twig' with {form: token_form} only %}
-        {{ form_end(token_form, {render_rest: false}) }}
+        </form>
 
         <details class="setup-token-gate__howto">
             <summary>{{ 'setup.token.howto'|trans }}</summary>

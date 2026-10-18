@@ -6,9 +6,9 @@ namespace App\Identity\Controller;
 
 use App\Identity\Entity\User;
 use App\Shared\Controller\RequiresValidFormTrait;
-use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;

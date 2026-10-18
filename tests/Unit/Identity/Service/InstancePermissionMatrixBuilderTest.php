@@ -13,8 +13,8 @@ final class InstancePermissionMatrixBuilderTest extends TestCase
 {
     public function testGroupsPermissionsByCategory(): void
     {
-        $admin = (new InstancePermission())->setKey('admin.users')->setCategory('administration');
-        $audit = (new InstancePermission())->setKey('audit.read')->setCategory('audit');
+        $admin = new InstancePermission()->setKey('admin.users')->setCategory('administration');
+        $audit = new InstancePermission()->setKey('audit.read')->setCategory('audit');
 
         $repo = $this->createStub(InstancePermissionRepository::class);
         $repo->method('findAllOrdered')->willReturn([$admin, $audit]);

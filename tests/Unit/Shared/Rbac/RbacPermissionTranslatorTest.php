@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Shared\Rbac;
 
+use App\Shared\Rbac\RbacPermissionSubject;
 use App\Shared\Rbac\RbacPermissionTranslator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -58,7 +59,7 @@ final class RbacPermissionTranslatorTest extends TestCase
     public function testNameReturnsYamlWhenDbLocaleMissing(): void
     {
         $permission = $this->permission('admin.hub.view', 'DB Hub', 'DB desc');
-        $this->translator->method('trans')
+        $this->translator->expects(self::atLeastOnce())->method('trans')
             ->with('permissions.catalog.admin_hub_view.name')
             ->willReturn('View administration hub');
 
@@ -91,7 +92,7 @@ final class RbacPermissionTranslatorTest extends TestCase
     public function testDescriptionReturnsYamlWhenDbLocaleMissing(): void
     {
         $permission = $this->permission('admin.ops.view', 'Ops', 'DB fallback');
-        $this->translator->method('trans')
+        $this->translator->expects(self::atLeastOnce())->method('trans')
             ->with('permissions.catalog.admin_ops_view.description')
             ->willReturn('Instance-wide spikes and failed deliveries.');
 
@@ -113,14 +114,6 @@ final class RbacPermissionTranslatorTest extends TestCase
     /**
      * @param array<string, string> $nameTranslations
      * @param array<string, string> $descriptionTranslations
-     *
-     * @return object{
-     *     getKey(): string,
-     *     getName(): string,
-     *     getDescription(): ?string,
-     *     getNameForLocale(string): ?string,
-     *     getDescriptionForLocale(string): ?string
-     * }
      */
     private function permission(
         string $key,
@@ -128,18 +121,18 @@ final class RbacPermissionTranslatorTest extends TestCase
         ?string $description,
         array $nameTranslations = [],
         array $descriptionTranslations = [],
-    ): object {
-        return new class($key, $name, $description, $nameTranslations, $descriptionTranslations) {
+    ): RbacPermissionSubject {
+        return new readonly class($key, $name, $description, $nameTranslations, $descriptionTranslations) implements RbacPermissionSubject {
             /**
              * @param array<string, string> $nameTranslations
              * @param array<string, string> $descriptionTranslations
              */
             public function __construct(
-                private readonly string $key,
-                private readonly string $name,
-                private readonly ?string $description,
-                private readonly array $nameTranslations,
-                private readonly array $descriptionTranslations,
+                private string $key,
+                private string $name,
+                private ?string $description,
+                private array $nameTranslations,
+                private array $descriptionTranslations,
             ) {
             }
 

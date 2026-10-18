@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Shared\Appearance;
 use App\Identity\Entity\User;
 use App\Shared\Appearance\Entity\SiteAppearance;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class SiteAppearanceEntityTest extends TestCase
 {
@@ -44,7 +45,7 @@ final class SiteAppearanceEntityTest extends TestCase
         $user->setDisplayName('A');
 
         $appearance->setCreatedBy($user);
-        $appearance->setUpdatedBy(new \stdClass());
+        $appearance->setUpdatedBy(new stdClass());
         self::assertSame($user, $appearance->getCreatedBy());
         self::assertNull($appearance->getUpdatedBy());
         self::assertSame(1, $appearance->getId());

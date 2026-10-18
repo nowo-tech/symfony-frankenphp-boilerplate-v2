@@ -8,6 +8,7 @@ use App\Identity\Entity\InstancePermission;
 use App\Identity\Entity\InstancePermissionTranslation;
 use App\Identity\Entity\User;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class InstancePermissionTest extends TestCase
 {
@@ -89,7 +90,7 @@ final class InstancePermissionTest extends TestCase
         $user->setEmail('audit@example.com');
 
         $permission->setCreatedBy($user);
-        $permission->setUpdatedBy(new \stdClass());
+        $permission->setUpdatedBy(new stdClass());
         self::assertSame($user, $permission->getCreatedBy());
         self::assertNull($permission->getUpdatedBy());
         $permission->setUpdatedBy($user);

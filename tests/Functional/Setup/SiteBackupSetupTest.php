@@ -28,6 +28,10 @@ final class SiteBackupSetupTest extends DatabaseWebTestCase
     #[Override]
     protected bool $autoSeedPlatformCatalogs = false;
 
+    /** Cold start: setup not completed, so `/setup` answers (403 token gate / wizard) instead of redirecting home. */
+    #[Override]
+    protected bool $markSetupCompleted = false;
+
     public function testAdminProvisionerIsBound(): void
     {
         self::createClient();

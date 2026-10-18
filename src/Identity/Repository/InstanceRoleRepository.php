@@ -82,7 +82,7 @@ class InstanceRoleRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param list<int>    $roleIds
+     * @param list<int>             $roleIds
      * @param 'permissions'|'users' $association
      *
      * @return array<int, int>

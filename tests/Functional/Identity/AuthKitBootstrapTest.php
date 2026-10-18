@@ -38,7 +38,7 @@ final class AuthKitBootstrapTest extends DatabaseWebTestCase
         self::assertNotSame(500, $status);
         self::assertTrue(
             \in_array($status, [404, 403], true) || $client->getResponse()->isRedirection() || $client->getResponse()->isSuccessful(),
-            sprintf('QR start should not 500 (got %d).', $status),
+            \sprintf('QR start should not 500 (got %d).', $status),
         );
     }
 
@@ -95,6 +95,8 @@ final class AuthKitBootstrapTest extends DatabaseWebTestCase
                 'displayName' => 'Admin',
                 'password' => 'Secret123!',
                 'password_confirm' => 'Secret123!',
+                // Terms consent is a slide-to-confirm gate (registration_consent: gate): the slid value is '1'.
+                'terms' => '1',
                 '_token' => $values['registration_form']['_token'] ?? null,
             ],
         ];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Shared\Rbac;
 
+use App\Shared\Rbac\RbacRoleSubject;
 use App\Shared\Rbac\RbacRoleTranslator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -38,7 +39,7 @@ final class RbacRoleTranslatorTest extends TestCase
     public function testNameReturnsTranslationWhenKeyExists(): void
     {
         $role = $this->role('ROLE_SUPPORT', 'DB Support', 'DB when to use');
-        $this->translator->method('trans')
+        $this->translator->expects(self::atLeastOnce())->method('trans')
             ->with('roles.catalog.role_support.name')
             ->willReturn('Support desk');
 
@@ -57,7 +58,7 @@ final class RbacRoleTranslatorTest extends TestCase
     public function testDescriptionReturnsTranslationWhenKeyExists(): void
     {
         $role = $this->role('ROLE_SUPPORT', 'Support', 'DB fallback');
-        $this->translator->method('trans')
+        $this->translator->expects(self::atLeastOnce())->method('trans')
             ->with('roles.catalog.role_support.description')
             ->willReturn('Use for L1 ticket triage.');
 
@@ -91,16 +92,13 @@ final class RbacRoleTranslatorTest extends TestCase
         self::assertNull($this->rbacRoleTranslator->description($role));
     }
 
-    /**
-     * @return object{getCode(): string, getName(): string, getDescription(): ?string}
-     */
-    private function role(string $code, string $name, ?string $description): object
+    private function role(string $code, string $name, ?string $description): RbacRoleSubject
     {
-        return new class($code, $name, $description) {
+        return new readonly class($code, $name, $description) implements RbacRoleSubject {
             public function __construct(
-                private readonly string $code,
-                private readonly string $name,
-                private readonly ?string $description,
+                private string $code,
+                private string $name,
+                private ?string $description,
             ) {
             }
 

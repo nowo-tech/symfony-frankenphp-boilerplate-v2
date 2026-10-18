@@ -42,11 +42,11 @@ final readonly class ContentSecurityPolicySubscriber
      * @param list<string> $scriptSrcExtra
      */
     public function __construct(
-        #[Autowire('%kernel.debug%')]
+        #[Autowire(param: 'kernel.debug')]
         private bool $kernelDebug,
-        #[Autowire('%app.csp.connect_src_extra%')]
+        #[Autowire(param: 'app.csp.connect_src_extra')]
         private array $connectSrcExtra = [],
-        #[Autowire('%app.csp.script_src_extra%')]
+        #[Autowire(param: 'app.csp.script_src_extra')]
         private array $scriptSrcExtra = [],
     ) {
     }

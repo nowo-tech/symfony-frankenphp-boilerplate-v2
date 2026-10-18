@@ -13,7 +13,7 @@ final class InstanceConfigImportTypeTest extends TestCase
 {
     public function testExposesImportFieldMetadata(): void
     {
-        $type = (new ReflectionClass(InstanceConfigImportType::class))->newInstanceWithoutConstructor();
+        $type = new ReflectionClass(InstanceConfigImportType::class)->newInstanceWithoutConstructor();
 
         self::assertSame('instance_config_import', $type->getBlockPrefix());
 

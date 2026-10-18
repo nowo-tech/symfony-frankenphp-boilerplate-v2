@@ -20,7 +20,7 @@ final class QrLoginImageFunctionalTest extends DatabaseWebTestCase
         $status = $client->getResponse()->getStatusCode();
         self::assertTrue(
             \in_array($status, [404, 403], true) || $client->getResponse()->isRedirection(),
-            sprintf('Expected QR start unavailable (404/403/redirect), got %d.', $status),
+            \sprintf('Expected QR start unavailable (404/403/redirect), got %d.', $status),
         );
 
         if ($client->getResponse()->isRedirection()) {

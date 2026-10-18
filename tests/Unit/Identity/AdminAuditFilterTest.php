@@ -14,7 +14,7 @@ final class AdminAuditFilterTest extends TestCase
 {
     public function testFromRequestParsesValidFilters(): void
     {
-        $request = Request::create('/', 'GET', [
+        $request = Request::create('/', Request::METHOD_GET, [
             'action' => UserActionType::UserCreated->value,
             'from' => '2024-01-02',
             'to' => '2024-01-03',
@@ -32,7 +32,7 @@ final class AdminAuditFilterTest extends TestCase
 
     public function testFromRequestIgnoresUnknownActionAndBadDates(): void
     {
-        $request = Request::create('/', 'GET', [
+        $request = Request::create('/', Request::METHOD_GET, [
             'action' => 'not-allowed',
             'from' => 'not-a-date',
             'to' => '2024-99-99',

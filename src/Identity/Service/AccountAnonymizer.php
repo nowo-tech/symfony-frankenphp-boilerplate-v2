@@ -59,7 +59,7 @@ final readonly class AccountAnonymizer
 
         $random = bin2hex(random_bytes(32));
         $subject->setPassword($this->passwordHasher->hashPassword($subject, $random));
-        $subject->eraseCredentials();
+        $subject->clearPlainPassword();
 
         foreach ($subject->getPasswordHistory()->toArray() as $history) {
             if ($history instanceof PasswordHistory) {

@@ -11,6 +11,15 @@ parameters:
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
         consoleApplicationLoader: tests/phpstan/console-application.php
+    ignoreErrors:
+        # FrankenPHP worker rules target request code; the PHPUnit bootstrap / helpers run once per CLI process.
+        -
+            identifier: frankenphp.worker.noUmask
+            path: tests/bootstrap.php
+        # dg/bypass-finals lets tests stub the final seeders / services; PHPUnit's Stub&T of a final class has no type.
+        -
+            identifier: method.unresolvableReturnType
+            path: tests/*
 
 includes:
     - vendor/phpstan/phpstan-symfony/extension.neon

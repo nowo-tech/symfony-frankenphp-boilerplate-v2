@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Identity\Form;
 
 use App\Identity\Entity\User;
-use InvalidArgumentException;
 use App\Shared\Form\FormKitAbstractType;
+use InvalidArgumentException;
 use Override;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

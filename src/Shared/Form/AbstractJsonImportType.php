@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Form;
 
-use App\Shared\Form\FormKitAbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;

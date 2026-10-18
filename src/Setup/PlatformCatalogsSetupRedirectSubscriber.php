@@ -28,9 +28,9 @@ final readonly class PlatformCatalogsSetupRedirectSubscriber implements EventSub
         private PlatformBootstrapState $platformBootstrapState,
         private AuthorizationCheckerInterface $authorizationChecker,
         private SetupPathPrefixResolver $setupPathPrefixResolver,
-        #[Autowire('%nowo.site_backup.setup.path_prefix%')]
+        #[Autowire(param: 'nowo.site_backup.setup.path_prefix')]
         private string $setupPathPrefix = '/setup',
-        #[Autowire('%app.setup.check_platform_catalogs%')]
+        #[Autowire(param: 'app.setup.check_platform_catalogs')]
         private bool $enabled = true,
     ) {
     }

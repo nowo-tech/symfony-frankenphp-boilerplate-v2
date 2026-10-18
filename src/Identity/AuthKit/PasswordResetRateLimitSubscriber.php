@@ -13,7 +13,7 @@ final readonly class PasswordResetRateLimitSubscriber extends AuthKitRouteRateLi
     public function __construct(
         #[Autowire(service: 'limiter.password_reset')]
         RateLimiterFactory $passwordResetLimiter,
-        #[Autowire('%kernel.environment%')]
+        #[Autowire(param: 'kernel.environment')]
         string $environment = 'prod',
     ) {
         parent::__construct(

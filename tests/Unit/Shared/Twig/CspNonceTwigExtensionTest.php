@@ -14,10 +14,9 @@ final class CspNonceTwigExtensionTest extends TestCase
 {
     public function testReturnsNonceFromRequest(): void
     {
-        $stack = new RequestStack();
         $request = Request::create('/');
         $request->attributes->set(ContentSecurityPolicySubscriber::REQUEST_ATTR_NONCE, 'abc123');
-        $stack->push($request);
+        $stack = new RequestStack([$request]);
 
         $extension = new CspNonceTwigExtension($stack);
 

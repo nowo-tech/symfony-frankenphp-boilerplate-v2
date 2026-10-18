@@ -6,6 +6,7 @@ namespace App\Shared\Health;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ final readonly class HealthController
         private EntityManagerInterface $entityManager,
         private MessengerQueueHealth $messengerQueueHealth,
         private LoggerInterface $logger,
-        #[Autowire('%env(REDIS_URL)%')]
+        #[Autowire(env: 'REDIS_URL')]
         private string $redisUrl,
     ) {
     }
@@ -91,7 +92,7 @@ final readonly class HealthController
     {
         $parts = parse_url($url);
         if (!\is_array($parts) || !isset($parts['host'])) {
-            throw new \RuntimeException('Invalid REDIS_URL');
+            throw new RuntimeException('Invalid REDIS_URL');
         }
 
         $host = $parts['host'];
@@ -100,7 +101,7 @@ final readonly class HealthController
         $errstr = '';
         $fp = @fsockopen($host, (int) $port, $errno, $errstr, 2.0);
         if (false === $fp) {
-            throw new \RuntimeException(\sprintf('Redis unreachable: %s', '' !== $errstr ? $errstr : (string) $errno));
+            throw new RuntimeException(\sprintf('Redis unreachable: %s', '' !== $errstr ? $errstr : (string) $errno));
         }
 
         $password = rawurldecode((string) ($parts['pass'] ?? ''));
@@ -113,7 +114,7 @@ final readonly class HealthController
             $authResponse = fgets($fp, 64);
             if (!\is_string($authResponse) || !str_starts_with($authResponse, '+OK')) {
                 fclose($fp);
-                throw new \RuntimeException('Redis AUTH failed');
+                throw new RuntimeException('Redis AUTH failed');
             }
         }
 
@@ -121,7 +122,7 @@ final readonly class HealthController
         $response = fgets($fp, 64);
         fclose($fp);
         if (!\is_string($response) || !str_starts_with($response, '+PONG')) {
-            throw new \RuntimeException('Redis PING failed');
+            throw new RuntimeException('Redis PING failed');
         }
     }
 }

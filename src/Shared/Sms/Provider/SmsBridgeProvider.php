@@ -6,8 +6,8 @@ namespace App\Shared\Sms\Provider;
 
 use App\Shared\Sms\Exception\SmsSendException;
 use App\Shared\Sms\SmsOutboundMessage;
-use App\Shared\Sms\SmsSendResult;
 use App\Shared\Sms\SmsSenderInterface;
+use App\Shared\Sms\SmsSendResult;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -23,17 +23,17 @@ final readonly class SmsBridgeProvider implements SmsSenderInterface
 
     public function __construct(
         private HttpClientInterface $httpClient,
-        #[Autowire('%env(SMS_BRIDGE_BASE_URL)%')]
+        #[Autowire(env: 'SMS_BRIDGE_BASE_URL')]
         private string $baseUrl = '',
-        #[Autowire('%env(SMS_BRIDGE_AUTH_TOKEN)%')]
+        #[Autowire(env: 'SMS_BRIDGE_AUTH_TOKEN')]
         private string $authToken = '',
-        #[Autowire('%env(SMS_BRIDGE_ACCOUNT_SID)%')]
+        #[Autowire(env: 'SMS_BRIDGE_ACCOUNT_SID')]
         private string $accountSid = '',
-        #[Autowire('%env(SMS_BRIDGE_FROM)%')]
+        #[Autowire(env: 'SMS_BRIDGE_FROM')]
         private string $defaultFrom = '',
-        #[Autowire('%env(SMS_BRIDGE_DEVICE_ID)%')]
+        #[Autowire(env: 'SMS_BRIDGE_DEVICE_ID')]
         private string $defaultDeviceId = '',
-        #[Autowire('%env(SMS_BRIDGE_API_MODE)%')]
+        #[Autowire(env: 'SMS_BRIDGE_API_MODE')]
         private string $apiMode = 'twilio',
     ) {
     }
@@ -126,10 +126,8 @@ final readonly class SmsBridgeProvider implements SmsSenderInterface
             throw new SmsSendException('SMS Bridge transport error: '.$e->getMessage(), 0, $e);
         }
 
-        if ($statusCode < 200 || $statusCode >= 300 || !\is_array($payload)) {
-            $detail = \is_array($payload)
-                ? (string) ($payload['message'] ?? $payload['error'] ?? json_encode($payload))
-                : 'invalid response';
+        if ($statusCode < 200 || $statusCode >= 300) {
+            $detail = (string) ($payload['message'] ?? $payload['error'] ?? json_encode($payload));
             throw new SmsSendException(\sprintf('SMS Bridge rejected message (HTTP %d): %s', $statusCode, $detail));
         }
 
@@ -179,8 +177,8 @@ final readonly class SmsBridgeProvider implements SmsSenderInterface
             throw new SmsSendException('SMS Bridge transport error: '.$e->getMessage(), 0, $e);
         }
 
-        if ($statusCode < 200 || $statusCode >= 300 || !\is_array($payload)) {
-            $detail = \is_array($payload) ? (string) ($payload['error'] ?? json_encode($payload)) : 'invalid response';
+        if ($statusCode < 200 || $statusCode >= 300) {
+            $detail = (string) ($payload['error'] ?? json_encode($payload));
             throw new SmsSendException(\sprintf('SMS Bridge rejected message (HTTP %d): %s', $statusCode, $detail));
         }
 

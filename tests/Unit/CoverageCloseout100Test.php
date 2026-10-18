@@ -34,14 +34,12 @@ use App\Setup\PlatformCatalogsSetupRedirectSubscriber;
 use App\Setup\SiteBackupSecurityDefaultsGuard;
 use App\Shared\Appearance\AppearanceSettingsSection;
 use App\Shared\Appearance\Form\SiteAppearanceType;
-use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use App\Shared\Http\SafeInternalRedirect;
 use App\Shared\Mailer\ConfiguredMailer;
 use App\Shared\Mailer\MailerDsnAudit;
 use App\Shared\Mailer\MailerDsnValidator;
 use App\Shared\Menu\AdministrationMenuCurrentMatcher;
 use App\Shared\Menu\PreferencesMenuCurrentMatcher;
-use Nowo\DashboardMenuBundle\Entity\MenuItem;
 use App\Shared\Rbac\RbacPermissionTranslator;
 use App\Shared\Settings\Entity\InstanceSettings;
 use App\Shared\Settings\Form\InstanceMailerSettingsType;
@@ -60,17 +58,21 @@ use Nowo\AuthKitBundle\Repository\SocialLoginAccountRepository;
 use Nowo\AuthKitBundle\SocialLogin\SocialLoginGate;
 use Nowo\BreadcrumbKitBundle\Repository\BreadcrumbCollectionRepository;
 use Nowo\CookieConsentBundle\Repository\CookieConsentConfigRepository;
+use Nowo\DashboardMenuBundle\Entity\MenuItem;
 use Nowo\DashboardMenuBundle\Repository\MenuRepository;
+use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use Nowo\PasswordPolicyBundle\Model\PasswordHistoryInterface;
 use Nowo\SiteBackupBundle\Routing\SetupPathPrefixResolver;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionProperty;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -138,7 +140,7 @@ final class CoverageCloseout100Test extends KernelTestCase
             '/setup',
             true,
         );
-        $json = Request::create('/dashboard', 'GET', server: ['HTTP_ACCEPT' => 'application/json']);
+        $json = Request::create('/dashboard', Request::METHOD_GET, server: ['HTTP_ACCEPT' => 'application/json']);
         $subJson->onKernelRequest($this->requestEvent($json));
 
         $stateThrow = $this->createStub(PlatformBootstrapState::class);
@@ -168,7 +170,9 @@ final class CoverageCloseout100Test extends KernelTestCase
         $gate->attributes->set('_route', 'app_dashboard');
         $eventGate = $this->requestEvent($gate);
         $sub->onKernelRequest($eventGate);
-        self::assertSame('/setup', $eventGate->getResponse()?->getTargetUrl());
+        $redirect = $eventGate->getResponse();
+        self::assertInstanceOf(RedirectResponse::class, $redirect);
+        self::assertSame('/setup', $redirect->getTargetUrl());
     }
 
     public function testConfiguredMailerEnvFallbackCacheAndSampleGuard(): void
@@ -204,7 +208,7 @@ final class CoverageCloseout100Test extends KernelTestCase
         $group = new UserGroup();
         $user = new User();
         $user->setEmail('g@example.com');
-        (new \ReflectionProperty(User::class, 'id'))->setValue($user, 9);
+        new ReflectionProperty(User::class, 'id')->setValue($user, 9);
         self::assertFalse($group->hasUser($user));
 
         $membership = new UserGroupMembership();
@@ -262,17 +266,19 @@ final class CoverageCloseout100Test extends KernelTestCase
         $authKit->attributes->set('_route', 'nowo_auth_kit_login');
         $sub->onKernelRequest($this->requestEvent($authKit));
 
-        $withQs = Request::create('/dashboard', 'GET', ['foo' => '1', '_locale' => 'es']);
+        $withQs = Request::create('/dashboard', Request::METHOD_GET, ['foo' => '1', '_locale' => 'es']);
         $eventQs = $this->requestEvent($withQs);
         $sub->onKernelRequest($eventQs);
-        self::assertSame('/dashboard?foo=1', $eventQs->getResponse()?->getTargetUrl());
+        $redirect = $eventQs->getResponse();
+        self::assertInstanceOf(RedirectResponse::class, $redirect);
+        self::assertSame('/dashboard?foo=1', $redirect->getTargetUrl());
 
         $blankDefault = new UserPreferredLocaleSubscriber($storage, $translator, '   ');
         $blankDefault->onKernelRequest($this->requestEvent(Request::create('/dashboard')));
 
         $guestStorage = new TokenStorage();
         $guestStorage->setToken(new NullToken());
-        /** @var TranslatorInterface&LocaleAwareInterface&\PHPUnit\Framework\MockObject\MockObject $guestTranslator */
+        /** @var TranslatorInterface&LocaleAwareInterface&MockObject $guestTranslator */
         $guestTranslator = $this->createMock(LocaleAwareTranslator::class);
         $guest = new GuestSessionLocaleSubscriber($guestStorage, $guestTranslator, ['en', 'es'], 'en');
 
@@ -299,7 +305,7 @@ final class CoverageCloseout100Test extends KernelTestCase
 
         $user = new User();
         $permissions = $this->createStub(InstancePermissionRepository::class);
-        $permissions->method('findOneByKey')->willReturn((new InstancePermission())->setKey('admin.users.manage'));
+        $permissions->method('findOneByKey')->willReturn(new InstancePermission()->setKey('admin.users.manage'));
         $voter2 = new InstancePermissionVoter($permissions, $this->createStub(InstanceRoleRepository::class));
         self::assertSame(
             VoterInterface::ACCESS_DENIED,
@@ -323,18 +329,18 @@ final class CoverageCloseout100Test extends KernelTestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $token = new PasswordResetTokenResult(new User(), 'tok', new DateTimeImmutable('+1 hour'), PasswordResetDeliveryMode::Link);
 
-        (new AuthKitPasswordResetMailNotifier($mailerOff, $translator))->notify(
+        new AuthKitPasswordResetMailNotifier($mailerOff, $translator)->notify(
             $token,
             new PasswordResetNotificationContext('a@example.com', 'https://x', PasswordResetDeliveryMode::Link),
         );
-        (new AuthKitPasswordResetMailNotifier($mailerOn, $translator))->notify(
+        new AuthKitPasswordResetMailNotifier($mailerOn, $translator)->notify(
             $token,
             new PasswordResetNotificationContext('not-an-email', 'https://x', PasswordResetDeliveryMode::Link),
         );
-        (new AuthKitMagicLoginMailNotifier($mailerOff, $translator))->notify(
+        new AuthKitMagicLoginMailNotifier($mailerOff, $translator)->notify(
             new MagicLoginNotificationContext('a@example.com', 'https://x', new DateTimeImmutable('+1 hour')),
         );
-        (new AuthKitMagicLoginMailNotifier($mailerOn, $translator))->notify(
+        new AuthKitMagicLoginMailNotifier($mailerOn, $translator)->notify(
             new MagicLoginNotificationContext('bad', 'https://x', new DateTimeImmutable('+1 hour')),
         );
         $this->addToAssertionCount(1);
@@ -344,7 +350,7 @@ final class CoverageCloseout100Test extends KernelTestCase
     {
         $user = new User();
         $user->setEmail('exp@example.com');
-        (new \ReflectionProperty(User::class, 'passwordHistory'))->setValue(
+        new ReflectionProperty(User::class, 'passwordHistory')->setValue(
             $user,
             new ArrayCollection([$this->createStub(PasswordHistoryInterface::class)]),
         );
@@ -354,14 +360,14 @@ final class CoverageCloseout100Test extends KernelTestCase
         $memberships = $this->createStub(UserGroupMembershipRepository::class);
         $memberships->method('findByUser')->willReturn([]);
 
-        $doc = (new AccountDataExporter(
+        $doc = new AccountDataExporter(
             $memberships,
             $actions,
             new AccountSocialAccounts(
-                (new ReflectionClass(SocialLoginGate::class))->newInstanceWithoutConstructor(),
+                new ReflectionClass(SocialLoginGate::class)->newInstanceWithoutConstructor(),
                 $this->createStub(SocialLoginAccountRepository::class),
             ),
-        ))->export($user);
+        )->export($user);
 
         self::assertSame(0, $doc['password_history']['count']);
     }
@@ -369,6 +375,7 @@ final class CoverageCloseout100Test extends KernelTestCase
     public function testInstancePermissionSyncSkipsNonStringLocale(): void
     {
         $permission = new InstancePermission();
+        // @phpstan-ignore argument.type, argument.type (malformed locale keys are the case under test)
         $permission->syncTranslations([0 => 'Name', 'en' => 'English'], [0 => 'Desc']);
         self::assertSame('English', $permission->getNameForLocale('en'));
         self::assertNull($permission->getNameForLocale('0'));
@@ -380,7 +387,7 @@ final class CoverageCloseout100Test extends KernelTestCase
         $translator->method('getLocale')->willReturn('en');
         $translator->method('trans')->willReturnCallback(static fn (string $id): string => $id);
         $rbac = new RbacPermissionTranslator($translator);
-        $permission = (new InstancePermission())->setKey('admin.custom.x')->setName('X')->setDescription(null);
+        $permission = new InstancePermission()->setKey('admin.custom.x')->setName('X')->setDescription(null);
         self::assertNull($rbac->description($permission));
     }
 
@@ -413,7 +420,9 @@ final class CoverageCloseout100Test extends KernelTestCase
         $request->attributes->set('_route', 'nowo_auth_kit_reset_password_request');
         $event = $this->requestEvent($request);
         $sub->onKernelRequest($event);
-        self::assertSame('/login', $event->getResponse()?->getTargetUrl());
+        $redirect = $event->getResponse();
+        self::assertInstanceOf(RedirectResponse::class, $redirect);
+        self::assertSame('/login', $redirect->getTargetUrl());
     }
 
     public function testAccountDisplayTypeRejectsUnknownSection(): void
@@ -453,7 +462,7 @@ final class CoverageCloseout100Test extends KernelTestCase
 
     public function testUserActionRepositoryPlatformPredicates(): void
     {
-        $repo = (new ReflectionClass(UserActionRepository::class))->newInstanceWithoutConstructor();
+        $repo = new ReflectionClass(UserActionRepository::class)->newInstanceWithoutConstructor();
         $method = new ReflectionMethod(UserActionRepository::class, 'contextUuidPredicate');
         self::assertStringContainsString('JSON_UNQUOTE', $method->invoke($repo, new MySQLPlatform(), 'groupUuid'));
         $this->expectException(RuntimeException::class);
@@ -532,11 +541,11 @@ final class CoverageCloseout100Test extends KernelTestCase
         ], new InMemoryStorage());
         $sub = new PasswordResetRateLimitSubscriber($factory, 'prod');
 
-        $get = Request::create('/reset', 'GET');
+        $get = Request::create('/reset', Request::METHOD_GET);
         $get->attributes->set('_route', 'nowo_auth_kit_reset_password_request');
         $sub->onKernelRequest($this->requestEvent($get));
 
-        $post = Request::create('/reset', 'POST', server: ['REMOTE_ADDR' => '203.0.113.20']);
+        $post = Request::create('/reset', Request::METHOD_POST, server: ['REMOTE_ADDR' => '203.0.113.20']);
         $post->attributes->set('_route', 'nowo_auth_kit_reset_password_request_unlocalized');
         $sub->onKernelRequest($this->requestEvent($post));
         $this->addToAssertionCount(1);

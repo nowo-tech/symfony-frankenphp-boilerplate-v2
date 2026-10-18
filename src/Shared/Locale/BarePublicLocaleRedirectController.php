@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class BarePublicLocaleRedirectController extends AbstractController
 {
     public function __construct(
-        #[Autowire('%kernel.default_locale%')]
+        #[Autowire(param: 'kernel.default_locale')]
         private readonly string $defaultLocale,
     ) {
     }

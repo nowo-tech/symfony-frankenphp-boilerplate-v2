@@ -33,10 +33,7 @@ final readonly class RbacPermissionTranslator
         return 'permissions.catalog.'.$this->catalogSlug($key).'.description';
     }
 
-    /**
-     * @param object{getKey(): string, getName(): string} $permission
-     */
-    public function name(object $permission): string
+    public function name(RbacPermissionSubject $permission): string
     {
         $locale = $this->translator->getLocale();
         if (\is_callable([$permission, 'getNameForLocale'])) {
@@ -57,10 +54,7 @@ final readonly class RbacPermissionTranslator
         return $translated;
     }
 
-    /**
-     * @param object{getKey(): string, getDescription(): ?string} $permission
-     */
-    public function description(object $permission): ?string
+    public function description(RbacPermissionSubject $permission): ?string
     {
         $locale = $this->translator->getLocale();
         if (\is_callable([$permission, 'getDescriptionForLocale'])) {

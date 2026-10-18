@@ -18,9 +18,9 @@ use App\Identity\Service\InstancePermissionMatrixBuilder;
 use App\Identity\Service\UserActionRecorder;
 use App\Identity\UserActionType;
 use App\Shared\Controller\RequiresValidFormTrait;
+use Doctrine\ORM\EntityManagerInterface;
 use Nowo\FormKitBundle\Form\CsrfOnlyFormFactory;
 use Nowo\FormKitBundle\Form\GetFilterFormFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormView;
@@ -109,7 +109,7 @@ final class AdminInstanceRoleController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/roles/{id}', name: 'admin_roles_show', methods: ['GET'], requirements: ['id' => Requirement::UUID])]
+    #[Route('/admin/roles/{id}', name: 'admin_roles_show', requirements: ['id' => Requirement::UUID], methods: ['GET'])]
     public function show(
         #[MapEntity(mapping: ['id' => 'uuid'])]
         InstanceRole $role,
@@ -122,7 +122,7 @@ final class AdminInstanceRoleController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/roles/{id}/edit', name: 'admin_roles_edit', methods: ['GET', 'POST'], requirements: ['id' => Requirement::UUID])]
+    #[Route('/admin/roles/{id}/edit', name: 'admin_roles_edit', requirements: ['id' => Requirement::UUID], methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
         #[MapEntity(mapping: ['id' => 'uuid'])]
@@ -169,7 +169,7 @@ final class AdminInstanceRoleController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/roles/{id}/delete', name: 'admin_roles_delete', methods: ['POST'], requirements: ['id' => Requirement::UUID])]
+    #[Route('/admin/roles/{id}/delete', name: 'admin_roles_delete', requirements: ['id' => Requirement::UUID], methods: ['POST'])]
     public function delete(
         Request $request,
         #[MapEntity(mapping: ['id' => 'uuid'])]
@@ -210,7 +210,7 @@ final class AdminInstanceRoleController extends AbstractController
         return $this->redirectToRoute('admin_roles');
     }
 
-    #[Route('/admin/roles/{id}/permissions', name: 'admin_roles_permissions', methods: ['GET', 'POST'], requirements: ['id' => Requirement::UUID])]
+    #[Route('/admin/roles/{id}/permissions', name: 'admin_roles_permissions', requirements: ['id' => Requirement::UUID], methods: ['GET', 'POST'])]
     public function permissions(
         Request $request,
         #[MapEntity(mapping: ['id' => 'uuid'])]
@@ -283,7 +283,7 @@ final class AdminInstanceRoleController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/roles/{id}/users', name: 'admin_roles_users', methods: ['GET'], requirements: ['id' => Requirement::UUID])]
+    #[Route('/admin/roles/{id}/users', name: 'admin_roles_users', requirements: ['id' => Requirement::UUID], methods: ['GET'])]
     public function users(
         #[MapEntity(mapping: ['id' => 'uuid'])]
         InstanceRole $role,
@@ -319,7 +319,7 @@ final class AdminInstanceRoleController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/roles/{id}/users/add', name: 'admin_roles_users_add', methods: ['POST'], requirements: ['id' => Requirement::UUID])]
+    #[Route('/admin/roles/{id}/users/add', name: 'admin_roles_users_add', requirements: ['id' => Requirement::UUID], methods: ['POST'])]
     public function addUser(
         Request $request,
         #[MapEntity(mapping: ['id' => 'uuid'])]
@@ -361,7 +361,7 @@ final class AdminInstanceRoleController extends AbstractController
         return $this->redirectToRoute('admin_roles_users', ['id' => $role->getUuid()]);
     }
 
-    #[Route('/admin/roles/{id}/users/{userId}/remove', name: 'admin_roles_users_remove', methods: ['POST'], requirements: ['id' => Requirement::UUID, 'userId' => Requirement::UUID])]
+    #[Route('/admin/roles/{id}/users/{userId}/remove', name: 'admin_roles_users_remove', requirements: ['id' => Requirement::UUID, 'userId' => Requirement::UUID], methods: ['POST'])]
     public function removeUser(
         Request $request,
         #[MapEntity(mapping: ['id' => 'uuid'])]
