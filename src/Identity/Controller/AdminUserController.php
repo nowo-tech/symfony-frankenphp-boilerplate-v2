@@ -26,6 +26,7 @@ use JsonException;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,65 +60,21 @@ final class AdminUserController extends AbstractController
     #[Route('/admin/users', name: 'admin_users', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $filterForm = $this->filterFormFactory->create(UserFilterType::class, [], [
-            'action' => $this->generateUrl('admin_users'),
-        ]);
-        $filterForm->handleRequest($request);
-        $query = $filterForm->isSubmitted() && $filterForm->isValid()
-            ? (string) ($filterForm->get('q')->getData() ?? '')
-            : $request->query->getString('q');
-        $users = $this->userRepository->findAllForAdminDirectory('' !== $query ? $query : null);
-
-        $roleForms = [];
-        $toggleEnabledForms = [];
-        $anonymizeForms = [];
-        foreach ($users as $user) {
-            $userId = $user->getId();
-            if (null === $userId) {
-                continue;
-            }
-            $roleForms[$userId] = $this->createForm(AdminUserRoleConfirmType::class, [
-                'role' => \in_array('ROLE_ADMIN', $user->getRoles(), true) ? 'admin' : 'user',
-            ], [
-                'action' => $this->generateUrl('admin_users_role', ['id' => $user->getUuid()]),
-                'method' => 'POST',
-                'csrf_token_id' => 'admin_user_role_'.$userId,
-            ])->createView();
-            $toggleEnabledForms[$userId] = $this->csrfOnlyFormFactory->createNamed(
-                $this->generateUrl('admin_users_toggle_enabled', ['id' => $user->getUuid()]),
-                'toggle_user_'.$userId,
-            )->createView();
-            $anonymizeForms[$userId] = $this->csrfOnlyFormFactory->createNamed(
-                $this->generateUrl('admin_users_anonymize', ['id' => $user->getUuid()]),
-                'admin_user_anonymize_'.$userId,
-            )->createView();
-        }
-
-        return $this->render('admin/users/index.html.twig', [
-            'users' => $users,
-            'q' => $query,
-            'filter_form' => $filterForm->createView(),
-            'adminCount' => $this->countAdmins(),
-            'recentActions' => $this->userActionRepository->findLatest(25),
-            'roleForms' => $roleForms,
-            'toggleEnabledForms' => $toggleEnabledForms,
-            'anonymizeForms' => $anonymizeForms,
-        ]);
+        return $this->renderIndex($request);
     }
 
     /**
      * Create an account (email, display name, password, instance role).
+     * GET opens the create modal on the directory; POST processes the form.
      */
     #[Route('/admin/users/new', name: 'admin_users_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
-        $form = $this->createForm(AdminUserType::class, [
-            'email' => '',
-            'displayName' => '',
-            'password' => '',
-            'role' => 'user',
-            'enabled' => true,
-        ]);
+        if (!$request->isMethod(Request::METHOD_POST)) {
+            return $this->redirectToRoute('admin_users', ['new' => '1']);
+        }
+
+        $form = $this->buildCreateForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -132,7 +89,7 @@ final class AdminUserController extends AbstractController
             if ($this->userRepository->findOneByEmail($email) instanceof User) {
                 $this->addFlash('error', 'flash.users.email_taken');
 
-                return $this->redirectToRoute('admin_users_new');
+                return $this->redirectToRoute('admin_users', ['new' => '1']);
             }
 
             /** @var User $actor */
@@ -163,9 +120,7 @@ final class AdminUserController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        return $this->render('admin/users/form.html.twig', [
-            'form' => $form,
-        ]);
+        return $this->renderIndex($request, $form, openCreate: true);
     }
 
     /**
@@ -356,6 +311,79 @@ final class AdminUserController extends AbstractController
         $this->addFlash('success', 'flash.users.anonymized');
 
         return $this->redirectToRoute('admin_users');
+    }
+
+    /**
+     * @param FormInterface<mixed>|null $invalidCreateForm
+     */
+    private function renderIndex(
+        Request $request,
+        ?FormInterface $invalidCreateForm = null,
+        bool $openCreate = false,
+    ): Response {
+        $filterForm = $this->filterFormFactory->create(UserFilterType::class, [], [
+            'action' => $this->generateUrl('admin_users'),
+        ]);
+        $filterForm->handleRequest($request);
+        $query = $filterForm->isSubmitted() && $filterForm->isValid()
+            ? (string) ($filterForm->get('q')->getData() ?? '')
+            : $request->query->getString('q');
+        $users = $this->userRepository->findAllForAdminDirectory('' !== $query ? $query : null);
+
+        $roleForms = [];
+        $toggleEnabledForms = [];
+        $anonymizeForms = [];
+        foreach ($users as $user) {
+            $userId = $user->getId();
+            if (null === $userId) {
+                continue;
+            }
+            $roleForms[$userId] = $this->createForm(AdminUserRoleConfirmType::class, [
+                'role' => \in_array('ROLE_ADMIN', $user->getRoles(), true) ? 'admin' : 'user',
+            ], [
+                'action' => $this->generateUrl('admin_users_role', ['id' => $user->getUuid()]),
+                'method' => 'POST',
+                'csrf_token_id' => 'admin_user_role_'.$userId,
+            ])->createView();
+            $toggleEnabledForms[$userId] = $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_users_toggle_enabled', ['id' => $user->getUuid()]),
+                'toggle_user_'.$userId,
+            )->createView();
+            $anonymizeForms[$userId] = $this->csrfOnlyFormFactory->createNamed(
+                $this->generateUrl('admin_users_anonymize', ['id' => $user->getUuid()]),
+                'admin_user_anonymize_'.$userId,
+            )->createView();
+        }
+
+        $createForm = ($invalidCreateForm ?? $this->buildCreateForm())->createView();
+
+        return $this->render('admin/users/index.html.twig', [
+            'users' => $users,
+            'q' => $query,
+            'filter_form' => $filterForm->createView(),
+            'adminCount' => $this->countAdmins(),
+            'recentActions' => $this->userActionRepository->findLatest(25),
+            'roleForms' => $roleForms,
+            'toggleEnabledForms' => $toggleEnabledForms,
+            'anonymizeForms' => $anonymizeForms,
+            'createForm' => $createForm,
+            'open_create' => $openCreate || $request->query->getBoolean('new'),
+        ]);
+    }
+
+    /** @return FormInterface<mixed> */
+    private function buildCreateForm(): FormInterface
+    {
+        return $this->createForm(AdminUserType::class, [
+            'email' => '',
+            'displayName' => '',
+            'password' => '',
+            'role' => 'user',
+            'enabled' => true,
+        ], [
+            'action' => $this->generateUrl('admin_users_new'),
+            'method' => 'POST',
+        ]);
     }
 
     /** Whether the account holds ROLE_ADMIN (instance admin, not project owner). */

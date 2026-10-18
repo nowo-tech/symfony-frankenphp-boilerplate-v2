@@ -14,6 +14,10 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 - **SMS Bridge provider** (`App\Shared\Sms\`): `SMS_PROVIDER=sms_bridge` + `bin/console app:sms:send`. Docs: [docs/product/SMS.md](product/SMS.md).
 
+- **Admin create modals:** `/admin/users` and `/admin/groups` create forms open in a list-page dialog (`templates/shared/_confirm_dialog.html.twig`, `?new=1`); legacy `/new` URLs redirect to the modal.
+
+- **Product UI manual** ([docs/manual/](manual/README.md)) with Playwright-captured screenshots (`make docs-manual-screenshots`) and wiki Home source (`docs/wiki/Home.md`, `make wiki-push-home`).
+
 - Platform **`.checkbox`** / `.checkbox-label` paint (AuthKit, kit-admin, RoutingKit); FormKit `checkbox` field class (`086-platform-form-chrome`).
 
 ### Changed

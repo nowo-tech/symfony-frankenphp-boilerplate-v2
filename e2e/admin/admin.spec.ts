@@ -13,13 +13,23 @@ test.describe('Administration', () => {
   test('identity admin pages load', async ({ page }) => {
     for (const path of [
       '/admin/users',
-      '/admin/users/new',
+      '/admin/users?new=1',
       '/admin/groups',
-      '/admin/groups/new',
+      '/admin/groups?new=1',
       '/admin/social-login',
     ]) {
       await expectAuthenticatedPage(page, path);
     }
+  });
+
+  test('legacy identity create URLs open list modals', async ({ page }) => {
+    await expectAuthenticatedPage(page, '/admin/users/new');
+    await expect(page).toHaveURL(/\/admin\/users\?new=1/);
+    await expect(page.locator('form[action$="/admin/users/new"]')).toBeVisible();
+
+    await expectAuthenticatedPage(page, '/admin/groups/new');
+    await expect(page).toHaveURL(/\/admin\/groups\?new=1/);
+    await expect(page.locator('form[action$="/admin/groups/new"]')).toBeVisible();
   });
 
   test('settings pages load', async ({ page }) => {

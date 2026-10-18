@@ -1,0 +1,50 @@
+{#
+    Reusable Stimulus confirm-dialog wrapper.
+
+    Modes:
+    - Full (default): wrapper div + optional trigger + dialog panel.
+    - only_dialog: dialog only (controller/trigger live in the parent template).
+
+    Always paint the dialog body via `{% block form %}` using Symfony `form_start` /
+    `form_end` (or a non-form panel). Hand-rolled HTML forms are not supported here.
+
+    Override blocks: trigger, form.
+#}
+{% set _wrapper = wrapper|default(true) %}
+{% set _only_dialog = only_dialog|default(false) %}
+{% set _dialog_modifier = dialog_modifier|default('') %}
+{% set _dialog_class = 'confirm-dialog' ~ (_dialog_modifier ? ' ' ~ _dialog_modifier : '') %}
+
+{% if _wrapper and not _only_dialog %}
+<div
+    data-controller="confirm-dialog"
+    {% if expected_value is defined and expected_value is not null %}data-confirm-dialog-expected-value="{{ expected_value|e('html_attr') }}"{% endif %}
+    {# Stimulus Boolean: attribute present with empty/"null" is still true — only emit for explicit true. #}
+    {% if open_on_connect|default(false) in [true, 1, '1', 'true', 'TRUE'] %}data-confirm-dialog-open-on-connect-value="true"{% endif %}
+>
+    {% block trigger %}
+        {% if trigger_label is defined %}
+            <button
+                type="button"
+                class="{{ trigger_class|default('btn-ghost') }}"
+                data-action="confirm-dialog#open"
+                {% if trigger_title is defined %}title="{{ trigger_title }}"{% endif %}
+                {% if trigger_aria_label is defined %}aria-label="{{ trigger_aria_label }}"{% endif %}
+                {% if trigger_testid is defined %}data-testid="{{ trigger_testid }}"{% endif %}
+                {% if trigger_disabled|default(false) %}disabled{% endif %}
+            >{{ trigger_label }}</button>
+        {% endif %}
+    {% endblock %}
+{% endif %}
+
+<dialog
+    class="{{ _dialog_class }}"
+    data-confirm-dialog-target="dialog"
+    {% if aria_labelledby is defined %}aria-labelledby="{{ aria_labelledby }}"{% endif %}
+>
+    {% block form %}{% endblock %}
+</dialog>
+
+{% if _wrapper and not _only_dialog %}
+</div>
+{% endif %}

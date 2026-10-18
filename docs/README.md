@@ -8,6 +8,8 @@ This repository is the **platform starter** (Identity / Shared / Setup). Product
 
 | Doc | Topic |
 |-----|--------|
+| [Product UI manual](manual/README.md) | English operator guide with Playwright screenshots (1440×900) |
+| [GitHub wiki Home](https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/wiki) | Wiki index → same chapters (source: [`wiki/Home.md`](wiki/Home.md); `make wiki-push-home`) |
 | [INSTALL.md](INSTALL.md) | First install, seed layers, SiteBackup setup |
 | [PRODUCTION.md](PRODUCTION.md) | Prod image, secrets, health, Messenger |
 | [UPGRADING.md](UPGRADING.md) | First install and upgrade notes |
