@@ -12,7 +12,7 @@ This chapter shows the gate visitors hit before setup, then the guided **fresh i
 
 **What it contributes.** It tells operators that the instance is not ready for AuthKit yet, and points them to complete setup with a local token rather than guessing credentials.
 
-![Setup gate](images/setup-gate.png)
+![Setup gate](images/setup-gate.webp)
 
 ## Wizard — entry and boot mode
 
@@ -24,7 +24,7 @@ Open the wizard with the local setup token (`SITE_SETUP_TOKEN` / default E2E `ap
 
 **What it contributes.** One place to decide fresh install vs restore, keep progress visible, and avoid hand-running migrations on a cold box.
 
-![Setup wizard (boot mode)](images/setup-wizard.png)
+![Setup wizard (boot mode)](images/setup-wizard.webp)
 
 Typical **fresh install** sequence:
 
@@ -41,7 +41,7 @@ Typical **fresh install** sequence:
 
 **What it contributes.** Confirms that the database is being prepared; operators should wait for this step to finish before treating the instance as usable.
 
-![Migrations in progress](images/setup-progress-cache_clear_4.png)
+![Migrations in progress](images/setup-progress-cache_clear_4.webp)
 
 ## Wizard — first admin account
 
@@ -49,7 +49,7 @@ Typical **fresh install** sequence:
 
 **What it contributes.** Establishes the first `ROLE_ADMIN` account so you can sign in after setup. On restore-from-dump flows this step may be skipped when users already exist in the dump.
 
-![First admin account](images/setup-admin.png)
+![First admin account](images/setup-admin.webp)
 
 ## Wizard — completion
 
@@ -57,7 +57,7 @@ Typical **fresh install** sequence:
 
 **What it contributes.** Confirms the instance is ready for AuthKit sign-in and points operators to the dashboard.
 
-![Setup complete](images/setup-done.png)
+![Setup complete](images/setup-done.webp)
 
 ## Next steps
 

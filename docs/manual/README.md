@@ -9,16 +9,16 @@ Operator guide for the self-hosted Shell platform UI (Identity / Shared / Setup)
 1. Start with [First-time setup](00-setup.md) only if you are installing a cold instance.
 2. Otherwise begin at [Getting started](01-getting-started.md) (sign-in).
 3. Use later chapters as a screen catalog: open the matching section when you need that part of the UI.
-4. Companion shots named `*-2.png` continue the **same** viewport (scroll position), not a different layout. The prose under each image explains what that continuation shows.
+4. Companion shots named `*-2.webp` continue the **same** viewport (scroll position), not a different layout. The prose under each image explains what that continuation shows.
 
 ## Conventions
 
 | Item | Value |
 |------|--------|
-| Viewport | **1440×900** fixed. Tall screens use same-size companions (`*-2.png`), never a stretched full-page image |
+| Viewport | **1440×900** fixed. Tall screens use same-size companions (`*-2.webp`), never a stretched full-page image |
 | Theme | **Day** for the inventory. Day/night difference is shown once on public + private routes — see [Theme and language](06-appearance.md) |
 | Language | **English**. How to switch languages is shown once on public + private routes — see [Theme and language](06-appearance.md) |
-| Images | PNGs live under `images/`. Chapters may reference filenames before the first capture — run `make docs-manual-screenshots` to generate them |
+| Images | WebP (Chromium re-encode of the Playwright capture, `e2e/support/webp.ts`) under `images/`. Chapters may reference filenames before the first capture — run `make docs-manual-screenshots` to generate them |
 
 ## Contents
 

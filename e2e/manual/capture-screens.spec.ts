@@ -23,6 +23,7 @@ import {
   inspectManualAuthShot,
   inspectManualPage,
 } from '../support/manual-page-gate';
+import { screenshotWebp } from '../support/webp';
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const outDir = path.join(rootDir, 'docs', 'manual', 'images');
@@ -103,7 +104,7 @@ function noteManualGate(shotName: string, gate: { ok: boolean; kind?: string; re
     });
     // Drop stale PNG so manuals never keep a previous wrong-page capture.
     try {
-      fs.unlinkSync(path.join(outDir, `${shotName}.png`));
+      fs.unlinkSync(path.join(outDir, `${shotName}.webp`));
     } catch {
       /* missing is fine */
     }
@@ -161,7 +162,7 @@ async function shootOptional(page: Page, shot: Shot): Promise<void> {
       description: `${shot.name} skipped — ${reason}`,
     });
     try {
-      fs.unlinkSync(path.join(outDir, `${shot.name}.png`));
+      fs.unlinkSync(path.join(outDir, `${shot.name}.webp`));
     } catch {
       /* missing is fine */
     }
@@ -199,8 +200,7 @@ async function shootThemeAndLocaleDemo(page: Page, kind: 'public' | 'private'): 
     await openLocaleMenu(page);
     await page.setViewportSize(MANUAL_VIEWPORT);
     fs.mkdirSync(outDir, { recursive: true });
-    await page.screenshot({
-      path: path.join(outDir, `${prefix}-locale-menu.png`),
+    await screenshotWebp(page, path.join(outDir, `${prefix}-locale-menu.webp`), {
       fullPage: false,
       animations: 'disabled',
       caret: 'hide',
@@ -215,7 +215,7 @@ async function lockEnglishForSession(page: Page): Promise<void> {
   await gotoStable(page, '/dashboard');
   await captureManualScreenshot(page, outDir, '_warmup-en', { theme: 'light', maxParts: 1 });
   try {
-    fs.unlinkSync(path.join(outDir, '_warmup-en.png'));
+    fs.unlinkSync(path.join(outDir, '_warmup-en.webp'));
   } catch {
     /* ignore */
   }

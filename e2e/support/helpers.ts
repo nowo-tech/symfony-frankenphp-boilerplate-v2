@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
+import { screenshotWebp } from './webp';
 
 export const DEMO_EMAIL = process.env.PLAYWRIGHT_DEMO_EMAIL ?? 'admin@nowo-shell.local';
 export const DEMO_PASSWORD = process.env.PLAYWRIGHT_DEMO_PASSWORD ?? 'admin123';
@@ -249,7 +250,7 @@ export async function setManualTheme(page: Page, theme: ManualTheme): Promise<vo
 }
 
 export type CaptureManualOptions = {
-  /** Default light. Dark shots are saved as `{name}-dark.png`. */
+  /** Default light. Dark shots are saved as `{name}-dark.webp`. */
   theme?: ManualTheme;
   /** Extra same-size scrolls for tall pages (default 1 = only above-the-fold). Max 3. */
   maxParts?: number;
@@ -292,9 +293,8 @@ export async function captureManualScreenshot(
     if (part > 1 && at > maxScroll + 40) {
       break;
     }
-    const fileName = part === 1 ? `${baseName}.png` : `${baseName}-${part}.png`;
-    await page.screenshot({
-      path: path.join(outDir, fileName),
+    const fileName = part === 1 ? `${baseName}.webp` : `${baseName}-${part}.webp`;
+    await screenshotWebp(page, path.join(outDir, fileName), {
       fullPage: false,
       animations: 'disabled',
       caret: 'hide',

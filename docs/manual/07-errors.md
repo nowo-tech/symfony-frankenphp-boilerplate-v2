@@ -8,58 +8,58 @@ This chapter documents the branded HTTP error pages used by Nowo Shell when debu
 
 Use this page when the request shape is invalid: malformed links, incomplete query strings, or input the application cannot interpret safely.
 
-![Nowo Shell 400 bad request page](images/error-400.png)
+![Nowo Shell 400 bad request page](images/error-400.webp)
 
 ## 401 — Unauthorized
 
 Use this page when the visitor must authenticate before continuing and the request cannot proceed as an anonymous guest.
 
-![Nowo Shell 401 unauthorized page](images/error-401.png)
+![Nowo Shell 401 unauthorized page](images/error-401.webp)
 
 ## 403 — Forbidden
 
 Use this page when the route exists but the current visitor does not have permission to use it.
 
-![Nowo Shell 403 forbidden page](images/error-403.png)
+![Nowo Shell 403 forbidden page](images/error-403.webp)
 
 ## 404 — Not found
 
 Use this page for missing routes or records that are no longer available. The mascot keeps the dead-end state friendly without exposing debug detail.
 
-![Nowo Shell 404 not found page](images/error-404.png)
+![Nowo Shell 404 not found page](images/error-404.webp)
 
 ## 408 — Request timeout
 
 Use this page when the browser or upstream request took too long and the application stopped waiting.
 
-![Nowo Shell 408 request timeout page](images/error-408.png)
+![Nowo Shell 408 request timeout page](images/error-408.webp)
 
 ## 429 — Too many requests
 
 Use this page when rate limiting protects the product from repeated or abusive traffic.
 
-![Nowo Shell 429 rate limited page](images/error-429.png)
+![Nowo Shell 429 rate limited page](images/error-429.webp)
 
 ## 500 — Internal server error
 
 Use this page for unexpected application failures once debug is disabled. Operators should still investigate logs and Beacon data; the public sees calm branded copy instead of a Symfony exception screen.
 
-![Nowo Shell 500 internal server error page](images/error-500.png)
+![Nowo Shell 500 internal server error page](images/error-500.webp)
 
 ## 502 — Bad gateway
 
 Use this page when an upstream dependency or proxy response is invalid before Nowo Shell can finish the request cleanly.
 
-![Nowo Shell 502 bad gateway page](images/error-502.png)
+![Nowo Shell 502 bad gateway page](images/error-502.webp)
 
 ## 503 — Service unavailable
 
 Use this page when Nowo Shell is temporarily unavailable because of maintenance or a short outage window.
 
-![Nowo Shell 503 service unavailable page](images/error-503.png)
+![Nowo Shell 503 service unavailable page](images/error-503.webp)
 
 ## Maintenance preview
 
 This preview uses the same 503 mascot artwork as the live maintenance response, but lets operators verify the public downtime page without enabling maintenance mode first.
 
-![Nowo Shell maintenance preview page](images/error-maintenance.png)
+![Nowo Shell maintenance preview page](images/error-maintenance.webp)

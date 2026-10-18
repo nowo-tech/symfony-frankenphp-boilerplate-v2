@@ -25,7 +25,8 @@ function setupHeaders(): Record<string, string> {
 }
 
 export async function getSetupProgress(request: APIRequestContext): Promise<SetupProgress | { redirectedHome: true }> {
-  const res = await request.get('/setup/api/progress', { failOnStatusCode: false, maxRedirects: 0 });
+  // SiteBackup 1.21 guards the progress API with the setup token (403 {"error":"forbidden"} without it).
+  const res = await request.get('/setup/api/progress', { headers: setupHeaders(), failOnStatusCode: false, maxRedirects: 0 });
   // After durable setup.done, SiteBackup may 302 wizard + API to home.
   if ([301, 302, 303, 307, 308].includes(res.status())) {
     expect(res.headers()['location'] ?? '').toMatch(/\/($|\?)/);

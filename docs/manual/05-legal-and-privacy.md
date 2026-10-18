@@ -10,7 +10,7 @@ Public legal pages and cookie consent. Screenshots are **English + day**. Theme 
 
 **What it contributes.** Transparency for data processing; linked from AuthKit footers and the cookie banner.
 
-![Privacy](images/legal-privacy.png)
+![Privacy](images/legal-privacy.webp)
 
 ## Terms of use
 
@@ -20,7 +20,7 @@ Public legal pages and cookie consent. Screenshots are **English + day**. Theme 
 
 **What it contributes.** Contractual baseline for operators and end users without inventing a custom legal CMS.
 
-![Terms](images/legal-terms.png)
+![Terms](images/legal-terms.webp)
 
 ## Cookies
 
@@ -30,4 +30,4 @@ Public legal pages and cookie consent. Screenshots are **English + day**. Theme 
 
 **What it contributes.** Explains which cookies are functional vs optional; the live banner still drives consent choices.
 
-![Cookies](images/legal-cookies.png)
+![Cookies](images/legal-cookies.webp)

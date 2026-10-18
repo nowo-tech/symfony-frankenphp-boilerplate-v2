@@ -14,7 +14,7 @@ This chapter covers the public AuthKit entry points that ship **enabled** on the
 
 **What it contributes.** Secure access to the private UI. Footer links expose legal pages and cookie settings without requiring a session.
 
-![Sign in](images/auth-login.png)
+![Sign in](images/auth-login.webp)
 
 A successful sign-in opens the [dashboard](02-dashboard.md).
 

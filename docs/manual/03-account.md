@@ -12,7 +12,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Confirms who you are signed in as, password-policy status, and shortcuts into Security / Display. Phone verification supports QR login (see [Getting started](01-getting-started.md#qr-phone-sign-in)).
 
-![Account overview](images/account-profile.png)
+![Account overview](images/account-profile.webp)
 
 ## Profile {#profile}
 
@@ -22,7 +22,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Controls how your name appears in member lists and the avatar menu, and keeps phone state aligned with QR sign-in.
 
-![Profile](images/account-profile.png)
+![Profile](images/account-profile.webp)
 
 ## Groups
 
@@ -32,7 +32,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Explains group memberships managed by administrators under [Administration → Groups](04-admin.md#groups).
 
-![Your groups](images/account-groups.png)
+![Your groups](images/account-groups.webp)
 
 ## Security
 
@@ -42,7 +42,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Self-service credential hygiene without admin intervention. Complements instance-wide password policy from the password kits.
 
-![Security](images/account-security.png)
+![Security](images/account-security.webp)
 
 ### Security activity
 
@@ -52,7 +52,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Personal audit trail so you can spot unexpected access.
 
-![Security activity](images/account-security-activity.png)
+![Security activity](images/account-security-activity.webp)
 
 ### Trusted devices
 
@@ -62,7 +62,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Lets you review and manage remembered devices tied to AuthKit sessions.
 
-![Trusted devices](images/account-security-devices.png)
+![Trusted devices](images/account-security-devices.webp)
 
 ### Password history
 
@@ -72,7 +72,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Supports compliance and personal hygiene when password reuse is restricted.
 
-![Password history](images/account-security-history.png)
+![Password history](images/account-security-history.webp)
 
 ## Display
 
@@ -82,7 +82,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Per-user comfort settings that sync with the header theme toggle (see [Theme and language](06-appearance.md)).
 
-![Display preferences](images/account-display.png)
+![Display preferences](images/account-display.webp)
 
 ## Privacy
 
@@ -92,7 +92,7 @@ Open Account from the avatar menu in the header. Sidebar groups: **Profile**, **
 
 **What it contributes.** Complements public [Legal → Privacy policy](05-legal-and-privacy.md#privacy-policy) with signed-in data-subject tools.
 
-![Privacy tools](images/account-privacy.png)
+![Privacy tools](images/account-privacy.webp)
 
 ## Next steps
 

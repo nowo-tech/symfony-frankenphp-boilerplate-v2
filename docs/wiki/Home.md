@@ -23,7 +23,7 @@ Full index and conventions: [docs/manual/README.md](https://github.com/nowo-tech
 
 | Item | Value |
 |------|--------|
-| Viewport | **1440×900** fixed (tall screens use `*-2.png` companions) |
+| Viewport | **1440×900** fixed (tall screens use `*-2.webp` companions) |
 | Theme / language | **Day** + **English** for the inventory; preference demos once public + private — see chapter 06 |
 | Error previews | `/_error/{code}` in `APP_ENV=dev`; maintenance preview at `/_maintenance_preview` |
 | Prose | Each screen: purpose → what it contributes → screenshot (no bare image stacks) |

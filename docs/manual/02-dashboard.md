@@ -12,7 +12,7 @@ Theme comparison for this private surface: [Theme and language](06-appearance.md
 
 **What it contributes.** A stable entry point after AuthKit login. From here you reach identity tools, instance settings, and kit admin panels without memorizing routes.
 
-![Dashboard home](images/dashboard.png)
+![Dashboard home](images/dashboard.webp)
 
 ## Next steps
 

@@ -42,7 +42,7 @@ async function shootSetup(
       description: `${name} skipped — ${gate.reason ?? 'page gate'}`,
     });
     try {
-      fs.unlinkSync(path.join(outDir, `${name}.png`));
+      fs.unlinkSync(path.join(outDir, `${name}.webp`));
     } catch {
       /* missing is fine */
     }

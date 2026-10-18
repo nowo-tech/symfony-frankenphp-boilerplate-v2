@@ -14,11 +14,11 @@ The sun / moon control sits in the top bar (guest AuthKit shell and authenticate
 
 **Day**
 
-![Public — day theme](images/prefs-public-theme.png)
+![Public — day theme](images/prefs-public-theme.webp)
 
 **Night**
 
-![Public — night theme](images/prefs-public-theme-dark.png)
+![Public — night theme](images/prefs-public-theme-dark.webp)
 
 ### Private example (authenticated chrome)
 
@@ -26,11 +26,11 @@ The sun / moon control sits in the top bar (guest AuthKit shell and authenticate
 
 **Day**
 
-![Private — day theme](images/prefs-private-theme.png)
+![Private — day theme](images/prefs-private-theme.webp)
 
 **Night**
 
-![Private — night theme](images/prefs-private-theme-dark.png)
+![Private — night theme](images/prefs-private-theme-dark.webp)
 
 ### How to change
 
@@ -48,13 +48,13 @@ Enabled locales include `en` and `es`. The default locale uses bare AuthKit path
 
 **What it contributes.** Shows how guests switch locale from the AuthKit header before signing in.
 
-![Public language menu](images/prefs-public-locale-menu.png)
+![Public language menu](images/prefs-public-locale-menu.webp)
 
 ### Private — open the language menu
 
 **What it contributes.** Shows the same control inside the authenticated shell; the choice can be stored on the account.
 
-![Private language menu](images/prefs-private-locale-menu.png)
+![Private language menu](images/prefs-private-locale-menu.webp)
 
 ### How to change
 
