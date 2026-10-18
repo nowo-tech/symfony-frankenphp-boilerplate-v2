@@ -37,7 +37,7 @@ Configuration: `config/packages/nowo_cookie_consent.yaml`
 | `enabled_locales` | `en`, `es`, `de`, `nl`, `fr`, `it`, `pt` |
 | `disabled_routes` | legal pages (banner does not auto-open there) |
 
-Twig overrides (optional) live under `templates/bundles/NowoCookieConsentBundle/` — CookieConsent **1.4.5+** prepends that path automatically. Skin tokens: `assets/styles/_cookie_consent.scss`. Do **not** fork the modal Twig for skinning; prefer tokens. XHR CSRF double-submit lives in vendor `nowo-consent-modal.js` (**≥1.4.8**).
+The admin pages (`/cookie-consent-config/…`) are UiKit 2 scaffolds in `layouts/ui_admin.html.twig` (CookieConsent **≥1.16**, no forks); the public modal keeps the vendor Twig. Skin tokens: `assets/styles/_cookie_consent.scss`. Do **not** fork the modal Twig for skinning; prefer tokens. XHR CSRF double-submit lives in vendor `nowo-consent-modal.js` (**≥1.4.8**).
 
 ### Public modal skin (`assets/styles/_cookie_consent.scss`)
 

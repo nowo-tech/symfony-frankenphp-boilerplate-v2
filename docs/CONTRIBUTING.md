@@ -17,9 +17,7 @@
 13. **CSRF via Symfony Forms** — host mutable HTML POSTs use kit `CsrfOnlyFormFactory` / Twig `csrf_action_form()` / `search_query_form()` / `flat_hidden_fields()` (FormKit **≥2.4**) with `form_start` / `form_end`. Prefer factory `createNamed()` for nested `csrf_only[_token]`; use `create()` / `named: false` only when the consumer must see a flat `_token`. Do not add new hand-rolled Twig `csrf_token('…')` hidden fields for product/admin host forms. **Intentional exceptions** (keep `csrf_token()` / header tokens):
     - AJAX `data-*-token` / `X-CSRF-TOKEN` (theme, content-width, product-tour mark in `base.html.twig` / `_product_tour.html.twig`): product tour mark-seen at `/account/product-tour/seen` sends `X-CSRF-TOKEN: csrf_token('account_product_tour')` because the driver.js controller runs outside a Symfony form. This is a one-way AJAX write with SameSite protection — acceptable for low-risk UI state.
     - AuthKit logout `_csrf_token` (`_user_menu.html.twig`)
-    - Kit modal `data-token` deletes (DashboardMenu, BreadcrumbKit overrides)
-    - CookieConsent kit admin table fork (`templates/bundles/NowoCookieConsentBundle/…`)
-    - HttpLog kit fork export/purge/delete (`templates/bundles/NowoHttpLogBundle/…` — leave until kit ships FormKit CSRF)
+14. **Kit pages (UiKit 2 page contract, REQ-UI-003)** — every nowo kit page renders through `nowo_ui_kit.layouts.{admin,guest}` (`templates/layouts/ui_admin.html.twig`, `ui_guest.html.twig`), themed by `nowo_ui_kit.theme` in `config/packages/nowo_ui_kit.yaml` (slot classes, `--app-*` tokens, shell / burger / pagination / toasts partials). Do not add `templates/bundles/Nowo*Bundle/` forks, `templates/kit/*_layout` bridges or per-kit class maps; a real customization is a one-block override outside `templates/bundles/` wired through the kit's `web_ui.templates.<page>` (`templates/auth/`, `templates/kit/`, `templates/maintenance/`, `templates/pwa/`). Kit page metrics: `assets/styles/kit-admin.css` (no colour remaps, no `!important`).
 
 ## QA gates
 

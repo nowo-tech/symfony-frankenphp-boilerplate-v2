@@ -55,6 +55,20 @@ There is no `composer update nowo-tech/symfony-frankenphp-boilerplate-v2` path f
 
 **No migrations.**
 
+**UiKit 2 page contract (REQ-UI-003).** UiKit **2.4.0** and the kits on the contract (AuthKit 1.27.2, BreadcrumbKit 2.7.2, CookieConsent 1.17.0, DashboardMenu 2.8.1, HttpLog 1.9.1, MaintenanceMode 1.10.1, Pwa 1.10.0, RoutingKit 1.10.0, SiteBackup 1.21.2, FormKit 2.12.0, PasswordToggle 2.4.1, `doctrine/orm` 3.7.5):
+
+```bash
+composer install
+php bin/console assets:install public
+make vite-build    # new entry kit-admin-styles; kit-admin entry removed
+php bin/console cache:clear
+```
+
+- Kit pages render in `templates/layouts/ui_admin.html.twig` / `ui_guest.html.twig` (`nowo_ui_kit.layouts`), styled by `nowo_ui_kit.theme` (`config/packages/nowo_ui_kit.yaml`). Apps cloned from this starter: delete `templates/kit/*_layout.html.twig`, `_kit_admin_styles.html.twig` and the `templates/bundles/Nowo*Bundle/` forks, and move product chrome into theme slots / partials instead of forks.
+- Config keys renamed (old keys are deprecated aliases in the kits): `nowo_breadcrumb_kit.dashboard.*` → `web_ui.*` (`modals` → `dialog_sizes`; the route import uses `%nowo_breadcrumb_kit.web_ui.path_prefix%`), `nowo_dashboard_menu.dashboard.{enabled,layout_template}` → `web_ui.*`, `nowo_maintenance_mode.panel.*` → `web_ui.*`, `nowo_routing_kit.panel.{enabled,path_prefix}` → `web_ui.*`, `nowo_site_backup.panel.*` / `templates.*` → `web_ui.*`, `nowo_auth_kit.profiles.*.templates` / `css` → `web_ui.form_themes` / `web_ui.templates` + theme slots, `nowo_pwa.install_prompt.*_button_class` → theme slots (`theme.bundles.NowoPwaBundle`).
+- Tests / E2E selectors: the AuthKit `.nowo-auth-kit__*` markup is gone — use `[data-nowo-ui-page="auth"]`, `[data-testid="auth-kit-<page>"]`.
+- SiteBackup 1.21 panel: sign-in and panel are UiKit pages in the guest bridge; `data-nowo-confirm` is gone (UiKit confirm dialogs).
+
 Kit-over-shim floors (OTHER pass 40): HotReload **1.5.2**, LoginThrottle **3.2.0**, CookieConsent **1.9.7**, Pwa **1.5.0**.
 
 ```bash
