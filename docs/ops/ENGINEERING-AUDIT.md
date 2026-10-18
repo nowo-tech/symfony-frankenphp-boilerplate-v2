@@ -54,6 +54,16 @@ This document is the REV-007 evidence artifact. Re-run at least once per minor r
 
 ---
 
+## Platform QA lanes (REQ-QA-006 / QA-010 / QA-011)
+
+| REQ | Evidence |
+| --- | -------- |
+| QA-006 | Warm `chromium` `testIgnore`s `e2e/worker/`, `e2e/cold/`, `e2e/manual/`; local `--shard=N/M` via `make test-e2e-isolated ARGS='--shard=1/2'`; CI single job (small suite) — [`playwright.config.ts`](../../playwright.config.ts), [`e2e/README.md`](../../e2e/README.md), [`CONTRIBUTING.md`](../CONTRIBUTING.md) |
+| QA-010 | `make test-e2e-worker-safe` + `e2e/worker/` |
+| QA-011 | `make test-e2e-cold` / `make test-e2e-clean` + `e2e/cold/` |
+
+---
+
 ## How to re-verify
 
 ```bash

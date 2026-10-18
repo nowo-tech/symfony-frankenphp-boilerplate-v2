@@ -97,6 +97,17 @@ http://{$SERVER_NAME:localhost}, http://host.docker.internal, http://127.0.0.1 {
 		}
 	}
 
+	# REQ-HDR-007 — scanner noise (/wp-login.php, /hi.php/, /xmlrpc.php …): the app only exposes
+	# clean URLs through public/index.php, so any other .php path is a probe. Answer 404 here
+	# instead of booting Symfony (one Beacon issue per probed filename otherwise).
+	@phpProbe {
+		path_regexp phpProbe \.(?i:php\d?|phtml|phar)(/|$)
+		not path /index.php /index.php/*
+	}
+	handle @phpProbe {
+		respond 404
+	}
+
 	# classic: run PHP per request.
 	# worker:  if a worker is registered for ./public/index.php, requests to that
 	#          script are handled by the worker (no re-bootstrap).

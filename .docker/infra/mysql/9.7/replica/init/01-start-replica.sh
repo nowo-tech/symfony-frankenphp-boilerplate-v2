@@ -1,12 +1,12 @@
 #!/bin/bash
-# Configure GTID replication from mysql-9.7-primary (runs once on empty datadir).
+# Configure GTID replication from mysql-9.7.2-primary (runs once on empty datadir).
 set -euo pipefail
 
 # App .env may set MYSQL_HOST=primary; force local instance for init.
 unset MYSQL_HOST DATABASE_HOST
 export MYSQL_PWD="${MYSQL_ROOT_PASSWORD}"
 
-PRIMARY_HOST="${MYSQL_PRIMARY_HOST:-mysql-9.7-primary}"
+PRIMARY_HOST="${MYSQL_PRIMARY_HOST:-mysql-9.7.2-primary}"
 REPLICATOR_USER="${MYSQL_REPLICATION_USER:-replicator}"
 REPLICATOR_PASSWORD="${MYSQL_REPLICATION_PASSWORD:-${MYSQL_ROOT_PASSWORD}}"
 

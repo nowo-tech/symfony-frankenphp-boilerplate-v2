@@ -6,7 +6,7 @@
 # Usage (from symfony-frankenphp-boilerplate-v2 root, with .env loaded / present):
 #   ./.scripts/bootstrap-shared-db.sh
 #
-# Requires: mysql-9.7-primary running (make up-infra, or developer.local.server/server).
+# Requires: mysql-9.7.2-primary running (make up-infra, or developer.local.server/server).
 # Standalone default DB name is `app` (see .env.dist MYSQL_DATABASE).
 
 set -euo pipefail
@@ -24,7 +24,7 @@ set -a
 source .env.local
 set +a
 
-PRIMARY="${SHARED_MYSQL_PRIMARY:-mysql-9.7-primary}"
+PRIMARY="${SHARED_MYSQL_PRIMARY:-mysql-9.7.2-primary}"
 DB_NAME="${MYSQL_DATABASE:-app}"
 DB_USER="${MYSQL_USER:-root}"
 DB_PASS="${MYSQL_PASSWORD:-}"

@@ -107,7 +107,7 @@ services:
   ###> doctrine/doctrine-bundle ###
   # MySQL 9.7 (latest stable official: https://hub.docker.com/_/mysql)
   database:
-    image: mysql:${MYSQL_VERSION:-9.7}
+    image: mysql:${MYSQL_VERSION:-9.7.2}
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-app}
@@ -136,16 +136,21 @@ services:
   ###< doctrine/doctrine-bundle ###
 
   # Redis (sessions + cache.app). Standalone default hostname: `redis`.
-  # Shared mode uses compose.infra.yaml `redis-8.10.0` — set REDIS_HOST accordingly.
+  # Shared mode uses compose.infra.yaml `redis-8.10.2` — set REDIS_HOST accordingly.
+  # Dual-mode AUTH (REQ-INFRA-SHARED-003): empty REDIS_PASSWORD = no AUTH.
   redis:
-    image: redis:${REDIS_VERSION:-8.10.0}-alpine
+    image: redis:${REDIS_VERSION:-8.10.2}-alpine
     restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    command: >
+      sh -c 'if [ -n "$$REDIS_PASSWORD" ]; then exec redis-server --requirepass "$$REDIS_PASSWORD"; else exec redis-server; fi'
     volumes:
       # Host-visible Redis data (gitignored).
       - ./.data/redis:/data
     # No host ports — reach via Compose network only (REQ-FP-006).
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG; else redis-cli ping | grep -q PONG; fi"]
       interval: 5s
       timeout: 3s
       retries: 10

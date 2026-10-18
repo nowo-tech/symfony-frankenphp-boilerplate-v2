@@ -1,0 +1,44 @@
+# Isolated Playwright smoke stack — separate Compose project, MySQL schema, Redis DB, ports.
+#
+#   make up-e2e && make ready-e2e && make test-e2e-isolated
+#
+# Uses `.env.e2e.local` (from `.scripts/ensure-e2e-env.sh` + `.env.e2e.dist`).
+# Does not replace the dogfood stack (`make up` / :9444).
+#
+# IMPORTANT: do not re-interpolate DATABASE_URL / REDIS_URL / MESSENGER_TRANSPORT_DSN
+# via `environment: ${VAR}` — Compose prefers process env over `--env-file`.
+services:
+  php:
+    env_file: !override
+      - .env.e2e.local
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nowo_shell_e2e}
+      DEFAULT_URI: ${DEFAULT_URI:-https://localhost:9461}
+    volumes:
+      - ./:/app
+      - e2e_var_cache:/app/var/cache
+      - e2e_var_log:/app/var/log
+
+  messenger:
+    env_file: !override
+      - .env.e2e.local
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nowo_shell_e2e}
+    volumes:
+      - ./:/app
+      - e2e_var_cache:/app/var/cache
+      - e2e_var_log:/app/var/log
+
+  messenger-notify:
+    env_file: !override
+      - .env.e2e.local
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nowo_shell_e2e}
+    volumes:
+      - ./:/app
+      - e2e_var_cache:/app/var/cache
+      - e2e_var_log:/app/var/log
+
+volumes:
+  e2e_var_cache:
+  e2e_var_log:

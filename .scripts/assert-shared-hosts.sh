@@ -19,8 +19,8 @@ MYSQL_HOST="${MYSQL_HOST:-database}"
 REDIS_HOST="${REDIS_HOST:-redis}"
 MODE="${1:-check}" # check | require-shared | require-standalone
 
-shared_mysql='mysql-9.7-primary'
-shared_redis='redis-8.10.0'
+shared_mysql='mysql-9.7.2-primary'
+shared_redis='redis-8.10.2'
 standalone_mysql='database'
 standalone_redis='redis'
 
@@ -37,7 +37,7 @@ is_standalone_redis=0
 fail() {
   echo "assert-shared-hosts: $*" >&2
   echo "  Standalone: MYSQL_HOST=database REDIS_HOST=redis" >&2
-  echo "  Shared:     MYSQL_HOST=mysql-9.7-primary REDIS_HOST=redis-8.10.0" >&2
+  echo "  Shared:     MYSQL_HOST=mysql-9.7.2-primary REDIS_HOST=redis-8.10.2" >&2
   echo "  See docs/ops/SHARED-SERVER.md" >&2
   exit 1
 }

@@ -7,31 +7,35 @@
 # COMPOSE_PROJECT_NAME. Network name matches developer.local.server/server
 # and little-vps (`SHARED_DOCKER_NETWORK`, default server_network).
 #
-# Coexistence: if mysql-9.7-primary already exists (e.g. from server/), `make up-infra`
+# Coexistence: if mysql-9.7.2-primary already exists (e.g. from server/), `make up-infra`
 # is a no-op — see docs/ops/SHARED-SERVER.md.
 #
 # No host-published DB/Redis ports (REQ-FP-006): reach via Compose network only.
 name: shared-infra
 
 services:
-  redis-8.10.0:
-    image: redis:${REDIS_VERSION:-8.10.0}-alpine
-    container_name: redis-8.10.0
+  redis-8.10.2:
+    image: redis:${REDIS_VERSION:-8.10.2}-alpine
+    container_name: redis-8.10.2
     restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    command: >
+      sh -c 'if [ -n "$$REDIS_PASSWORD" ]; then exec redis-server --requirepass "$$REDIS_PASSWORD"; else exec redis-server; fi'
     volumes:
       - ./.data/infra/redis:/data
     networks:
       - server_network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG; else redis-cli ping | grep -q PONG; fi"]
       interval: 5s
       timeout: 3s
       retries: 10
       start_period: 5s
 
-  mysql-9.7-primary:
-    image: mysql:${MYSQL_VERSION:-9.7}
-    container_name: mysql-9.7-primary
+  mysql-9.7.2-primary:
+    image: mysql:${MYSQL_VERSION:-9.7.2}
+    container_name: mysql-9.7.2-primary
     restart: unless-stopped
     env_file:
       - .env.local
@@ -64,16 +68,16 @@ services:
       start_period: 40s
 
   # Opt-in: MYSQL_TOPOLOGY=replica → docker compose --profile mysql-replica
-  mysql-9.7-replica:
+  mysql-9.7.2-replica:
     profiles: ["mysql-replica"]
-    image: mysql:${MYSQL_VERSION:-9.7}
-    container_name: mysql-9.7-replica
+    image: mysql:${MYSQL_VERSION:-9.7.2}
+    container_name: mysql-9.7.2-replica
     restart: unless-stopped
     env_file:
       - .env.local
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env.local}
-      MYSQL_PRIMARY_HOST: mysql-9.7-primary
+      MYSQL_PRIMARY_HOST: mysql-9.7.2-primary
       MYSQL_REPLICATION_USER: replicator
       MYSQL_REPLICATION_PASSWORD: ${MYSQL_REPLICATION_PASSWORD:-${MYSQL_ROOT_PASSWORD}}
       # Override shared .env.local so mysql CLI inside this container is not redirected to primary
@@ -85,7 +89,7 @@ services:
     networks:
       - server_network
     depends_on:
-      mysql-9.7-primary:
+      mysql-9.7.2-primary:
         condition: service_healthy
     healthcheck:
       test:

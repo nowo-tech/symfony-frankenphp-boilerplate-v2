@@ -8,7 +8,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     // Controllers only — thinking-orbs / assets/lib stay out of the suite (and out of the gate).
-    include: ['assets/controllers/**/*.{test,spec}.ts'],
+    include: [
+      'assets/controllers/**/*.{test,spec}.ts',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],

@@ -7,14 +7,14 @@ Nowo Shell (symfony-frankenphp-boilerplate-v2) supports **two** local topologies
 
 `make up` / `classic` / `worker` assert **standalone** hosts (`MYSQL_HOST=database`, `REDIS_HOST=redis`), then call `make up-infra` (coexistence: start shared MySQL/Redis if missing for siblings) and start the **local** `database` + `redis` services.
 
-`make up-shared` asserts **shared** hosts (`MYSQL_HOST=mysql-9.7-primary`, `REDIS_HOST=redis-8.10.0`), starts infra, and brings the app up with [`compose.shared.yaml`](../../compose.shared.yaml) so local `database` / `redis` stay profiled out. Mixed host pairs fail fast via [`.scripts/assert-shared-hosts.sh`](../../.scripts/assert-shared-hosts.sh).
+`make up-shared` asserts **shared** hosts (`MYSQL_HOST=mysql-9.7.2-primary`, `REDIS_HOST=redis-8.10.2`), starts infra, and brings the app up with [`compose.shared.yaml`](../../compose.shared.yaml) so local `database` / `redis` stay profiled out. Mixed host pairs fail fast via [`.scripts/assert-shared-hosts.sh`](../../.scripts/assert-shared-hosts.sh).
 
 ## Topology switch (`MYSQL_TOPOLOGY`)
 
 | Value | Infra services | Recommended hosts |
 |-------|----------------|--------------------|
-| `simple` (default) | `mysql-9.7-primary` + `redis-8.10.0` | `MYSQL_HOST` / `MYSQL_HOST_RO` → `mysql-9.7-primary` |
-| `replica` | primary + Redis + `mysql-9.7-replica` (Compose profile `mysql-replica`) | `MYSQL_HOST_RO=mysql-9.7-replica` |
+| `simple` (default) | `mysql-9.7.2-primary` + `redis-8.10.2` | `MYSQL_HOST` / `MYSQL_HOST_RO` → `mysql-9.7.2-primary` |
+| `replica` | primary + Redis + `mysql-9.7.2-replica` (Compose profile `mysql-replica`) | `MYSQL_HOST_RO=mysql-9.7.2-replica` |
 
 Set in `.env.local` (see `.env.dist`):
 
@@ -31,7 +31,7 @@ Primary is always GTID-ready and creates a `replicator` user on first empty data
 cp .env.dist .env.local   # once — standalone defaults: MYSQL_HOST=database, REDIS_HOST=redis
 make up             # standalone app stack (asserts host pair)
 # Shared mode:
-#   set MYSQL_HOST=mysql-9.7-primary REDIS_HOST=redis-8.10.0 in .env
+#   set MYSQL_HOST=mysql-9.7.2-primary REDIS_HOST=redis-8.10.2 in .env
 make up-shared      # up-infra + compose.shared (no local DB/Redis containers)
 make bootstrap-shared-db   # optional: CREATE DATABASE (+ app user) on shared primary
 make bootstrap             # migrate + platform seed
@@ -55,17 +55,17 @@ Same container names and network:
 | Role | Hostname |
 |------|----------|
 | Network | `${SHARED_DOCKER_NETWORK:-server_network}` |
-| Write MySQL | `mysql-9.7-primary` |
-| Read MySQL | `mysql-9.7-replica` (when topology/replica is up) |
-| Redis | `redis-8.10.0` |
+| Write MySQL | `mysql-9.7.2-primary` |
+| Read MySQL | `mysql-9.7.2-replica` (when topology/replica is up) |
+| Redis | `redis-8.10.2` |
 
-`make up-infra` **does not recreate** containers if `mysql-9.7-primary` already exists (e.g. started from `server/`). It starts them if stopped and requires `redis-8.10.0` + the Docker network. Do **not** run both owners’ compose files against empty names at once — pick one owner for the containers.
+`make up-infra` **does not recreate** containers if `mysql-9.7.2-primary` already exists (e.g. started from `server/`). It starts them if stopped and requires `redis-8.10.2` + the Docker network. Do **not** run both owners’ compose files against empty names at once — pick one owner for the containers.
 
 Alternative (infra only from `server/`):
 
 ```bash
 cd /path/to/developer.local.server/server
-docker compose up -d redis-8.10.0 mysql-9.7-primary mysql-9.7-replica
+docker compose up -d redis-8.10.2 mysql-9.7.2-primary mysql-9.7.2-replica
 # then in symfony-frankenphp-boilerplate-v2:
 make up
 ```
@@ -84,8 +84,13 @@ DATABASE_URL_RO="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST_RO}:${MYSQ
 Redis (sessions + `cache.app`):
 
 ```env
+REDIS_PASSWORD=
 REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}
+# When server/.env (or this compose.infra) sets REDIS_PASSWORD:
+# REDIS_URL=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
 ```
+
+`REDIS_PASSWORD` is the **shared Redis** secret (REQ-INFRA-SHARED-003). Empty = no AUTH. Do not interpolate an empty password into the URL.
 
 Defaults from `.env.dist` / `.env.local` (standalone):
 
@@ -104,9 +109,9 @@ REDIS_HOST=redis
 Shared-mode overrides (comments in `.env.dist`):
 
 ```env
-MYSQL_HOST=mysql-9.7-primary
-MYSQL_HOST_RO=mysql-9.7-primary
-REDIS_HOST=redis-8.10.0
+MYSQL_HOST=mysql-9.7.2-primary
+MYSQL_HOST_RO=mysql-9.7.2-primary
+REDIS_HOST=redis-8.10.2
 ```
 
 Optional schema/user helper: `make bootstrap-shared-db` (CREATE DATABASE; optional non-root user). Cold start can also use SiteBackup `/setup`.
@@ -121,7 +126,7 @@ Optional schema/user helper: `make bootstrap-shared-db` (CREATE DATABASE; option
 | `compose.yaml` | Dev app + local `database` + `redis` + messenger (+ Mailpit / HMR profiles) |
 | `compose.shared.yaml` | Profiles out local `database`/`redis`; attaches app to `${SHARED_DOCKER_NETWORK}` |
 
-No host-published MySQL/Redis ports (REQ-FP-006): use `make mysql` or `docker compose exec database mysql …` / `docker exec -it mysql-9.7-primary mysql …`.
+No host-published MySQL/Redis ports (REQ-FP-006): use `make mysql` or `docker compose exec database mysql …` / `docker exec -it mysql-9.7.2-primary mysql …`.
 
 ## Join from another project
 
@@ -161,8 +166,8 @@ make -C /path/to/symfony-frankenphp-boilerplate-v2 up-infra
 | Role | Local (this repo or `server/`) | little-vps |
 |------|--------------------------------|------------|
 | Network | `server_network` | `server_internal` |
-| Write MySQL | `mysql-9.7-primary` (`MYSQL_HOST`) or standalone `database` | Ansible primary hostname |
-| Read MySQL | `mysql-9.7-replica` (`MYSQL_HOST_RO`) when replica topology is on | Ansible replica hostname |
-| Redis | `redis-8.10.0` or standalone `redis` (`REDIS_HOST`) | Redis role container |
+| Write MySQL | `mysql-9.7.2-primary` (`MYSQL_HOST`) or standalone `database` | Ansible primary hostname |
+| Read MySQL | `mysql-9.7.2-replica` (`MYSQL_HOST_RO`) when replica topology is on | Ansible replica hostname |
+| Redis | `redis-8.10.2` or standalone `redis` (`REDIS_HOST`) | Redis role container |
 
 Doctrine reads are not routed to the replica yet; apps write to the primary. `DATABASE_URL_RO` is documented for a future adapter.

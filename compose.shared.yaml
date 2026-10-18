@@ -1,6 +1,6 @@
 # Shared MySQL + Redis via external network (compose.infra / server/).
 #   make up-shared
-# Requires MYSQL_HOST=mysql-9.7-primary and REDIS_HOST=redis-8.10.0 (asserted by Make).
+# Requires MYSQL_HOST=mysql-9.7.2-primary and REDIS_HOST=redis-8.10.2 (asserted by Make).
 
 services:
   database:

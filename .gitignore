@@ -3,12 +3,15 @@
 # Never commit secrets. Operator working file: `.env.local` (REQ-ENV-003).
 /.env
 /.env.local
+/.env.e2e.local
+/.env.e2e.cold.local
 /.env.local.php
 /.env.*.local
 /.env.dev
 /.env.prod
 /.env.test
 /.demo-client.env
+/.demo-client.e2e.env
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
@@ -77,6 +80,7 @@ composer.phar
 
 # Env template (only versioned env file)
 !.env.dist
+!.env.e2e.dist
 
 # Local package downloads
 *.deb
