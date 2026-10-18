@@ -74,3 +74,27 @@
   gap: 0.65rem;
   justify-content: center;
 }
+
+/* —— Public maintenance (503 / /_maintenance_preview, templates/maintenance/page.html.twig on the UiKit auth panel) —— */
+
+.maintenance-page__figure {
+  margin: 0 0 1.25rem;
+}
+
+.maintenance-page__eta {
+  margin: 0 auto 1rem;
+  max-width: 20rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-moss-deep, var(--color-moss));
+}
+
+.maintenance-page__thanks {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-moss);
+}

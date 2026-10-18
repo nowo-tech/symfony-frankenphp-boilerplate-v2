@@ -3861,8 +3861,8 @@ html[data-ui-density='compact'] .issue-saved-views__save {
   user-select: none;
 }
 
-/* Kit CRUD (Menus / Breadcrumbs) — structural chrome; button colors live in
-   templates/kit/_kit_admin_styles.html.twig (loaded after Bootstrap CDN). */
+/* Kit pages (UiKit 2 scaffolds in layouts/ui_admin.html.twig / ui_guest.html.twig) — metrics in
+   assets/styles/kit-admin.css, colours from nowo_ui_kit.theme.tokens. */
 .kit-admin {
   color: var(--color-ink);
 }

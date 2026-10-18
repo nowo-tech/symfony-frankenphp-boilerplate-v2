@@ -1,4 +1,11 @@
+/* UiKit 2 cascade layers: nowo-ui.css (linked before this file) sits above Tailwind's preflight and below the
+   components / utilities, so the theme slot utilities and the app's unlayered SCSS win without !important. */
+@layer theme, base, nowo-ui, components, utilities;
+
 @import "tailwindcss";
+
+/* UiKit 2 theme slots (nowo_ui_kit.theme.classes): utilities printed by the kit scaffolds. */
+@source "../../config/packages/nowo_ui_kit.yaml";
 
 @theme {
   --font-sans: "Sora", "Segoe UI", sans-serif;
