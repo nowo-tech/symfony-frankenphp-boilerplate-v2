@@ -29,7 +29,6 @@ export default defineConfig({
         'assets/stimulus-env.d.ts',
         'assets/**/*.d.ts',
         'assets/app.ts',
-        'assets/kit-admin.ts',
         'assets/stimulus_bootstrap.ts',
         'assets/theme-boot.ts',
         'assets/controllers/combobox_controller.ts',

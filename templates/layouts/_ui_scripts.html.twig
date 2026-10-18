@@ -1,0 +1,9 @@
+{#
+  UiKit runtimes of the page-contract bridges (layouts/ui_admin.html.twig, layouts/ui_guest.html.twig), through the
+  UiKit `scripts` partial. The app owns the toast stack and the theme toggle (app entry), so only modal, confirm,
+  dialog, tabs, popover and segmented are loaded. JS-free pages (AuthPage::scripts = false) set
+  nowo_ui_scripts_enabled = false.
+#}
+{% if nowo_ui_scripts_enabled ?? true %}
+    {{ include(nowo_ui_partial('scripts'), {script_names: ['modal', 'confirm', 'dialog', 'tabs', 'popover', 'segmented'], nonce: csp_nonce()}, false) }}
+{% endif %}

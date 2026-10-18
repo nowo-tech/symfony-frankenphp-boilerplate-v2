@@ -1,6 +1,6 @@
 # nowo-tech/breadcrumb-kit-bundle
 # https://github.com/nowo-tech/BreadcrumbKitBundle
-# Host shell only: kit/breadcrumb_dashboard_layout.html.twig — do not fork dashboard/*.twig.
+# Administration pages: UiKit 2 scaffolds (layouts/ui_admin.html.twig + nowo_ui_kit.theme), no templates/bundles/ copy.
 nowo_breadcrumb_kit:
     locales: '%fallback_locales%'
     default_locale: '%default_locale%'
@@ -12,18 +12,16 @@ nowo_breadcrumb_kit:
         home_icon: null
         home_icon_replaces_label: true
         hide_when_single_root: true
-    dashboard:
+    # UiKit 2 page contract (BreadcrumbKit ≥2.7): the dashboard pages extend UiKit scaffolds in
+    # nowo_ui_kit.layouts.admin (layouts/ui_admin.html.twig), classes from nowo_ui_kit.theme, forms in UiKit dialogs.
+    web_ui:
         enabled: true
         path_prefix: /breadcrumb-kit-admin
-        layout_template: 'kit/breadcrumb_dashboard_layout.html.twig'
-        # Align with host nowo_ui_kit (tailwind + ux_icon); kit JS uses Nowo modals (non-Bootstrap).
-        css_framework: tailwind
-        icon_set: ux_icon
-        modals:
-            collection_form: normal
-            item_form: normal
-            import: normal
-            delete: normal
+        # Create / edit has many CSS fields.
+        dialog_sizes:
+            collection_form: xl
+            item_form: lg
+            import: md
         pagination:
             enabled: true
             per_page: 20

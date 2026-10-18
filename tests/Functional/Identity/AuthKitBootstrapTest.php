@@ -21,7 +21,7 @@ final class AuthKitBootstrapTest extends DatabaseWebTestCase
             $client->followRedirect();
         }
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'Nowo Shell');
+        self::assertSelectorTextContains('.brand-mark', 'Nowo Shell');
         self::assertSelectorExists('input[name="login_form[_remember_me]"]');
         $html = $client->getResponse()->getContent() ?: '';
         // AUTH-005: QR phone login stays disabled until a real OTP provider is wired.
@@ -48,7 +48,7 @@ final class AuthKitBootstrapTest extends DatabaseWebTestCase
         $client->request(Request::METHOD_GET, '/es/login');
         self::assertResponseIsSuccessful();
         // PWA install prompt also uses h2; AuthKit heading is h1 inside the panel.
-        self::assertSelectorTextContains('.nowo-auth-kit__panel h1', 'Iniciar sesión');
+        self::assertSelectorTextContains('[data-nowo-ui-page="auth"] h1', 'Iniciar sesión');
         // DEFAULT_LOCALE (en in PHPUnit) is canonical as bare /login, not /en/login.
         self::assertSelectorExists('a[href="/login"]');
     }
@@ -58,7 +58,7 @@ final class AuthKitBootstrapTest extends DatabaseWebTestCase
         $client = self::createClient();
         $client->request(Request::METHOD_GET, '/de/login');
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('.nowo-auth-kit__panel h1', 'Anmelden');
+        self::assertSelectorTextContains('[data-nowo-ui-page="auth"] h1', 'Anmelden');
     }
 
     public function testRegisterPageAvailableWhenNoUsers(): void

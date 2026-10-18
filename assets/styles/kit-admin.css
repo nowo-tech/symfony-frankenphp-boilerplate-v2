@@ -1,0 +1,494 @@
+/*
+ * App metrics for the kit pages (UiKit 2 page contract: kit admin pages in layouts/ui_admin.html.twig, guest pages
+ * in layouts/ui_guest.html.twig, both inside `.kit-admin`). Build entry `kit-admin-styles`.
+ *
+ * Since UiKit 2.3 nowo-ui.css sits in `@layer nowo-ui` (base.html.twig / layouts/guest_shell.html.twig) and the app's colours are
+ * UiKit tokens (nowo_ui_kit.theme.tokens in config/packages/nowo_ui_kit.yaml), so nothing here remaps a colour or
+ * needs !important to beat the kit. What stays is the app's own density / type scale on the UiKit semantic classes,
+ * and layout the theme slots cannot express.
+ */
+
+/* Page header title (theme slot page_title): same type as the product page headers (admin users / groups). Scoped
+   under .kit-admin so it beats the kit body scale below. */
+.kit-admin h1.kit-admin-page-header__title,
+h1.kit-admin-page-header__title {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+  letter-spacing: normal;
+  color: var(--color-ink, var(--app-ink));
+  margin: 0;
+}
+
+/* —— Kit pages: app type + control scale —— */
+.kit-admin {
+  --kit-font-body: 0.875rem;
+  --kit-font-label: 0.8125rem;
+  --kit-font-meta: 0.75rem;
+  --kit-font-title: 1.25rem;
+  --kit-btn-font: 0.875rem;
+  --kit-btn-pad-y: 0.5rem;
+  --kit-btn-pad-x: 1rem;
+  --kit-btn-sm: 2rem;
+  --kit-btn-sm-font: 0.8125rem;
+  --kit-btn-radius: 0.125rem;
+  font-size: var(--kit-font-body);
+  line-height: 1.45;
+  color: var(--app-ink);
+}
+
+.kit-admin h1 {
+  font-size: var(--kit-font-title);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.kit-admin small {
+  font-size: var(--kit-font-meta);
+}
+
+/* Row / icon actions (theme slots btn_sm, action): square and aligned. */
+.kit-admin .btn-sm {
+  width: var(--kit-btn-sm, 2rem);
+  min-width: var(--kit-btn-sm, 2rem);
+  min-height: var(--kit-btn-sm, 2rem);
+  height: var(--kit-btn-sm, 2rem);
+  padding: 0.35rem;
+  font-size: var(--kit-btn-sm-font, 0.8125rem);
+  line-height: 1;
+}
+
+.kit-admin .btn-sm svg {
+  display: block;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Textual compact buttons (row_actions_display: text): auto width. */
+.kit-admin .btn-sm.btn-label,
+.kit-admin .nowo-ui-row-actions--text :is(.btn-sm, .btn-ghost, .btn-danger, .btn-primary, .nowo-ui-btn--sm) {
+  width: auto;
+  min-width: 0;
+  height: auto;
+  min-height: var(--kit-btn-sm, 2rem);
+  padding: 0.35rem 0.65rem;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+/* Row actions: end-aligned cluster of square icon buttons on one line. */
+.kit-admin .nowo-ui-row-actions {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+/* Text row-action clusters: chips on one line; the table panel may scroll horizontally. */
+.kit-admin .nowo-ui-row-actions--text {
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  max-width: none;
+  justify-content: flex-end;
+}
+
+.kit-admin .btn-link {
+  min-height: 0;
+  padding: 0;
+  font-size: var(--kit-font-body, 0.875rem);
+  font-weight: 500;
+  color: var(--app-moss);
+  text-decoration: none;
+}
+
+.kit-admin .btn-link:hover {
+  color: var(--app-moss-deep);
+}
+
+.kit-admin .badge {
+  font-size: var(--kit-font-meta);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
+/* Pagination (theme partial layouts/partials/_pagination.html.twig): app pills; colours from the tokens. */
+.kit-admin .nowo-ui-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--app-sand);
+}
+
+.kit-admin .nowo-ui-pagination__nav {
+  order: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.kit-admin .nowo-ui-pagination__info {
+  order: 1;
+  margin: 0;
+  color: color-mix(in srgb, var(--app-ink) 65%, transparent);
+  font-size: var(--kit-font-meta);
+}
+
+.kit-admin .pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kit-admin .pagination .page-item {
+  margin: 0;
+}
+
+.kit-admin .nowo-ui-pagination__link {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  font-size: var(--kit-font-meta);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.kit-admin .nowo-ui-pagination__link.is-active {
+  font-weight: var(--nowo-ui-pagination-active-weight);
+}
+
+.kit-admin .nowo-ui-pagination__link.is-disabled {
+  border-color: var(--nowo-ui-border-strong);
+  color: color-mix(in srgb, var(--app-ink) 55%, transparent);
+}
+
+.kit-admin .nowo-ui-pagination__ellipsis {
+  padding: 0 0.25rem;
+  color: color-mix(in srgb, var(--app-ink) 45%, transparent);
+}
+
+/* Search rows (same layout as the admin users / groups filter row). */
+.kit-admin .nowo-ui-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.kit-admin .nowo-ui-search :is(.nowo-ui-input, input[type="search"], .nowo-ui-search__input) {
+  flex: 1 1 14rem;
+  min-width: 14rem;
+  max-width: none;
+  min-height: 2.25rem;
+}
+
+/* Badges (theme badge* slots): app pills, readable in both themes (--app-* switch under [data-theme="dark"]). */
+.kit-admin .nowo-ui-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.35rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--app-sand);
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, var(--app-sand) 55%, var(--app-mist));
+  color: color-mix(in srgb, var(--app-ink) 80%, transparent);
+  font-size: var(--kit-font-meta);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.kit-admin .nowo-ui-badge.nowo-ui-badge--success {
+  border-color: color-mix(in srgb, var(--app-moss) 35%, var(--app-sand));
+  background: color-mix(in srgb, var(--app-moss) 14%, var(--app-surface));
+  color: var(--app-moss-deep);
+}
+
+.kit-admin .nowo-ui-badge.nowo-ui-badge--warning {
+  border-color: color-mix(in srgb, var(--app-warn) 40%, var(--app-sand));
+  background: color-mix(in srgb, var(--app-warn) 14%, var(--app-surface));
+  color: var(--app-warn);
+}
+
+.kit-admin .nowo-ui-badge:is(.nowo-ui-badge--danger, .nowo-ui-badge--error) {
+  border-color: color-mix(in srgb, var(--app-alert) 40%, var(--app-sand));
+  background: color-mix(in srgb, var(--app-alert) 12%, var(--app-surface));
+  color: var(--app-alert);
+}
+
+.kit-admin .nowo-ui-badge:is(.nowo-ui-badge--info, .nowo-ui-badge--primary) {
+  border-color: color-mix(in srgb, var(--app-moss) 25%, var(--app-sand));
+  background: var(--app-mist);
+  color: var(--app-ink);
+}
+
+/* Tables (theme slots table_wrap = app panel, table = data-table): app density + head typography. */
+.kit-admin .nowo-ui-table-wrap {
+  margin: 0;
+  overflow-x: auto;
+  box-shadow: none;
+}
+
+.kit-admin .panel.nowo-ui-table-wrap {
+  padding: 1.25rem;
+  border: 1px solid var(--app-sand);
+  border-radius: var(--app-radius-card, 0.25rem);
+  background: color-mix(in srgb, var(--app-surface) 85%, transparent);
+  box-shadow: 0 1px 2px rgb(var(--app-shadow) / 6%);
+}
+
+.kit-admin .nowo-ui-table th,
+.kit-admin .nowo-ui-table td {
+  padding: 0.65rem 0.75rem;
+  font-size: var(--kit-font-body);
+}
+
+.kit-admin .nowo-ui-table td {
+  color: var(--nowo-ui-text);
+}
+
+.kit-admin .nowo-ui-table thead th {
+  font-size: var(--kit-font-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom-color: var(--app-sand);
+}
+
+/* Hovered stripe a step darker than the stripe itself (single hover token in the kit). */
+.kit-admin .nowo-ui-table--striped > tbody > tr:nth-child(even):hover {
+  background: color-mix(in srgb, var(--app-mist) 70%, transparent);
+}
+
+.kit-admin .nowo-ui-table code {
+  font-size: var(--kit-font-meta);
+  color: var(--app-moss);
+  word-break: break-all;
+}
+
+/* Empty state (theme slot empty = app panel). */
+.kit-admin .nowo-ui-empty {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  font-size: var(--kit-font-body);
+}
+
+/* Controls: app control metrics (FormKit `input` / UiKit `input` slot); colours from the tokens. */
+.kit-admin :is(.nowo-ui-input, input.input, select.input, textarea.input) {
+  font-size: var(--kit-font-body);
+  min-height: 2.375rem;
+  padding: 0.5rem 0.75rem;
+  accent-color: var(--nowo-ui-primary);
+}
+
+.kit-admin :is(input, select, textarea).input:focus {
+  outline: 0;
+  border-color: var(--nowo-ui-primary);
+  box-shadow: var(--nowo-ui-focus-ring);
+}
+
+.kit-admin .nowo-ui-btn {
+  justify-content: center;
+  /* app control height (the shared control metrics of _components.scss): buttons line up with the fields of a filter row. */
+  min-height: 2.375rem;
+  padding: var(--kit-btn-pad-y) var(--kit-btn-pad-x);
+  font-size: var(--kit-btn-font);
+  font-weight: 500;
+}
+
+.kit-admin .nowo-ui-btn--primary {
+  font-weight: 600;
+}
+
+/* No --nowo-ui-btn-danger-hover-border token: hover strengthens the border to full alert. */
+.kit-admin .nowo-ui-btn--danger:hover {
+  border-color: var(--nowo-ui-danger);
+}
+
+/* Compact labeled toolbar / filter buttons. */
+.kit-admin .nowo-ui-btn--sm {
+  min-height: var(--kit-btn-sm);
+  padding: 0.35rem 0.65rem;
+  font-size: var(--kit-btn-sm-font);
+}
+
+/* Icon-only actions: square controls (labeled `btn-label` actions keep their width, see above). */
+.kit-admin .nowo-ui-action.nowo-ui-btn--sm:not(.btn-label),
+.kit-admin .nowo-ui-row-actions .nowo-ui-btn--sm:not(.btn-label) {
+  width: var(--kit-btn-sm);
+  min-width: var(--kit-btn-sm);
+  height: var(--kit-btn-sm);
+  min-height: var(--kit-btn-sm);
+  padding: 0.35rem;
+}
+
+/* Bootstrap's helper is not in Tailwind (AuthKit / SlideToConfirm screen-reader labels). */
+.kit-admin .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * Tabs (cookie consent, maintenance, area navs): product section tabs pills. Colours from the tab tokens; the pill
+ * layout (1px border on all four sides instead of the kit underline, metrics, weight) stays here.
+ */
+.kit-admin .nowo-ui-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  /* Stretch so a bolder glyph cannot lift the first pill off the row. */
+  align-items: stretch;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.kit-admin .nowo-ui-tabs__item {
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  gap: 0.35rem;
+  min-height: 2rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+  /* Same weight as product section tabs on every pill (the kit bolds only the active one). */
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.kit-admin .nowo-ui-tabs__item:is(.nowo-ui-tabs__item--active, .is-active, [aria-current="page"]) {
+  border-color: var(--nowo-ui-tab-active-border);
+  background: var(--nowo-ui-tab-active-bg);
+  color: var(--nowo-ui-tab-active-text);
+}
+
+/* Routing panel checkboxes (UiKit `check` slot): the app's drawn checkbox, coloured by the primary. */
+.kit-admin .nowo-ui-check {
+  gap: 0.55rem;
+  font-size: var(--kit-font-body);
+  line-height: 1.4;
+}
+
+.kit-admin .nowo-ui-check > input[type="checkbox"] {
+  appearance: none;
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  flex-shrink: 0;
+  border: 1px solid var(--nowo-ui-border-strong);
+  border-radius: 0.25rem;
+  background-color: var(--nowo-ui-surface);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 0.75rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kit-admin .nowo-ui-check > input[type="checkbox"]:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--nowo-ui-primary) 55%, var(--nowo-ui-border-strong));
+}
+
+.kit-admin .nowo-ui-check > input[type="checkbox"]:focus-visible {
+  outline: none;
+  border-color: var(--nowo-ui-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--nowo-ui-primary) 20%, transparent);
+}
+
+.kit-admin .nowo-ui-check > input[type="checkbox"]:checked {
+  border-color: var(--nowo-ui-primary);
+  background-color: var(--nowo-ui-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.5L6.5 11.5L12.5 4.5' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.kit-admin .nowo-ui-check > input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/*
+ * Scaffold regions: the page header, toolbars and card headers are laid out by their theme slot utilities
+ * (page_header, toolbar, card_header); toolbars inside them get no kit spacing. The filter form is UiKit's grid.
+ */
+.kit-admin .nowo-ui-toolbar {
+  margin: 0;
+  padding: 0;
+}
+
+.kit-admin .nowo-ui-section p.nowo-ui-toolbar {
+  margin-bottom: 0.75rem;
+}
+
+.kit-admin form.nowo-ui-filters[data-nowo-ui-region] {
+  display: grid;
+  align-items: end;
+  margin: 0 0 1.5rem;
+}
+
+.kit-admin form.nowo-ui-filters[data-nowo-ui-region] :is(.nowo-ui-input, input[type="search"]) {
+  flex: none;
+  min-width: 0;
+  max-width: none;
+}
+
+.kit-admin form.nowo-ui-filters[data-nowo-ui-region] label {
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--color-ink, var(--app-ink)) 65%, transparent);
+}
+
+/* UiKit 2.2 responsive tables, card mode (phones). Two fixes over the vendor rules:
+ * - the actions column keeps `width: 1%; white-space: nowrap` (more specific than the card `width: 100%`), so row
+ *   actions collapsed to a 24px column drawn over the previous cell;
+ * - the label | value grid places every child (and bare text) in its own grid cell, so cells with several children
+ *   (DashboardMenu "— Root — / Pos: 10", icon + label, route + permission badges) spilled into the label column.
+ *   The label is absolutely positioned instead and the value flows in the remaining width. */
+@container nowo-ui-table (max-width: 39.99rem) {
+  .kit-admin .nowo-ui-table--cards > tbody > tr > td.nowo-ui-table__actions {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .kit-admin .nowo-ui-table--cards > tbody > tr > td.nowo-ui-table__actions > .nowo-ui-row-actions {
+    flex-wrap: wrap;
+  }
+
+  /* !important: DashboardMenu indents the item cell by tree depth with an inline padding-inline-start. */
+  .kit-admin .nowo-ui-table--cards > tbody > tr > td[data-label]:not(.nowo-ui-table__actions) {
+    position: relative;
+    display: block;
+    min-height: 1.5rem;
+    padding-inline-start: calc(40% + 0.75rem) !important;
+    text-align: start;
+  }
+
+  .kit-admin .nowo-ui-table--cards > tbody > tr > td[data-label]:not(.nowo-ui-table__actions)::before {
+    position: absolute;
+    inset-inline-start: 0;
+    width: 40%;
+  }
+}

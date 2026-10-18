@@ -1,0 +1,13 @@
+{#
+  AuthKit reset request (nowo_auth_kit web_ui.templates.reset_request): the bundle page plus a footer link to the
+  code-entry page (password_reset.delivery: both — the mail / SMS code is typed there). AuthKit 1.27 links the code
+  page from nowhere.
+  Extends @!NowoAuthKit (Symfony's vendor-only namespace of the bundle; AuthKit registers no @!NowoAuthKitBundle).
+#}
+{% extends '@!NowoAuthKit/security/reset_request.html.twig' %}
+
+{% block auth_footer_extra %}
+    <ul class="{{ nowo_ui_class('auth_links', page.bundle) }}">
+        <li><a href="{{ path('nowo_auth_kit_reset_password_code', auth_kit_route_params()) }}" data-testid="auth-reset-code-link">{{ 'reset.code.title'|trans({}, 'NowoAuthKitBundle') }}</a></li>
+    </ul>
+{% endblock %}

@@ -299,7 +299,7 @@ final class AppearanceSettingsTest extends DatabaseWebTestCase
         ]);
         $client->request(Request::METHOD_GET, '/en/login');
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1.brand-mark', 'Custom Ops');
+        self::assertSelectorTextContains('.brand-mark', 'Custom Ops');
         self::assertSelectorTextContains('body', 'Signals');
     }
 }

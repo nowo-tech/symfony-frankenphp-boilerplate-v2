@@ -1,0 +1,24 @@
+{#
+  Maintenance panel (nowo_maintenance_mode.web_ui.templates.index): the bundle's UiKit settings page plus a link to the
+  public 503 preview under the status details (the bundle page header has no slot for it), and UiKit's form theme on
+  the section forms (MaintenanceMode prints them without a FormKit profile).
+#}
+{% extends '@NowoMaintenanceModeBundle/panel/index.html.twig' %}
+
+{% block nowo_ui_settings_section %}
+    {% if section.form %}
+        {% form_theme section.form with ['@NowoUiKit/form/nowo_ui_layout.html.twig'] %}
+    {% endif %}
+    {{ parent() }}
+    {% if section.id == 'status' %}
+        <p class="mt-4">
+            <a
+                class="{{ nowo_ui_class('btn_secondary', page.bundle) }}"
+                href="{{ path('nowo_maintenance_mode_preview') }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="maintenance-preview-link"
+            >{{ 'nav.maintenance_preview'|trans }}</a>
+        </p>
+    {% endif %}
+{% endblock %}

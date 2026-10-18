@@ -71,9 +71,13 @@ nowo_pwa:
         css_class: nowo-pwa-install
         mark_asset: /brand/app-mark.svg
         title: preferences.display.pwa_prompt_title
-        button_class: btn-primary
-        dismiss_button_class: btn-ghost
-        never_button_class: 'btn-ghost app-pwa-install__never'
+        # Buttons: nowo_ui_kit.theme slots btn_primary / btn_secondary / btn_link (Pwa ≥1.10;
+        # theme.bundles.NowoPwaBundle in config/packages/nowo_ui_kit.yaml).
+
+    # UiKit 2 page contract (Pwa ≥1.10): the install links keep the "not available" hint (thin block override).
+    web_ui:
+        templates:
+            install_links: 'pwa/install_links.html.twig'
 
     install_links:
         enabled: true

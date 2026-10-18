@@ -1,7 +1,7 @@
 # nowo-tech/http-log-bundle — HTTP request/response audit log + admin UI
 # https://github.com/nowo-tech/HttpLogBundle
 #
-# Host shell only: kit/http_log_admin_layout.html.twig — do not fork admin/*.twig.
+# Admin UI: UiKit 2 scaffolds (HttpLog ≥1.8) in layouts/ui_admin.html.twig, classes from nowo_ui_kit.theme; no fork.
 nowo_http_log:
     enabled: true
     environments: []
@@ -72,8 +72,8 @@ nowo_http_log:
     web_ui:
         enabled: true
         path_prefix: /admin/http-log
-        layout_template: 'kit/http_log_admin_layout.html.twig'
-        css_framework: tailwind
+        # UiKit 2 page contract (HttpLog ≥1.8): the pages extend UiKit scaffolds in nowo_ui_kit.layouts.admin
+        # (layouts/ui_admin.html.twig) and take their classes from nowo_ui_kit.theme — no layout / chrome keys here.
         page_size: 50
     security:
         access_roles:

@@ -94,22 +94,19 @@ nowo_auth_kit:
                 phone_verified_field: phoneVerifiedAt
             embed:
                 mode: disabled
-            css:
-                button_class: 'btn-primary w-full'
-                secondary_button_class: 'btn-secondary flex w-full items-center justify-center no-underline'
-            templates:
-                layout: '@NowoAuthKitBundle/layout.html.twig'
-                form_theme:
+            # AuthKit 1.27 page contract (REQ-UI-003): every auth page extends the UiKit auth scaffold and renders in
+            # nowo_ui_kit.layouts.guest (layouts/ui_guest.html.twig: guest shell, brand hero, cookie preferences bubble,
+            # password toggle / strength assets). Buttons come from nowo_ui_kit.theme.pages.auth. No template under
+            # templates/bundles/NowoAuthKitBundle/; thin @!NowoAuthKit block overrides only.
+            web_ui:
+                # App field chrome (input / checkbox-label / password toggle) + OTP widget.
+                form_themes:
                     - '@NowoOtpInputBundle/Form/otp_input_theme.html.twig'
                     - form/password_strength_app_theme.html.twig
                     - form/auth_kit_theme.html.twig
-                login: '@NowoAuthKitBundle/security/login.html.twig'
-                register: '@NowoAuthKitBundle/security/register.html.twig'
-                magic_login_request: '@NowoAuthKitBundle/security/magic_login_request.html.twig'
-                magic_login_confirm: security/magic_login_confirm.html.twig
-                reset_request: '@NowoAuthKitBundle/security/reset_request.html.twig'
-                reset_password: '@NowoAuthKitBundle/security/reset_password.html.twig'
-                reset_password_code: '@NowoAuthKitBundle/security/reset_password_code.html.twig'
+                templates:
+                    # + link to the code-entry page (password_reset.delivery: both); AuthKit links it nowhere.
+                    reset_request: auth/reset_request.html.twig
             routes:
                 login:
                     path: /login

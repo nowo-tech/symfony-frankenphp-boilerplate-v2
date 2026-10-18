@@ -8,13 +8,16 @@ parameters:
 
 nowo_site_backup:
     enabled: true
-    # Host CSS stack hint (Twig global nowo_site_backup_css_framework) — REQ-UI-001 / v1.6+
-    css_framework: tailwind
     process_timeout: 900
-    templates:
-        # Friendlier token gate (SVG + calm copy); wizard/done stay in the package.
-        setup_token: 'kit/site_backup_setup_token.html.twig'
-        panel_login: 'kit/site_backup_panel_login.html.twig'
+    # UiKit 2 page contract (SiteBackup ≥1.21): panel, sign-in and setup pages extend UiKit scaffolds. The panel has
+    # its own password gate (on top of access_roles): it renders in the guest shell (layouts/ui_guest.html.twig), like
+    # the setup wizard (guest_layout_template null = nowo_ui_kit.layouts.guest).
+    web_ui:
+        path_prefix: '/_site_backup'
+        layout_template: 'layouts/ui_guest.html.twig'
+        templates:
+            # Friendlier token gate (illustration + calm copy); wizard / done / panel sign-in stay in the package.
+            setup_token: 'kit/site_backup_setup_token.html.twig'
     backup:
         include_paths:
             - config
@@ -42,10 +45,6 @@ nowo_site_backup:
             - '.env.local'
             - 'var/site-backup'
             - 'config/secrets'
-    panel:
-        path_prefix: '/_site_backup'
-        # Host chrome only — panel pages stay in the package (SiteBackup 1.5+).
-        layout_template: 'kit/site_backup_panel_layout.html.twig'
     security:
         # SiteBackup 1.14.2+: empty access_roles denies the panel (fail-closed). Password gate is additional.
         access_roles: [ROLE_ADMIN]
@@ -92,8 +91,6 @@ nowo_site_backup:
             default: '%default_locale%'
             enabled: '%fallback_locales%'
             unlocalized: serve
-        # Host chrome only — wizard/done/token stay in the package (SiteBackup 1.4+).
-        layout_template: 'kit/site_backup_setup_layout.html.twig'
         # Shared secret for /setup (?token= or X-Setup-Token). Parameter fallback keeps gate on when env is empty.
         setup_token: '%env(default:app.local_setup_token:SITE_SETUP_TOKEN)%'
         # Existing installs without setup.done stay usable; empty schema / setup.required still gate.

@@ -107,8 +107,8 @@ final class MagicLoginTest extends DatabaseWebTestCase
         $details = $handler->createLoginLink($user);
         $client->request(Request::METHOD_GET, $details->getUrl());
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('form.guest-auth__form');
-        $form = $client->getCrawler()->filter('form.guest-auth__form')->form();
+        self::assertSelectorExists('[data-testid="auth-kit-magic_login_confirm"] form');
+        $form = $client->getCrawler()->filter('[data-testid="auth-kit-magic_login_confirm"] form')->form();
         $client->submit($form);
         self::assertResponseRedirects();
         $client->followRedirect();
@@ -137,8 +137,8 @@ final class MagicLoginTest extends DatabaseWebTestCase
         $handler = self::getContainer()->get('security.authenticator.login_link_handler.main');
         $details = $handler->createLoginLink($user);
         $client->request(Request::METHOD_GET, $details->getUrl());
-        if ($client->getResponse()->isSuccessful() && $client->getCrawler()->filter('form.guest-auth__form')->count() > 0) {
-            $client->submit($client->getCrawler()->filter('form.guest-auth__form')->form());
+        if ($client->getResponse()->isSuccessful() && $client->getCrawler()->filter('[data-testid="auth-kit-magic_login_confirm"] form')->count() > 0) {
+            $client->submit($client->getCrawler()->filter('[data-testid="auth-kit-magic_login_confirm"] form')->form());
         }
         $status = $client->getResponse()->getStatusCode();
         self::assertTrue($status >= 300 || $status < 200 || $status >= 400, 'Disabled magic login must not succeed with 2xx');

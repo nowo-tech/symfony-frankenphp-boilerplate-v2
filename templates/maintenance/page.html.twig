@@ -1,0 +1,42 @@
+{#
+  Public maintenance page (503 + /_maintenance_preview), nowo_maintenance_mode.templates.page: the bundle page (UiKit
+  auth panel in nowo_ui_kit.layouts.guest = layouts/ui_guest.html.twig: guest shell, "Maintenance" eyebrow and brand
+  mark above the card) with the app's 503 art and the countdown to the scheduled end. Renders before the firewall: no
+  database, session or security calls here (ui_guest only reads site_appearance).
+#}
+{% extends '@!NowoMaintenanceMode/maintenance/page.html.twig' %}
+
+{% set _until = (state ?? null) and state.scheduledDisableAt ? state.scheduledDisableAt : null %}
+
+{% block maintenance_brand %}
+    <figure class="maintenance-page__figure">
+        <img class="error-page__img" src="{{ asset('illustrations/error-503.png') }}" width="1536" height="1024" alt="{{ 'error.503.image_alt'|trans({}, 'messages') }}" decoding="async" fetchpriority="high">
+    </figure>
+    {{ parent() }}
+{% endblock %}
+
+{% block maintenance_footer %}
+    {% if _until %}
+        <p class="maintenance-page__eta" id="mm-countdown" data-testid="maintenance-countdown" data-until="{{ _until|date('c') }}">{{ _until|date('Y-m-d H:i T') }}</p>
+    {% endif %}
+    <p class="maintenance-page__thanks">{{ 'maintenance.page.thanks'|trans({}, 'NowoMaintenanceModeBundle') }}</p>
+{% endblock %}
+
+{% block maintenance_scripts %}
+    {% if _until %}
+        <script{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %}>
+        (function () {
+            var el = document.getElementById('mm-countdown');
+            var target = el ? Date.parse(el.getAttribute('data-until') || '') : NaN;
+            if (!el || isNaN(target)) { return; }
+            function pad(n) { return String(n).padStart(2, '0'); }
+            function tick() {
+                var diff = Math.max(0, Math.floor((target - Date.now()) / 1000));
+                el.textContent = pad(Math.floor(diff / 3600)) + ':' + pad(Math.floor((diff % 3600) / 60)) + ':' + pad(diff % 60);
+                if (diff > 0) { window.setTimeout(tick, 1000); }
+            }
+            tick();
+        })();
+        </script>
+    {% endif %}
+{% endblock %}

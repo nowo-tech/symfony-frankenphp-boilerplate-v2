@@ -35,6 +35,9 @@ final readonly class ContentSecurityPolicySubscriber
 {
     public const string REQUEST_ATTR_NONCE = '_shell_csp_nonce';
 
+    /** Request attribute the nowo kits (UiKit scripts partial, AuthKit, MaintenanceMode) read the nonce from. */
+    public const string KIT_REQUEST_ATTR_NONCE = 'csp_nonce';
+
     private const string CSP_BASE = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: blob:; font-src 'self' data:; ";
 
     /**
@@ -71,6 +74,10 @@ final readonly class ContentSecurityPolicySubscriber
         $request = $event->getRequest();
         if (!$request->attributes->has(self::REQUEST_ATTR_NONCE)) {
             $request->attributes->set(self::REQUEST_ATTR_NONCE, base64_encode(random_bytes(16)));
+        }
+        // UiKit / AuthKit / MaintenanceMode templates read the nonce from the `csp_nonce` request attribute.
+        if (!$request->attributes->has(self::KIT_REQUEST_ATTR_NONCE)) {
+            $request->attributes->set(self::KIT_REQUEST_ATTR_NONCE, $request->attributes->get(self::REQUEST_ATTR_NONCE));
         }
     }
 

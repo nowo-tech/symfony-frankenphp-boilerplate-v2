@@ -1,0 +1,11 @@
+{#
+  Preferences install / uninstall links (nowo_pwa.web_ui.templates.install_links): the bundle links (theme slots
+  btn_primary / btn_secondary) plus the "not available in this browser" hint that assets/styles/_components.scss shows
+  while neither link is visible. Only this block is redefined.
+#}
+{% extends '@!NowoPwaBundle/pwa/install_links.html.twig' %}
+
+{% block pwa_uninstall_link %}
+    {{ parent() }}
+    <p class="nowo-pwa-install-links__hint">{{ 'preferences.display.pwa_unavailable'|trans }}</p>
+{% endblock %}

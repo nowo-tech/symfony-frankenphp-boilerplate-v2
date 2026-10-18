@@ -1,0 +1,8 @@
+{#
+  Nowo Shell product chrome (open + main + close) — the UiKit `shell` theme partial (nowo_ui_kit.theme.partials.shell),
+  same inputs as @NowoUiKit/partials/_shell.html.twig. base.html.twig includes the two halves itself so
+  {% block body %} stays uncaptured.
+#}
+{% include 'layouts/shell/_open.html.twig' %}
+{% if main is defined %}{{ main|raw }}{% endif %}
+{% include 'layouts/shell/_close.html.twig' %}

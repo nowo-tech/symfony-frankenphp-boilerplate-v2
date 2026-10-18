@@ -17,17 +17,15 @@ nowo_routing_kit:
             - '%kernel.project_dir%/src/Shared/Settings/Controller'
             - '%kernel.project_dir%/src/Shared/Appearance/Controller'
     panel:
-        enabled: true
-        path_prefix: '/admin/_routing'
         allow_controller_override: false
         max_definitions: 500
         list_page_size: 50
         reject_conflicts: true
+    # UiKit 2 page contract (RoutingKit ≥1.9): the panel extends UiKit scaffolds in nowo_ui_kit.layouts.admin
+    # (layouts/ui_admin.html.twig), classes from nowo_ui_kit.theme, deletes in UiKit confirm dialogs (CSP-safe).
     web_ui:
         enabled: true
-        layout_template: 'kit/routing_kit_panel_layout.html.twig'
-        css_framework: tailwind
-        icon_set: ux_icon
+        path_prefix: '/admin/_routing'
     security:
         access_roles: [ROLE_ADMIN]
         allow_unauthenticated: false

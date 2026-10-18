@@ -54,6 +54,30 @@ final class ContentSecurityPolicySubscriberTest extends TestCase
         self::assertSame("default-src 'none'", $response->headers->get('Content-Security-Policy'));
     }
 
+    public function testRequestNonceIsSharedWithTheKitsCspNonceAttribute(): void
+    {
+        $kernel = $this->createStub(KernelInterface::class);
+        $request = Request::create('/');
+        $subscriber = new ContentSecurityPolicySubscriber(false);
+        $subscriber(new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST));
+
+        $nonce = $request->attributes->get(ContentSecurityPolicySubscriber::REQUEST_ATTR_NONCE);
+        self::assertIsString($nonce);
+        self::assertNotSame('', $nonce);
+        self::assertSame($nonce, $request->attributes->get(ContentSecurityPolicySubscriber::KIT_REQUEST_ATTR_NONCE));
+    }
+
+    public function testKeepsAnExistingKitCspNonceAttribute(): void
+    {
+        $kernel = $this->createStub(KernelInterface::class);
+        $request = Request::create('/');
+        $request->attributes->set(ContentSecurityPolicySubscriber::KIT_REQUEST_ATTR_NONCE, 'kit-nonce');
+        $subscriber = new ContentSecurityPolicySubscriber(false);
+        $subscriber(new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST));
+
+        self::assertSame('kit-nonce', $request->attributes->get(ContentSecurityPolicySubscriber::KIT_REQUEST_ATTR_NONCE));
+    }
+
     public function testSkipsProfilerFragmentPaths(): void
     {
         $response = $this->dispatch('/_wdt/abcdef', '<div class="sf-toolbarreset"></div>', kernelDebug: true);

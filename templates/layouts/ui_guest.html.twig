@@ -1,0 +1,77 @@
+{#
+  UiKit 2 page contract (REQ-UI-003) — guest layout bridge (nowo_ui_kit.layouts.guest, and the SiteBackup panel:
+  nowo_site_backup.web_ui.layout_template). AuthKit pages (sign in, register, password reset, magic link), setup
+  wizard and token gate, backup panel and its sign-in, public maintenance page. Maps the canonical blocks onto
+  layouts/guest_shell.html.twig (theme + locale controls, toasts, legal footer, cookie consent), which calls no
+  database-backed Twig beyond site_appearance (cold-start setup).
+
+  Above the content: the eyebrow + brand mark; AuthKit pages get the product eyebrow and tagline, the password toggle /
+  strength assets and the cookie preferences bubble (the former templates/bundles/NowoAuthKitBundle/layout.html.twig).
+  Width by page type: auth = sign-in card, wizard = setup, other = panel.
+#}
+{% extends 'layouts/guest_shell.html.twig' %}
+
+{% set _ui_page_type = nowo_ui_page_type|default('') %}
+{% set _bundle = nowo_ui_bundle|default('') %}
+{% set _auth_kit = _bundle == 'NowoAuthKitBundle' %}
+
+{% block title %}{% block nowo_ui_document_title %}{% endblock %} — {{ site_appearance.brandName }}{% endblock %}
+
+{% block guest_shell_width %}{{ _ui_page_type == 'auth' ? 'max-w-md' : (_ui_page_type == 'wizard' ? 'max-w-xl' : 'max-w-4xl') }}{% endblock %}
+
+{% block stylesheets %}
+    {# App metrics of the kit pages (assets/styles/kit-admin.css; colours: nowo_ui_kit.theme.tokens). #}
+    {{ vite_entry_link_tags('kit-admin-styles') }}
+    {% if _auth_kit %}
+        <link rel="stylesheet" href="{{ asset('css/toggle_password.css', 'nowo_password_toggle') }}">
+    {% endif %}
+    {% block nowo_ui_head %}{% endblock %}
+    {% block nowo_ui_styles %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+    {#- SiteBackup / MaintenanceMode forms have no FormKit profile: UiKit's form theme gives their widgets the `input`
+        slot classes (a page template that sets its own form theme later wins, e.g. kit/site_backup_setup_token). -#}
+    {% if page is defined and page.form|default(null) %}
+        {% form_theme page.form with ['@NowoUiKit/form/nowo_ui_layout.html.twig'] %}
+    {% endif %}
+    <div class="fade-up mb-6 text-center">
+        {% set _route = app.request.attributes.get('_route')|default('') %}
+        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-moss)]">{{ _auth_kit ? site_appearance.brandEyebrow : ('_setup' in _route ? 'setup.eyebrow' : (_bundle == 'NowoMaintenanceModeBundle' ? 'nav.maintenance' : 'nav.setup'))|trans }}</p>
+        {% include '_brand_mark.html.twig' with {tag: 'p', size: 'hero'} %}
+        {% if _auth_kit %}
+            <p class="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-[var(--color-ink)]/65">{{ 'auth.tagline'|trans }}</p>
+        {% endif %}
+    </div>
+    <div class="fade-up-delay {{ _ui_page_type == 'auth' ? '' : 'panel shadow-md ' }}kit-admin nowo-ui-host-page nowo-ui-host-page--{{ _ui_page_type ?: 'page' }}"{% if _bundle %} data-nowo-ui-bundle="{{ _bundle }}"{% endif %}>
+        {% block nowo_ui_navigation %}{% endblock %}
+        {% block nowo_ui_page_header %}{% endblock %}
+        {% block nowo_ui_flashes %}{% endblock %}
+        {% block nowo_ui_content %}{% endblock %}
+    </div>
+    {% block nowo_ui_modals %}{% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+    {% if _auth_kit %}
+        <script src="{{ asset('password-strength.js', 'nowo_password_strength') }}" defer></script>
+    {% endif %}
+    {% include 'layouts/_ui_scripts.html.twig' %}
+    {% block nowo_ui_scripts %}{% endblock %}
+{% endblock %}
+
+{#- Public maintenance 503 (MaintenanceMode sets nowo_ui_theme_boot = false on its status page): rendered before the
+    firewall and must not start a session — the locale switcher and the cookie consent modal read the session. -#}
+{% block guest_shell_locale_switcher %}
+    {% if nowo_ui_theme_boot ?? true %}{{ parent() }}{% endif %}
+{% endblock %}
+
+{% block guest_shell_cookie_consent %}
+    {% if nowo_ui_theme_boot ?? true %}{{ parent() }}{% endif %}
+{% endblock %}
+
+{% block cookie_consent_extras %}
+    {% if _auth_kit and nowo_cookie_consent_should_render() %}
+        {% include '@NowoCookieConsentBundle/cookie_consent_preferences_bubble.html.twig' %}
+    {% endif %}
+{% endblock %}

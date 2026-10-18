@@ -1,0 +1,49 @@
+{#
+  UiKit 2 page contract (REQ-UI-003) — admin layout bridge (nowo_ui_kit.layouts.admin).
+
+  Kit admin pages (HttpLog, DashboardMenu, BreadcrumbKit, RoutingKit, CookieConsent, MaintenanceMode) extend UiKit
+  scaffolds (@NowoUiKit/page/*), which extend this layout. It maps the canonical nowo_ui_* blocks onto the signed-in
+  shell (base.html.twig), which keeps the sidebar, header controls, BreadcrumbKit trail, toasts and footer:
+    - nowo_ui_document_title → <title> (suffixed with the brand);
+    - nowo_ui_flashes replaces base's app_flashes (toast stack by default);
+    - nowo_ui_navigation is empty (the sidebar belongs to the base shell);
+    - the page header renders below base's breadcrumb trail (nowo_ui_kit.breadcrumbs.enabled: false);
+    - the content sits in `.kit-admin` (assets/styles/kit-admin.css: app metrics on the UiKit semantic classes;
+      colours are nowo_ui_kit.theme.tokens) with data-nowo-ui-bundle (per-bundle theme exceptions);
+    - UiKit runtimes: layouts/_ui_scripts.html.twig (the app owns the toast stack and the theme toggle).
+#}
+{% extends 'base.html.twig' %}
+
+{% block title %}{% block nowo_ui_document_title %}{% endblock %} — {{ site_appearance.brandName }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# App metrics of the kit pages (assets/styles/kit-admin.css; colours: nowo_ui_kit.theme.tokens). #}
+    {{ vite_entry_link_tags('kit-admin-styles') }}
+    {% block nowo_ui_head %}{% endblock %}
+    {% block nowo_ui_styles %}{% endblock %}
+{% endblock %}
+
+{% block app_flashes %}
+    {% block nowo_ui_flashes %}
+        {% include '_toasts.html.twig' %}
+    {% endblock %}
+{% endblock %}
+
+{% block body %}
+    {#- Kit forms without a FormKit profile get the UiKit `input` slot classes. -#}
+    {% if page is defined and page.form|default(null) %}
+        {% form_theme page.form with ['@NowoUiKit/form/nowo_ui_layout.html.twig'] %}
+    {% endif %}
+    <div class="kit-admin nowo-ui-host-page"{% if nowo_ui_bundle|default(null) %} data-nowo-ui-bundle="{{ nowo_ui_bundle }}"{% endif %}>
+        {% block nowo_ui_navigation %}{% endblock %}
+        {% block nowo_ui_page_header %}{% endblock %}
+        {% block nowo_ui_content %}{% endblock %}
+    </div>
+{% endblock %}
+
+{% block body_after %}
+    {% block nowo_ui_modals %}{% endblock %}
+    {% include 'layouts/_ui_scripts.html.twig' %}
+    {% block nowo_ui_scripts %}{% endblock %}
+{% endblock %}

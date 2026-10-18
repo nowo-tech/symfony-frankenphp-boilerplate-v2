@@ -12,14 +12,18 @@ nowo_maintenance_mode:
         enabled: ~
         path: '/_maintenance_preview'
 
-    panel:
+    # Public 503 page: the bundle page on the guest layout (layouts/ui_guest.html.twig) + the app's 503 art and the
+    # countdown to the scheduled end (thin block override, no fork under templates/bundles/).
+    templates:
+        page: 'maintenance/page.html.twig'
+
+    # UiKit 2 page contract (MaintenanceMode ≥1.10): panel / history extend UiKit scaffolds in nowo_ui_kit.layouts.admin
+    # (layouts/ui_admin.html.twig), classes from nowo_ui_kit.theme; the thin index adds the 503 preview link.
+    web_ui:
         enabled: true
         path_prefix: '/admin/maintenance'
-
-    web_ui:
-        layout_template: 'kit/maintenance_mode_panel_layout.html.twig'
-        css_framework: tailwind
-        icon_set: ux_icon
+        templates:
+            index: 'kit/maintenance_mode_panel_index.html.twig'
 
     security:
         allow_unauthenticated: false
@@ -60,3 +64,9 @@ when@prod:
         security:
             access_roles: [ROLE_ADMIN]
             allow_unauthenticated: false
+
+when@test:
+    nowo_maintenance_mode:
+        preview:
+            # Coverage runs use APP_DEBUG=0: the default (~ = kernel.debug) would 404 the preview.
+            enabled: true

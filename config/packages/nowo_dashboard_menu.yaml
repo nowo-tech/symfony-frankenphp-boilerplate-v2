@@ -1,6 +1,7 @@
 # nowo-tech/dashboard-menu-bundle
 # https://github.com/nowo-tech/DashboardMenuBundle
-# Host shell only: kit/menu_dashboard_layout.html.twig — do not fork dashboard/*.twig.
+# Administration pages: UiKit 2 scaffolds (DashboardMenu ≥2.7) in nowo_ui_kit.layouts.admin
+# (layouts/ui_admin.html.twig), classes from nowo_ui_kit.theme, UiKit dialogs; no templates/bundles/ copy.
 nowo_dashboard_menu:
     locales: '%fallback_locales%'
     default_locale: '%default_locale%'
@@ -11,15 +12,15 @@ nowo_dashboard_menu:
     api:
         enabled: false
         path_prefix: /api/menu
-    dashboard:
+    web_ui:
         enabled: true
-        layout_template: 'kit/menu_dashboard_layout.html.twig'
-        # Align with host nowo_ui_kit (tailwind + ux_icon); kit JS uses Nowo modals (non-Bootstrap).
-        css_framework: tailwind
-        icon_set: ux_icon
+    dashboard:
         # Empty (not null): skip bundle stimulus-live.js which imports esm.sh (blocked by script-src 'self').
         # Host Vite app already boots Stimulus + UX Live and exposes window.Stimulus.
         stimulus_script_url: ''
+        # Host Vite app registers Symfony UX Autocomplete + Tom Select styles: never load them from esm.sh /
+        # jsDelivr (strict CSP, no Bootstrap tom-select CSS over Tailwind) — DashboardMenu 2.3.2.
+        autocomplete_bootstrap: false
         modals:
             menu_form: normal
             copy: normal

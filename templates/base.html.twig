@@ -12,6 +12,7 @@
         data-user-contrast="{{ app.user.preferredContrast|e('html_attr') }}"
         data-user-sidebar="{{ app.user.preferredSidebar|e('html_attr') }}"
     {% endif %}
+    data-nowo-ui-host-tokens
     data-issue-panel-defaults="{{ (app.user ? app.user.preferredCollapsedIssuePanels : ['raw', 'extra'])|json_encode|e('html_attr') }}"
 >
     <head>
@@ -25,15 +26,19 @@
         <link rel="icon" href="{{ asset('brand/app-mark.svg') }}" type="image/svg+xml">
         <link rel="apple-touch-icon" href="{{ asset('icons/apple-touch-icon.png') }}">
         {% block stylesheets %}
-            {# UiKit tokens/components first; Nowo Shell app CSS must win for app chrome. #}
+            {# UiKit 2 nowo-ui.css lives in @layer nowo-ui (declared first in assets/styles/tailwind.css: theme, base,
+               nowo-ui, components, utilities): the app's unlayered component CSS and the Tailwind utilities of the theme
+               slots win without !important. Colours: nowo_ui_kit.theme.tokens. #}
             <link rel="stylesheet" href="{{ asset('css/nowo-ui.css', 'nowo_ui_kit') }}">
             {{ vite_entry_link_tags('app') }}
         {% endblock %}
         {# After app CSS so site palette / radius / border tokens win the cascade. #}
         <style{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %}>{{ site_appearance.cssOverrides|raw }}</style>
+        {# The app's UiKit theme tokens (nowo_ui_kit.theme.tokens → --nowo-ui-* on :root / dark), CSP nonce from the request. #}
+        {{ nowo_ui_tokens() }}
         {% block javascripts %}
             {{ vite_entry_script_tags('app') }}
-            <script src="{{ asset('js/nowo-ui-orb.js', 'nowo_ui_kit') }}" defer></script>
+            <script src="{{ asset('js/nowo-ui-orb.js', 'nowo_ui_kit') }}"{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %} defer></script>
         {% endblock %}
     </head>
     <body class="page-shell{% if app.user %} page-shell--app{% endif %}">
@@ -58,10 +63,10 @@
                 </div>
             {% endset %}
             {#
-              Open UiKit _shell without capturing {% block body %} (Twig allows one
-              definition). Main slot is closed after the shared body blocks below.
+              Open the app shell (layouts/shell/, also the UiKit `shell` theme partial) without capturing
+              {% block body %} (Twig allows one definition). Main slot is closed after the shared body blocks below.
             #}
-            {% include '@NowoUiKitBundle/partials/_shell_open.html.twig' with {
+            {% include 'layouts/shell/_open.html.twig' with {
                 framework: 'tailwind',
                 brand_html: brand_html,
                 header_end: header_end,
@@ -112,7 +117,7 @@
             {% set footer_html %}
                 {% include '_legal_footer.html.twig' %}
             {% endset %}
-            {% include '@NowoUiKitBundle/partials/_shell_close.html.twig' with {
+            {% include 'layouts/shell/_close.html.twig' with {
                 footer_html: footer_html
             } %}
             {{ nowo_pwa_install_prompt() }}

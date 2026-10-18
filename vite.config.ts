@@ -85,8 +85,8 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 app: './assets/app.ts',
-                // Kit admin shells (menus / breadcrumbs / cookie consent) — Bootstrap + layout helpers.
-                'kit-admin': './assets/kit-admin.ts',
+                // App metrics of the kit pages (UiKit 2 scaffolds; colours are nowo_ui_kit.theme.tokens).
+                'kit-admin-styles': './assets/styles/kit-admin.css',
             },
         },
     },

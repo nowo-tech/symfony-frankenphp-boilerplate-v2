@@ -1,6 +1,6 @@
 {# Guest / pre-login shell: theme + locale controls (AuthKit-aligned). #}
 <!DOCTYPE html>
-<html lang="{{ app.request.locale|default('en') }}"{% if site_appearance.footerFixed %} data-footer-fixed="1"{% endif %} data-nowo-cookie-consent-external-css="true">
+<html lang="{{ app.request.locale|default('en') }}"{% if site_appearance.footerFixed %} data-footer-fixed="1"{% endif %} data-nowo-cookie-consent-external-css="true" data-nowo-ui-host-tokens>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -15,8 +15,10 @@
     {{ vite_entry_link_tags('app') }}
     {# After app CSS so site palette / radius / border tokens win the cascade. #}
     <style{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %}>{{ site_appearance.cssOverrides|raw }}</style>
+    {# The app's UiKit theme tokens (nowo_ui_kit.theme.tokens). #}
+    {{ nowo_ui_tokens() }}
     {{ vite_entry_script_tags('app') }}
-    <script src="{{ asset('js/nowo-ui-orb.js', 'nowo_ui_kit') }}" defer></script>
+    <script src="{{ asset('js/nowo-ui-orb.js', 'nowo_ui_kit') }}"{% if csp_nonce() %} nonce="{{ csp_nonce() }}"{% endif %} defer></script>
     {% block stylesheets %}{% endblock %}
 </head>
 <body class="page-shell">
@@ -25,7 +27,7 @@
     {% include '_toasts.html.twig' %}
     <div class="top-controls">
         {% include '_theme_toggle.html.twig' %}
-        {% include '_locale_switcher.html.twig' %}
+        {% block guest_shell_locale_switcher %}{% include '_locale_switcher.html.twig' %}{% endblock %}
     </div>
     <main class="auth-shell-main relative z-10 mx-auto flex w-full max-w-6xl flex-1 justify-center px-4 py-12">
         <div class="w-full {% block guest_shell_width %}max-w-2xl{% endblock %}">
@@ -35,7 +37,9 @@
     {% block javascripts %}{% endblock %}
     {{ nowo_pwa_install_prompt() }}
     {% include '_legal_footer.html.twig' %}
-    {{ nowo_cookie_consent_render() }}
-    {% block cookie_consent_extras %}{% endblock %}
+    {% block guest_shell_cookie_consent %}
+        {{ nowo_cookie_consent_render() }}
+        {% block cookie_consent_extras %}{% endblock %}
+    {% endblock %}
 </body>
 </html>

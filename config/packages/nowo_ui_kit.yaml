@@ -1,10 +1,185 @@
 # nowo-tech/ui-kit-bundle
 # https://github.com/nowo-tech/UiKitBundle
 #
-# Host design system: Tailwind class helpers + Nowo Shell token remap under .kit-admin
-# (see templates/kit/_kit_admin_styles.html.twig). Product chrome stays in base.html.twig.
+# Host design system: the app's component classes per theme slot + the app tokens (theme.tokens below);
+# assets/styles/kit-admin.css keeps the app's kit page metrics only. Product chrome stays in base.html.twig.
 nowo_ui_kit:
     css_framework: tailwind
     icon_set: ux_icon
-    # Table/list row actions: icon only (label is visually hidden + aria-label/title).
-    row_actions_display: text
+    # Table/list row actions: text | icon | icon_text. Icon buttons (label in aria-label / title), as the 1.x kit tables.
+    row_actions_display: icon
+    # UiKit 2 page contract (REQ-UI-003): kit admin / guest pages extend UiKit scaffolds, which extend these layouts —
+    # one-file bridges onto the app shells (base.html.twig / layouts/guest_shell.html.twig).
+    layouts:
+        admin: 'layouts/ui_admin.html.twig'
+        guest: 'layouts/ui_guest.html.twig'
+    # base.html.twig already prints breadcrumb_render() above every signed-in page: the kit page headers must not repeat
+    # it (BreadcrumbKit "Collections / Items", DashboardMenu "Menus / <code>").
+    breadcrumbs:
+        enabled: false
+    # ONE theme for every UiKit scaffold (the kit admin / guest pages): the app's component classes
+    # (assets/styles/_components.scss, kit-admin.css). Tailwind v4 host: no UiKit framework utility classes on any slot
+    # (framework_defaults: false). Replaces the per-kit 1.x layouts and chrome (templates/kit/*_layout.html.twig,
+    # templates/kit/_kit_admin_styles.html.twig and the templates/bundles/Nowo*Bundle/ forks).
+    theme:
+        framework_defaults: false
+        # The app palette as UiKit tokens: nowo-ui.css lives in @layer nowo-ui, nowo_ui_tokens() prints these on :root /
+        # [data-theme="dark"] and <html data-nowo-ui-host-tokens> drops the UiKit palette. Values follow the --app-*
+        # palette (assets/styles/tailwind.css + SiteAppearance overrides), so the kit pages and dialogs paint from one
+        # place. Formerly the --nowo-ui-* remaps of templates/kit/_kit_admin_styles.html.twig.
+        tokens:
+            primary: 'var(--app-moss)'
+            primary-contrast: '#ffffff'
+            primary-hover: 'var(--app-moss-deep)'
+            link-hover: 'var(--app-moss-deep)'
+            danger: 'var(--app-alert)'
+            danger-text: 'var(--app-alert)'
+            danger-bg: 'var(--app-flash-error-bg)'
+            danger-border: 'var(--app-flash-error-border)'
+            danger-text-strong: 'var(--app-alert)'
+            success-bg: 'var(--app-flash-ok-bg)'
+            success-border: 'var(--app-flash-ok-border)'
+            success-text: 'var(--app-flash-ok-text)'
+            surface: 'var(--app-surface)'
+            surface-muted: 'var(--app-mist)'
+            border: 'var(--app-sand)'
+            border-strong: 'var(--app-sand)'
+            text: 'var(--app-ink)'
+            muted: 'color-mix(in srgb, var(--app-ink) 55%%, transparent)'
+            radius: 'var(--app-radius-control, 0.125rem)'
+            card-radius: 'var(--app-radius-card, 0.25rem)'
+            border-width: 'var(--app-border-width, 1px)'
+            shadow-rgb: 'var(--app-shadow)'
+            focus-ring: '0 0 0 0.2rem color-mix(in srgb, var(--app-moss) 20%%, transparent)'
+            # Buttons: ghost secondary / danger (.btn-ghost look).
+            btn-bg: 'transparent'
+            btn-hover-bg: 'var(--app-surface)'
+            btn-hover-border: 'color-mix(in srgb, var(--app-moss) 40%%, var(--app-sand))'
+            btn-danger-bg: 'transparent'
+            btn-danger-border: 'color-mix(in srgb, var(--app-alert) 55%%, var(--app-sand))'
+            btn-danger-hover-bg: 'color-mix(in srgb, var(--app-alert) 12%%, var(--app-surface))'
+            # Tables: sand rules, muted head, mist hover / stripes.
+            table-border: 'color-mix(in srgb, var(--app-sand) 85%%, transparent)'
+            table-head-text: 'color-mix(in srgb, var(--app-ink) 55%%, transparent)'
+            table-hover-bg: 'color-mix(in srgb, var(--app-mist) 55%%, transparent)'
+            table-stripe-bg: 'color-mix(in srgb, var(--app-mist) 55%%, transparent)'
+            # Tabs: product section tabs (shared/_tabs.html.twig).
+            tab-text: 'color-mix(in srgb, var(--app-ink) 70%%, transparent)'
+            tab-hover-text: 'var(--app-ink)'
+            tab-active-text: 'var(--app-moss)'
+            tab-active-border: 'var(--app-moss)'
+            tab-active-weight: '600'
+            # Pagination: product table pills.
+            pagination-hover-bg: 'var(--app-surface)'
+            pagination-hover-border: 'var(--app-moss)'
+            pagination-hover-text: 'var(--app-moss)'
+            pagination-active-bg: 'color-mix(in srgb, var(--app-moss) 12%%, var(--app-surface))'
+            pagination-active-border: 'var(--app-moss)'
+            pagination-active-text: 'var(--app-moss)'
+            pagination-active-weight: '600'
+        tokens_dark:
+            # Moss is light in dark mode: dark text on primary.
+            primary-contrast: '#0c1210'
+        # App chrome as UiKit theme partials (no templates/bundles/NowoUiKitBundle/ fork): the kit list scaffolds paginate
+        # with the app's table pills, flashes use the app toast stack, the shell / burger are the app shell of
+        # base.html.twig (product layout: sidebar, content width, header controls — not expressible as slots).
+        partials:
+            pagination: 'layouts/partials/_pagination.html.twig'
+            toasts: '_toasts.html.twig'
+            shell: 'layouts/shell/_shell.html.twig'
+            burger: 'layouts/shell/_burger.html.twig'
+        classes:
+            page_header: 'kit-admin-page-header mb-6 flex flex-wrap items-start justify-between gap-3'
+            page_title: 'kit-admin-page-header__title font-[family-name:var(--font-display)] text-3xl font-bold'
+            page_intro: 'mt-1 text-sm text-[var(--color-ink)]/65'
+            toolbar: 'flex flex-wrap items-center gap-2'
+            btn: 'btn-ghost no-underline'
+            btn_primary: 'btn-primary no-underline'
+            btn_secondary: 'btn-ghost no-underline'
+            btn_danger: 'btn-danger'
+            btn_danger_solid: 'btn-danger'
+            btn_link: 'btn-ghost no-underline'
+            btn_sm: 'btn-sm'
+            btn_icon: 'btn-icon'
+            table_wrap: 'panel overflow-x-auto nowo-ui-table-wrap--flush'
+            table: 'data-table w-full text-left text-sm'
+            table_head_row: 'border-b border-[var(--color-sand)] text-[var(--color-ink)]/65'
+            table_head_cell: 'px-2 py-2 font-medium'
+            table_row: 'row-hover border-b border-[var(--color-sand)]/70 last:border-0'
+            table_cell: 'px-2 py-3'
+            table_cell_muted: 'px-2 py-3 text-[var(--color-ink)]/65'
+            row_actions: 'inline-flex flex-nowrap items-center justify-end gap-1'
+            # Row actions: square icon buttons in `action`, the app button per resolved variant (delete → btn-danger).
+            action: 'btn-sm no-underline'
+            action_primary: 'btn-primary'
+            action_secondary: 'btn-ghost'
+            action_danger: 'btn-danger'
+            action_neutral: 'btn-ghost'
+            badge: 'badge border-0 bg-[var(--color-sand)] text-[var(--color-ink)]/75'
+            badge_primary: 'badge border-0 bg-[var(--color-moss)]/15 text-[var(--color-moss)]'
+            badge_success: 'badge border-0 bg-[var(--color-moss)]/15 text-[var(--color-moss)]'
+            badge_warning: 'badge border-0 badge-warn'
+            badge_danger: 'badge border-0 bg-[var(--color-alert)]/15 text-[var(--color-alert)]'
+            badge_info: 'badge border-0 bg-[var(--color-mist)] text-[var(--color-ink)]/75'
+            badge_neutral: 'badge border-0 bg-[var(--color-sand)] text-[var(--color-ink)]/75'
+            # UiKit filter grid (kit-admin.css keeps it a grid inside .kit-admin) in an app panel.
+            filters: 'panel'
+            filters_actions: 'flex flex-wrap items-end gap-2'
+            input: 'input'
+            input_full: 'input w-full'
+            check_input: 'checkbox'
+            muted: 'text-[var(--color-ink)]/65'
+            empty: 'panel text-sm text-[var(--color-ink)]/65'
+            card: 'panel'
+            card_header: 'mb-3 flex flex-wrap items-baseline justify-between gap-2 border-0 p-0'
+            card_title: 'text-lg font-semibold [font-family:inherit]'
+            card_intro: 'mt-3 mb-1 text-sm text-[var(--color-ink)]/65'
+            card_body: 'p-0'
+            card_footer: 'mt-4 border-t border-[var(--color-sand)] pt-4'
+            cards: 'grid gap-4 lg:grid-cols-2'
+            section: 'mb-6'
+            # Term | value rows (items are display: contents), stacked on phones.
+            detail_list: 'grid gap-x-4 gap-y-2 text-sm sm:grid-cols-[minmax(8rem,14rem)_1fr]'
+            detail_term: 'm-0 text-xs font-medium text-[var(--color-ink)]/65'
+            detail_value: 'm-0 min-w-0 break-words'
+            code: 'font-mono text-xs'
+            code_block: 'nowo-ui-code max-h-96 overflow-auto rounded-md p-3 text-xs'
+            tabs: 'mb-6'
+            tabs_secondary: 'mb-4'
+            form_panel: 'panel max-w-3xl'
+            form: 'grid gap-3'
+            form_actions: 'mt-2 flex flex-wrap items-center gap-2'
+            danger_zone: 'panel panel--danger mt-6 max-w-3xl'
+            danger_zone_title: 'mb-2 text-lg font-semibold text-[var(--color-alert)]'
+            danger_zone_intro: 'mb-4 text-sm text-[var(--color-ink)]/65'
+            flash_error: 'flash flash-error mb-4'
+            flash_success: 'flash flash-success mb-4'
+            # Confirm dialog = the app's shared/_confirm_dialog (.confirm-dialog*, assets/styles/_components.scss).
+            confirm: 'confirm-dialog text-start'
+            confirm_title: 'confirm-dialog__title [font-family:inherit]'
+            confirm_message: 'confirm-dialog__body'
+        bundles:
+            NowoPwaBundle:
+                classes:
+                    # Install prompt "never ask again" (app-pwa-install__never: assets/styles/_components.scss).
+                    btn_link: 'btn-ghost app-pwa-install__never no-underline'
+        pages:
+            confirm:
+                classes:
+                    # Full-page confirm (no-JS fallback): the dialog-box chrome above must not apply to the page.
+                    confirm: ''
+            auth:
+                classes:
+                    # The guest layout (layouts/ui_guest.html.twig) paints no panel around auth pages: the scaffold's
+                    # panel is the app card (AuthKit sign-in / reset / magic link, backup panel and maintenance pages).
+                    auth_panel: 'panel shadow-md'
+                    card_body: 'p-0'
+                    page_title: 'mb-4 text-lg font-semibold'
+                    page_intro: 'mb-4 text-sm text-[var(--color-ink)]/65'
+                    form: 'flex flex-col gap-4'
+                    form_actions: 'mt-0'
+                    btn_primary: 'btn-primary w-full justify-center no-underline'
+                    btn_secondary: 'btn-ghost flex w-full items-center justify-center no-underline'
+                    # Footer links centred under the form, on the panel padding (no second inset).
+                    auth_footer: 'mt-4 px-0 pb-0 pt-4 text-sm'
+                    auth_links: 'justify-center gap-x-4 gap-y-1'
