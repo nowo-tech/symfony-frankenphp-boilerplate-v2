@@ -17,7 +17,7 @@ test.describe('Public / guest surfaces', () => {
     await expect(page.locator('input[name="login_form[_username]"]')).toBeVisible();
     await expect(page.locator('input[name="login_form[_password]"]')).toBeVisible();
     await expect(
-      page.locator('form[name="login_form"] button[type="submit"], .nowo-auth-kit__panel button[type="submit"]').first(),
+      page.locator('form[name="login_form"] button[type="submit"], [data-nowo-ui-page="auth"] button[type="submit"]').first(),
     ).toBeVisible();
   });
 
@@ -62,7 +62,7 @@ test.describe('Public / guest surfaces', () => {
     await page.locator('input[name="login_form[_username]"]').fill('nobody@example.invalid');
     await page.locator('input[name="login_form[_password]"]').fill('wrong-password-xyz');
     await page
-      .locator('.nowo-auth-kit__panel button[type="submit"], form[name="login_form"] button[type="submit"]')
+      .locator('[data-nowo-ui-page="auth"] button[type="submit"], form[name="login_form"] button[type="submit"]')
       .first()
       .click();
     await expect(page).toHaveURL(/\/login/);

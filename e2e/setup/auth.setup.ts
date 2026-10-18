@@ -51,7 +51,7 @@ setup('authenticate as demo admin', async ({ page }) => {
 
   await page.locator('input[name="login_form[_username]"]').fill(email);
   await page.locator('input[name="login_form[_password]"]').fill(password);
-  await page.locator('.nowo-auth-kit__panel button[type="submit"], form[name="login_form"] button[type="submit"]').first().click();
+  await page.locator('[data-nowo-ui-page="auth"] button[type="submit"], form[name="login_form"] button[type="submit"]').first().click();
 
   await page.waitForURL(/\/dashboard(\?|$)/, { timeout: 45_000 });
   await dismissProductTour(page);

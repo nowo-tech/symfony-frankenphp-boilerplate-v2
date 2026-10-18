@@ -254,7 +254,7 @@ export async function inspectManualAuthShot(
   if (isQr) {
     const qrOk = await page
       .locator(
-        '.auth-qr-challenge, .nowo-auth-kit__qr-challenge, .auth-qr-challenge__image, .auth-qr-challenge__code',
+        '[data-testid="auth-kit-qr_login_show"], .auth-qr-challenge, .auth-qr-challenge__image, .auth-qr-challenge__code',
       )
       .first()
       .isVisible()
@@ -275,7 +275,7 @@ export async function inspectManualAuthShot(
 
   const formVisible = await page
     .locator(
-      'form[name="login_form"], form[name="registration_form"], form[name="reset_password_request_form"], form[name="magic_login_form"], form.nowo-auth-kit__form, .nowo-auth-kit__panel form, input[type="password"], input[type="email"]',
+      'form[name="login_form"], form[name="registration_form"], form[name="reset_password_request_form"], form[name="magic_login_form"], [data-nowo-ui-page="auth"] form, input[type="password"], input[type="email"]',
     )
     .first()
     .isVisible()
@@ -293,7 +293,7 @@ export async function inspectManualAuthShot(
       .isVisible()
       .catch(() => false);
     const signInOnly = await page
-      .locator('h1, h2, .nowo-auth-kit__title, legend')
+      .locator('h1, h2, legend')
       .filter({ hasText: /^sign in$/i })
       .first()
       .isVisible()

@@ -52,7 +52,7 @@ test.describe('Cold-start setup circuit', () => {
     await page.locator('input[name="login_form[_username]"]').fill(COLD_ADMIN_EMAIL);
     await page.locator('input[name="login_form[_password]"]').fill(COLD_ADMIN_PASSWORD);
     await page
-      .locator('.nowo-auth-kit__panel button[type="submit"], form[name="login_form"] button[type="submit"]')
+      .locator('[data-nowo-ui-page="auth"] button[type="submit"], form[name="login_form"] button[type="submit"]')
       .first()
       .click();
 

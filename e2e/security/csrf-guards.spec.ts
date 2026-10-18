@@ -4,6 +4,9 @@ import { test, expect } from '@playwright/test';
  * CSRF / auth gate smoke — anonymous mutation attempts must not succeed silently.
  */
 test.describe('Security — CSRF guards', () => {
+  // Guest request: the chromium project stores the admin session, which would re-render the form (200).
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test('guest POST to admin user create is rejected', async ({ request }) => {
     const res = await request.post('/admin/users/new', {
       form: { 'admin_user[_token]': 'invalid-guest-token' },

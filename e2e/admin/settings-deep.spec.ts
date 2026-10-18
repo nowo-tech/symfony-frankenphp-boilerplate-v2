@@ -41,6 +41,8 @@ test.describe('Settings deep checks', () => {
     await expect(page.locator('[data-testid="instance-config-export"]')).toBeVisible();
     await expect(page.locator('[data-testid="instance-config-download"]')).toBeVisible();
     await expect(page.locator('[data-testid="instance-config-import"]')).toBeVisible();
+    // The import form lives in the second tab panel (hidden until its tab is opened).
+    await page.locator('[data-testid="instance-config-import"]').click();
     await expect(page.locator('[data-testid="instance-config-file"]')).toBeVisible();
   });
 
