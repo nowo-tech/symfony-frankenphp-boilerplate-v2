@@ -1176,6 +1176,11 @@ error:
     lead: A link between services went soft. We are plugging things back in — try again in a moment; you did nothing wrong.
     hint: Our mascot is reconnecting the glow cable. Sparks are intentional. Probably.
     image_alt: App mascot reconnecting a glowing cable between servers next to a large 502
+  503:
+    title: Under maintenance
+    lead: We are making a few gentle improvements. Everything you care about is safe — check back in a moment.
+    hint: Our hermit crab brought a wrench and a sandwich board. Tea is optional.
+    image_alt: Nowo Shell hermit crab mascot with a wrench beside a large 503 under maintenance sign
 roles:
   title: Roles
   intro: Instance capability roles. Assign permissions on the role detail Permissions tab; assign users on the Users tab.

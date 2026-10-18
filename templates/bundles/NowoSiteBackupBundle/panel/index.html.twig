@@ -3,6 +3,7 @@
 {% import '@NowoUiKitBundle/macros/ui.html.twig' as ui %}
 {% set _css_fw = nowo_site_backup_css_framework|default('tailwind') %}
 {% set _display = nowo_ui_kit_row_actions_display|default('icon') %}
+{% set _csp_nonce = app is defined and app and app.request ? app.request.attributes.get('csp_nonce')|default('') : '' %}
 
 {% block nowo_ui_document_title %}Site Backup panel{% endblock %}
 
@@ -62,7 +63,7 @@
                                         } only %}
                                     </button>
                                 </form>
-                                <form class="nowo-ui-row-actions__form" method="post" onsubmit="return confirm('Restore this backup now? Visitors will see the loading page.');">
+                                <form class="nowo-ui-row-actions__form" method="post" data-nowo-confirm="Restore this backup now? Visitors will see the loading page.">
                                     <input type="hidden" name="_csrf_token" value="{{ csrfToken }}">
                                     <input type="hidden" name="action" value="restore">
                                     <input type="hidden" name="backup_id" value="{{ b.id }}">
@@ -74,7 +75,7 @@
                                         } only %}
                                     </button>
                                 </form>
-                                <form class="nowo-ui-row-actions__form" method="post" onsubmit="return confirm('Delete backup?');">
+                                <form class="nowo-ui-row-actions__form" method="post" data-nowo-confirm="Delete backup?">
                                     <input type="hidden" name="_csrf_token" value="{{ csrfToken }}">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="backup_id" value="{{ b.id }}">
@@ -101,4 +102,19 @@
     <input type="hidden" name="action" value="logout">
     <button type="submit" class="{{ ui.btn('secondary', null, _css_fw) }}">Logout</button>
 </form>
+{# SiteBackup 1.16+: no inline on* handlers (CSP) — confirm via data-nowo-confirm + one delegated listener (same as the package template). #}
+<script{% if _csp_nonce %} nonce="{{ _csp_nonce }}"{% endif %}>
+(function () {
+  if (window.__nowoSiteBackupConfirm) { return; }
+  window.__nowoSiteBackupConfirm = true;
+  document.addEventListener('submit', function (event) {
+    var form = event.target;
+    if (!form || !form.getAttribute) { return; }
+    var message = form.getAttribute('data-nowo-confirm');
+    if (message && !window.confirm(message)) {
+      event.preventDefault();
+    }
+  }, true);
+})();
+</script>
 {% endblock %}

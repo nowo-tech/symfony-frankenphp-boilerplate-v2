@@ -31,7 +31,10 @@ final readonly class HealthController
     #[Route('/health/live', name: 'health_live', methods: ['GET'])]
     public function live(): JsonResponse
     {
-        return new JsonResponse(['status' => 'ok']);
+        return new JsonResponse([
+            'status' => 'ok',
+            'runtime' => FrankenPhpRuntime::snapshot(),
+        ]);
     }
 
     #[Route('/health/ready', name: 'health_ready', methods: ['GET'])]
@@ -98,6 +101,20 @@ final readonly class HealthController
         $fp = @fsockopen($host, (int) $port, $errno, $errstr, 2.0);
         if (false === $fp) {
             throw new \RuntimeException(\sprintf('Redis unreachable: %s', '' !== $errstr ? $errstr : (string) $errno));
+        }
+
+        $password = rawurldecode((string) ($parts['pass'] ?? ''));
+        if ('' !== $password) {
+            $user = (string) ($parts['user'] ?? '');
+            $auth = '' !== $user
+                ? \sprintf("AUTH %s %s\r\n", $user, $password)
+                : \sprintf("AUTH %s\r\n", $password);
+            fwrite($fp, $auth);
+            $authResponse = fgets($fp, 64);
+            if (!\is_string($authResponse) || !str_starts_with($authResponse, '+OK')) {
+                fclose($fp);
+                throw new \RuntimeException('Redis AUTH failed');
+            }
         }
 
         fwrite($fp, "PING\r\n");

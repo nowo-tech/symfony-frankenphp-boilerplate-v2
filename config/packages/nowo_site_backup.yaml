@@ -14,6 +14,7 @@ nowo_site_backup:
     templates:
         # Friendlier token gate (SVG + calm copy); wizard/done stay in the package.
         setup_token: 'kit/site_backup_setup_token.html.twig'
+        panel_login: 'kit/site_backup_panel_login.html.twig'
     backup:
         include_paths:
             - config
@@ -46,8 +47,14 @@ nowo_site_backup:
         # Host chrome only — panel pages stay in the package (SiteBackup 1.5+).
         layout_template: 'kit/site_backup_panel_layout.html.twig'
     security:
+        # SiteBackup 1.14.2+: empty access_roles denies the panel (fail-closed). Password gate is additional.
+        access_roles: [ROLE_ADMIN]
         password_protection: true
         password_hash: '%env(SITE_BACKUP_PASSWORD_HASH)%'
+        # SiteBackup 1.17+: per-IP panel password throttle (5 / 15 min → HTTP 429 + Retry-After) is on by default;
+        # storage = cache.rate_limiter (fallback cache.app). Disabled only under when@test.
+        login_throttle:
+            enabled: true
     exclusions:
         paths:
             - /health/live
@@ -188,6 +195,9 @@ when@prod:
 when@test:
     nowo_site_backup:
         security:
+            # Panel tests post wrong passwords; keep the 1.17 login throttle out of PHPUnit (REQ-SETUP-014).
+            login_throttle:
+                enabled: false
             # Demo hash for password "password" (panel tests only).
             password_hash: '$2y$13$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'
         setup:

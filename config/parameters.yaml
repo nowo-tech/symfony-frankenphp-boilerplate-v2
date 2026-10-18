@@ -11,3 +11,6 @@ parameters:
     app.session_cookie_name: NOWO_SHELL_SESSID
     # When true, SiteBackup setup gate also triggers if menus/breadcrumbs/cookies are missing.
     app.setup.check_platform_catalogs: true
+    # Extra CSP hosts (empty default). Product CDNs belong in the host app, not copied from siblings.
+    app.csp.connect_src_extra: []
+    app.csp.script_src_extra: []

@@ -42,4 +42,21 @@ final readonly class InstanceSettingsDurableSetupDoneStore implements DurableSet
             // Cold start / missing schema — SiteBackup finish will retry via SetupCompletedEvent.
         }
     }
+
+    /**
+     * SiteBackup 1.15+: re-open hook ({@see \Nowo\SiteBackupBundle\Setup\SetupWizardReopener}).
+     */
+    public function clearDone(): void
+    {
+        try {
+            $settings = $this->settingsRepository->getOrCreate();
+            if (!$settings->isSetupCompleted()) {
+                return;
+            }
+            $settings->clearSetupCompleted();
+            $this->settingsRepository->save($settings);
+        } catch (Throwable) {
+            // Missing schema — nothing durable to clear.
+        }
+    }
 }

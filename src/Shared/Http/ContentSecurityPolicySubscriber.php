@@ -24,6 +24,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * CSSOM ({@code element.style}) used by SortableJS, sidebar motion, etc.
  *
  * Debug keeps {@code unsafe-inline} on {@code style-src-elem} for the Web Profiler.
+ *
+ * Inline {@code <script>} tags from vendor Twig are stamped with the same nonce
+ * before the header is set, because a nonce in {@code script-src} disables
+ * {@code unsafe-inline} in browsers.
  */
 #[AsEventListener(event: KernelEvents::REQUEST, priority: 1024)]
 #[AsEventListener(event: KernelEvents::RESPONSE, priority: -100)]
@@ -33,11 +37,17 @@ final readonly class ContentSecurityPolicySubscriber
 
     private const string CSP_BASE = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: blob:; font-src 'self' data:; ";
 
-    private const string CSP_TAIL = "; connect-src 'self' ws: wss:; worker-src 'self'; manifest-src 'self'";
-
+    /**
+     * @param list<string> $connectSrcExtra
+     * @param list<string> $scriptSrcExtra
+     */
     public function __construct(
         #[Autowire('%kernel.debug%')]
         private bool $kernelDebug,
+        #[Autowire('%app.csp.connect_src_extra%')]
+        private array $connectSrcExtra = [],
+        #[Autowire('%app.csp.script_src_extra%')]
+        private array $scriptSrcExtra = [],
     ) {
     }
 
@@ -85,6 +95,9 @@ final readonly class ContentSecurityPolicySubscriber
             return;
         }
 
+        $nonce = (string) $request->attributes->get(self::REQUEST_ATTR_NONCE, '');
+        $this->stampInlineScriptNonces($response, $nonce);
+        $this->stampInlineStyleNonces($response, $nonce);
         $response->headers->set('Content-Security-Policy', $this->buildCsp($request));
     }
 
@@ -109,7 +122,98 @@ final readonly class ContentSecurityPolicySubscriber
             $scriptSrc .= " 'unsafe-eval'";
         }
 
-        return self::CSP_BASE.$styleSrcElem.'; '.$styleSrcAttr.'; '.$scriptSrc.self::CSP_TAIL;
+        foreach ($this->scriptSrcExtra as $source) {
+            $source = trim((string) $source);
+            if ('' !== $source) {
+                $scriptSrc .= ' '.$source;
+            }
+        }
+
+        $connectSrc = "connect-src 'self' ws: wss:";
+        foreach ($this->connectSrcExtra as $source) {
+            $source = trim((string) $source);
+            if ('' !== $source) {
+                $connectSrc .= ' '.$source;
+            }
+        }
+
+        return self::CSP_BASE.$styleSrcElem.'; '.$styleSrcAttr.'; '.$scriptSrc.'; '.$connectSrc."; worker-src 'self'; manifest-src 'self'";
+    }
+
+    /**
+     * Vendor templates often ship bare {@code <script>} blocks. With a nonce in
+     * script-src, browsers ignore unsafe-inline — stamp the request nonce onto
+     * executable inline scripts that do not already declare one.
+     */
+    private function stampInlineScriptNonces(Response $response, string $nonce): void
+    {
+        if ('' === $nonce) {
+            return;
+        }
+        $content = $response->getContent();
+        if (!\is_string($content) || !str_contains($content, '<script')) {
+            return;
+        }
+        $escapedNonce = htmlspecialchars($nonce, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
+        $updated = preg_replace_callback(
+            '/<script(\s[^>]*)?>/i',
+            static function (array $matches) use ($escapedNonce): string {
+                $attrs = $matches[1] ?? '';
+                if (1 === preg_match('/\bnonce\s*=/i', $attrs)) {
+                    return $matches[0];
+                }
+                if (1 === preg_match('/\bsrc\s*=/i', $attrs)) {
+                    return $matches[0];
+                }
+                if (1 === preg_match('/\btype\s*=\s*(["\'])(?!module\b|text\/javascript\b|application\/javascript\b|text\/ecmascript\b)[^"\']*\1/i', $attrs)) {
+                    return $matches[0];
+                }
+
+                return '<script nonce="'.$escapedNonce.'"'.$attrs.'>';
+            },
+            $content,
+        );
+        if (\is_string($updated) && $updated !== $content) {
+            $response->setContent($updated);
+        }
+    }
+
+    /**
+     * Host templates (e.g. maintenance 503) ship bare {@code <style>} blocks.
+     * A nonce in style-src-elem disables unsafe-inline in browsers — stamp the
+     * request nonce onto inline styles that do not already declare one.
+     */
+    private function stampInlineStyleNonces(Response $response, string $nonce): void
+    {
+        if ('' === $nonce) {
+            return;
+        }
+
+        $content = $response->getContent();
+
+        if (!\is_string($content) || !str_contains($content, '<style')) {
+            return;
+        }
+
+        $escapedNonce = htmlspecialchars($nonce, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
+
+        $updated = preg_replace_callback(
+            '/<style(\s[^>]*)?>/i',
+            static function (array $matches) use ($escapedNonce): string {
+                $attrs = $matches[1] ?? '';
+
+                if (1 === preg_match('/\bnonce\s*=/i', $attrs)) {
+                    return $matches[0];
+                }
+
+                return '<style nonce="'.$escapedNonce.'"'.$attrs.'>';
+            },
+            $content,
+        );
+
+        if (\is_string($updated) && $updated !== $content) {
+            $response->setContent($updated);
+        }
     }
 
     private function isHtmlResponse(Response $response): bool

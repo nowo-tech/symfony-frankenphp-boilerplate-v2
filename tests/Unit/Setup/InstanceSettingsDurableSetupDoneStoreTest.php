@@ -33,4 +33,28 @@ final class InstanceSettingsDurableSetupDoneStoreTest extends TestCase
 
         self::assertFalse(new InstanceSettingsDurableSetupDoneStore($repo)->isDone());
     }
+
+    public function testClearDoneResetsCompletionAndSkipsWhenNotDone(): void
+    {
+        $settings = InstanceSettings::defaults();
+        $settings->markSetupCompleted();
+        $repo = $this->createMock(InstanceSettingsRepository::class);
+        $repo->method('getOrCreate')->willReturn($settings);
+        $repo->expects(self::once())->method('save')->with($settings);
+
+        $store = new InstanceSettingsDurableSetupDoneStore($repo);
+        $store->clearDone();
+        self::assertFalse($settings->isSetupCompleted());
+        $store->clearDone();
+        self::assertFalse($store->isDone());
+    }
+
+    public function testClearDoneSwallowsRepositoryFailure(): void
+    {
+        $repo = $this->createMock(InstanceSettingsRepository::class);
+        $repo->method('getOrCreate')->willThrowException(new RuntimeException('no schema'));
+        $repo->expects(self::never())->method('save');
+
+        new InstanceSettingsDurableSetupDoneStore($repo)->clearDone();
+    }
 }

@@ -16,7 +16,15 @@ final class HealthEndpointsTest extends DatabaseWebTestCase
 
         $client->request(Request::METHOD_GET, '/health/live');
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('"status":"ok"', $client->getResponse()->getContent() ?: '');
+        $payload = json_decode($client->getResponse()->getContent() ?: '[]', true);
+        self::assertIsArray($payload);
+        self::assertSame('ok', $payload['status'] ?? null);
+        self::assertIsArray($payload['runtime'] ?? null);
+        self::assertContains($payload['runtime']['frankenphp_mode'] ?? null, ['classic', 'worker']);
+        self::assertArrayHasKey('frankenphp_worker', $payload['runtime'] ?? []);
+        self::assertArrayHasKey('reset_kernel', $payload['runtime'] ?? []);
+        self::assertArrayHasKey('app_runtime_mode', $payload['runtime'] ?? []);
+        self::assertArrayHasKey('worker_num', $payload['runtime'] ?? []);
 
         $client->request(Request::METHOD_GET, '/health/ready');
         self::assertResponseIsSuccessful();

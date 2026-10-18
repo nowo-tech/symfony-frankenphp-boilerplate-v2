@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class SiteBackupSecurityDefaultsGuardTest extends TestCase
 {
+    private const string AUTHENTICATED_REDIS_URL = 'redis://:authenticated@127.0.0.1:6379';
+
     public function testDevEnvironmentAllowsLocalDefaults(): void
     {
         $guard = new SiteBackupSecurityDefaultsGuard(
@@ -117,9 +119,40 @@ final class SiteBackupSecurityDefaultsGuardTest extends TestCase
             'unique-production-setup-token',
             '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
             'production-grade-app-secret-32',
+            self::AUTHENTICATED_REDIS_URL,
         );
         $guard->assertProductionSecretsSafe();
         $this->addToAssertionCount(1);
+    }
+
+    #[DataProvider('nonLocalEnvironmentsProvider')]
+    public function testNonLocalAcceptsRedisPasswordEnv(string $environment): void
+    {
+        $guard = new SiteBackupSecurityDefaultsGuard(
+            $environment,
+            'unique-production-setup-token',
+            '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'production-grade-app-secret-32',
+            'redis://127.0.0.1:6379',
+            'redis-secret',
+        );
+        $guard->assertProductionSecretsSafe();
+        $this->addToAssertionCount(1);
+    }
+
+    #[DataProvider('nonLocalEnvironmentsProvider')]
+    public function testNonLocalRejectsUnauthenticatedRedis(string $environment): void
+    {
+        $guard = new SiteBackupSecurityDefaultsGuard(
+            $environment,
+            'unique-production-setup-token',
+            '$2y$12$notTheLocalDefaultHashxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            'production-grade-app-secret-32',
+            'redis://127.0.0.1:6379',
+        );
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('REDIS_PASSWORD');
+        $guard->assertProductionSecretsSafe();
     }
 
     #[DataProvider('cacheBuildConsoleCommandsProvider')]

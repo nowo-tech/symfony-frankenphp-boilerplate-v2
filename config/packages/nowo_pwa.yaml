@@ -57,6 +57,10 @@ nowo_pwa:
         skip_waiting: true
         clients_claim: true
 
+    # Avoid anonymous manifest/SW fetches overwriting the session cookie (PWA ≥1.5).
+    http:
+        strip_set_cookie_on_bootstrap: true
+
     install_prompt:
         enabled: true
         display: banner

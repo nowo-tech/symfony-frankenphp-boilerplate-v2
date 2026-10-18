@@ -53,12 +53,32 @@ There is no `composer update nowo-tech/symfony-frankenphp-boilerplate-v2` path f
 
 ## Unreleased (main after 1.0.3)
 
-**No migrations.** Platform form chrome only (`086-platform-form-chrome`):
+**No migrations.**
+
+Kit-over-shim floors (OTHER pass 40): HotReload **1.5.2**, LoginThrottle **3.2.0**, CookieConsent **1.9.7**, Pwa **1.5.0**.
 
 ```bash
-composer install   # optional
+composer install   # kit bumps above
 make vite-build    # required for .checkbox + password-toggle CSS
 ```
+
+**Host shims removed** (kits own the behaviour now):
+
+- LoginThrottle nested AuthKit username (`AuthKitAwareLoginRateLimiter`)
+- PWA bootstrap `Set-Cookie` strip (`PwaStatelessCookieSubscriber` → `nowo_pwa.http.strip_set_cookie_on_bootstrap: true`)
+
+**SiteBackup 1.13.8 → 1.17.0** ([bundle UPGRADING](https://github.com/nowo-tech/SiteBackupBundle/blob/main/docs/UPGRADING.md)):
+
+```bash
+composer install   # nowo-tech/site-backup-bundle 1.17.0 (symfony/rate-limiter is now a hard dependency)
+php bin/console cache:clear
+```
+
+- **1.14.0 worker restart:** after a restore that applied files, or setup `cache_clear` / `database_url` writing `.env.local`, the bundle writes `var/site-backup/worker-restart.required`. Restart FrankenPHP workers (container restart or Caddy admin `POST /frankenphp/workers/restart`), then `bin/console nowo:site-backup:worker-restart --clear`.
+- **1.14.2 access roles:** an empty `security.access_roles` denies the panel. `nowo_site_backup.yaml` now declares `access_roles: [ROLE_ADMIN]` (password gate stays additional).
+- **1.15.0 SPI:** `InstanceSettingsDurableSetupDoneStore` implements `clearDone()` (clears `setup_completed_at`). `setup.reopen_when_detector_requires` stays off.
+- **1.16.0:** worker memos on by default (`schema_probe_ttl: 60`); if you drop the database under running workers, restart them or set `setup.worker_memo.schema_probe_ttl: 0`. The host `panel/index.html.twig` override uses `data-nowo-confirm` instead of inline `onsubmit` (CSP); re-apply if you customised it.
+- **1.17.0 login throttle:** 5 panel password attempts per client IP per 15 minutes, then HTTP 429 + `Retry-After`; success resets the counter and rotates the session id. Uses `cache.rate_limiter` (fallback `cache.app`). With several app servers point `security.login_throttle.cache_pool` at a shared pool; behind a proxy configure `framework.trusted_proxies`. Disabled only under `when@test`.
 
 Password-manager icons on focus (NordPass, etc.) are extension UI, not a host layout regression.
 

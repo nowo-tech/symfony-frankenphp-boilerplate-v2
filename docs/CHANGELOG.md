@@ -18,6 +18,10 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 ### Changed
 
+- **SiteBackup 1.13.8 → 1.17.0** (`nowo-tech/site-backup-bundle`): panel `security.access_roles: [ROLE_ADMIN]` declared explicitly (1.14.2+ fail-closed on empty list); per-IP panel login throttle on by default (5 / 15 min → HTTP 429 + `Retry-After`, pool `cache.rate_limiter` / `cache.app`), disabled only under `when@test`; `InstanceSettingsDurableSetupDoneStore::clearDone()` (1.15 SPI); host `panel/index.html.twig` override confirms via `data-nowo-confirm` + delegated listener (1.16, no inline `onsubmit`). Restores / setup steps that rewrite files now leave `var/site-backup/worker-restart.required` — restart FrankenPHP workers, then `bin/console nowo:site-backup:worker-restart --clear`.
+- **Beacon `send.stack_vars`** (REQ-BEACON-007): documented off in `nowo_beacon.yaml`; beacon-bundle 1.8.0 has no such key (added in 1.10.0) and never sends frame arguments — uncomment `stack_vars: false` when bumping Beacon to ≥ 1.10.
+- **Kit-over-shim (OTHER pass 40):** LoginThrottle **3.2.0**, CookieConsent **1.9.7**, Pwa **1.5.0**, HotReload **1.5.2**. Deleted host shims now owned by kits: `AuthKitAwareLoginRateLimiter`, `PwaStatelessCookieSubscriber`. PWA bootstrap `Set-Cookie` strip uses kit `http.strip_set_cookie_on_bootstrap: true`.
+- **Hot reload via HotReloadBundle ≥1.5:** `client_mode: shared_worker` (bundle-served `/_nowo/hot-reload/*`); host deferred client removed. CSP stamps vendor inline scripts (REQ-CSP-002).
 - CookieConsent **1.9.6** + Dashboard Menu **2.1.10**: embed via `nowo_cookie_consent_render()` (no kernel sub-request); kit tags `SearchQueryType` (no host `form.type` override).
 - Rector / PHP-CS-Fixer file headers document ownership split (semantic vs PER-CS; always CS after Rector).
 

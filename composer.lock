@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "869a6dbfe4cd96907297197438d1f0a2",
+    "content-hash": "2f41543a3df7a91eb50f68aa8025ba5d",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2051,16 +2051,16 @@
         },
         {
             "name": "nowo-tech/cookie-consent-bundle",
-            "version": "v1.9.6",
+            "version": "v1.9.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/CookieConsentBundle.git",
-                "reference": "ba904e9d430e238275a26da8a18aa6aeafad4bcd"
+                "reference": "096a2fef35d121f62539a72a7c6151c727247401"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/CookieConsentBundle/zipball/ba904e9d430e238275a26da8a18aa6aeafad4bcd",
-                "reference": "ba904e9d430e238275a26da8a18aa6aeafad4bcd",
+                "url": "https://api.github.com/repos/nowo-tech/CookieConsentBundle/zipball/096a2fef35d121f62539a72a7c6151c727247401",
+                "reference": "096a2fef35d121f62539a72a7c6151c727247401",
                 "shasum": ""
             },
             "require": {
@@ -2131,7 +2131,7 @@
                 "issues": "https://github.com/nowo-tech/CookieConsentBundle/issues",
                 "source": "https://github.com/nowo-tech/CookieConsentBundle"
             },
-            "time": "2026-08-24T16:03:01+00:00"
+            "time": "2026-08-28T22:48:03+00:00"
         },
         {
             "name": "nowo-tech/dashboard-menu-bundle",
@@ -2651,16 +2651,16 @@
         },
         {
             "name": "nowo-tech/login-throttle-bundle",
-            "version": "v3.1.2",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/LoginThrottleBundle.git",
-                "reference": "b5a99a239814dacd3a5f3a7f039494a24941d3ce"
+                "reference": "01e64c077d73fcbbe76248897c59635b802f80c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/LoginThrottleBundle/zipball/b5a99a239814dacd3a5f3a7f039494a24941d3ce",
-                "reference": "b5a99a239814dacd3a5f3a7f039494a24941d3ce",
+                "url": "https://api.github.com/repos/nowo-tech/LoginThrottleBundle/zipball/01e64c077d73fcbbe76248897c59635b802f80c8",
+                "reference": "01e64c077d73fcbbe76248897c59635b802f80c8",
                 "shasum": ""
             },
             "require": {
@@ -2732,7 +2732,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-18T09:34:53+00:00"
+            "time": "2026-08-28T22:47:51+00:00"
         },
         {
             "name": "nowo-tech/maintenance-mode-bundle",
@@ -3360,16 +3360,16 @@
         },
         {
             "name": "nowo-tech/pwa-bundle",
-            "version": "v1.3.2",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/PwaBundle.git",
-                "reference": "cd49b56743a35b2592bb0973dad3887dc54c9ff8"
+                "reference": "55b595aaa914003cdcd40fcb56f7ae8fdfb3becc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/PwaBundle/zipball/cd49b56743a35b2592bb0973dad3887dc54c9ff8",
-                "reference": "cd49b56743a35b2592bb0973dad3887dc54c9ff8",
+                "url": "https://api.github.com/repos/nowo-tech/PwaBundle/zipball/55b595aaa914003cdcd40fcb56f7ae8fdfb3becc",
+                "reference": "55b595aaa914003cdcd40fcb56f7ae8fdfb3becc",
                 "shasum": ""
             },
             "require": {
@@ -3447,7 +3447,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-19T16:27:36+00:00"
+            "time": "2026-08-29T14:36:57+00:00"
         },
         {
             "name": "nowo-tech/routing-kit-bundle",
@@ -3626,16 +3626,16 @@
         },
         {
             "name": "nowo-tech/site-backup-bundle",
-            "version": "v1.13.8",
+            "version": "v1.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/SiteBackupBundle.git",
-                "reference": "a782373d2ed507514c5ae03794f8be36dfbfdec3"
+                "reference": "1f5566972f2f1abc6890498123e4796d2f529e56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/SiteBackupBundle/zipball/a782373d2ed507514c5ae03794f8be36dfbfdec3",
-                "reference": "a782373d2ed507514c5ae03794f8be36dfbfdec3",
+                "url": "https://api.github.com/repos/nowo-tech/SiteBackupBundle/zipball/1f5566972f2f1abc6890498123e4796d2f529e56",
+                "reference": "1f5566972f2f1abc6890498123e4796d2f529e56",
                 "shasum": ""
             },
             "require": {
@@ -3651,6 +3651,7 @@
                 "symfony/http-foundation": "^7.0 || ^8.0",
                 "symfony/http-kernel": "^7.0 || ^8.0",
                 "symfony/process": "^7.0 || ^8.0",
+                "symfony/rate-limiter": "^7.3 || ^8.0",
                 "symfony/routing": "^7.0 || ^8.0",
                 "symfony/security-core": "^7.0 || ^8.0",
                 "symfony/security-csrf": "^7.0 || ^8.0",
@@ -3660,6 +3661,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "igor-php/igor-php": "^0.9.7",
                 "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^2.0",
@@ -3719,7 +3721,7 @@
                 "issues": "https://github.com/nowo-tech/SiteBackupBundle/issues",
                 "source": "https://github.com/nowo-tech/SiteBackupBundle"
             },
-            "time": "2026-08-24T16:03:11+00:00"
+            "time": "2026-10-12T18:22:00+00:00"
         },
         {
             "name": "nowo-tech/slide-to-confirm-bundle",
@@ -7629,16 +7631,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "6b2f4a0eeb28b5d74f90862592923a654bc629b3"
+                "reference": "7599ebb855fede59413ddb7f15198d67bfcae7ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/6b2f4a0eeb28b5d74f90862592923a654bc629b3",
-                "reference": "6b2f4a0eeb28b5d74f90862592923a654bc629b3",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/7599ebb855fede59413ddb7f15198d67bfcae7ba",
+                "reference": "7599ebb855fede59413ddb7f15198d67bfcae7ba",
                 "shasum": ""
             },
             "require": {
@@ -7676,7 +7678,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v8.1.5"
+                "source": "https://github.com/symfony/filesystem/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -7696,7 +7698,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-21T12:16:08+00:00"
+            "time": "2026-08-23T10:06:25+00:00"
         },
         {
             "name": "symfony/finder",
@@ -8178,16 +8180,16 @@
         },
         {
             "name": "symfony/http-client-contracts",
-            "version": "v3.7.1",
+            "version": "v3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client-contracts.git",
-                "reference": "41fc42d276aeff21192465331ebbab7d83a743c0"
+                "reference": "35be0019e2c2c9fba80f9dc033290a5240f7b44f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/41fc42d276aeff21192465331ebbab7d83a743c0",
-                "reference": "41fc42d276aeff21192465331ebbab7d83a743c0",
+                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/35be0019e2c2c9fba80f9dc033290a5240f7b44f",
+                "reference": "35be0019e2c2c9fba80f9dc033290a5240f7b44f",
                 "shasum": ""
             },
             "require": {
@@ -8236,7 +8238,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client-contracts/tree/v3.7.1"
+                "source": "https://github.com/symfony/http-client-contracts/tree/v3.7.3"
             },
             "funding": [
                 {
@@ -8256,20 +8258,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-08-04T08:41:16+00:00"
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "ee16f97e95cfa011a742714d7c8c8f70fe7423f4"
+                "reference": "093b78326f649c3a9db922b9f17123b6aeb3b8fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/ee16f97e95cfa011a742714d7c8c8f70fe7423f4",
-                "reference": "ee16f97e95cfa011a742714d7c8c8f70fe7423f4",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/093b78326f649c3a9db922b9f17123b6aeb3b8fb",
+                "reference": "093b78326f649c3a9db922b9f17123b6aeb3b8fb",
                 "shasum": ""
             },
             "require": {
@@ -8317,7 +8319,7 @@
             "description": "Defines an object-oriented layer for the HTTP specification",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-foundation/tree/v8.1.5"
+                "source": "https://github.com/symfony/http-foundation/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -8337,20 +8339,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-20T09:59:12+00:00"
+            "time": "2026-08-30T20:10:55+00:00"
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-kernel.git",
-                "reference": "0306e1e65b90023fe40de6c6be95d06396bcb2e6"
+                "reference": "2f73beb7c6f1a97d2c17bbf4dbd59da8cc18b355"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/0306e1e65b90023fe40de6c6be95d06396bcb2e6",
-                "reference": "0306e1e65b90023fe40de6c6be95d06396bcb2e6",
+                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/2f73beb7c6f1a97d2c17bbf4dbd59da8cc18b355",
+                "reference": "2f73beb7c6f1a97d2c17bbf4dbd59da8cc18b355",
                 "shasum": ""
             },
             "require": {
@@ -8427,7 +8429,7 @@
             "description": "Provides a structured process for converting a Request into a Response",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-kernel/tree/v8.1.5"
+                "source": "https://github.com/symfony/http-kernel/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -8447,7 +8449,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-22T13:45:00+00:00"
+            "time": "2026-08-30T21:40:49+00:00"
         },
         {
             "name": "symfony/mailer",
@@ -8623,7 +8625,7 @@
         },
         {
             "name": "symfony/mime",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mime.git",
@@ -8685,7 +8687,7 @@
                 "mime-type"
             ],
             "support": {
-                "source": "https://github.com/symfony/mime/tree/v8.1.5"
+                "source": "https://github.com/symfony/mime/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -9530,7 +9532,7 @@
         },
         {
             "name": "symfony/process",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
@@ -9571,7 +9573,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v8.1.5"
+                "source": "https://github.com/symfony/process/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -9835,8 +9837,84 @@
             "time": "2026-08-07T15:35:35+00:00"
         },
         {
+            "name": "symfony/redis-messenger",
+            "version": "v8.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/redis-messenger.git",
+                "reference": "8faf47c1ba53219f18fd82d92c6a47769ffde746"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/redis-messenger/zipball/8faf47c1ba53219f18fd82d92c6a47769ffde746",
+                "reference": "8faf47c1ba53219f18fd82d92c6a47769ffde746",
+                "shasum": ""
+            },
+            "require": {
+                "ext-redis": "*",
+                "php": ">=8.4.1",
+                "symfony/messenger": "^8.1"
+            },
+            "conflict": {
+                "ext-redis": "<6.1",
+                "ext-relay": "<0.12"
+            },
+            "require-dev": {
+                "symfony/property-access": "^7.4|^8.0",
+                "symfony/serializer": "^7.4|^8.0",
+                "symfony/var-dumper": "^7.4|^8.0"
+            },
+            "type": "symfony-messenger-bridge",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Messenger\\Bridge\\Redis\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Redis extension Messenger Bridge",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/redis-messenger/tree/v8.1.4"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-08-01T17:18:36+00:00"
+        },
+        {
             "name": "symfony/routing",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/routing.git",
@@ -9892,7 +9970,7 @@
                 "url"
             ],
             "support": {
-                "source": "https://github.com/symfony/routing/tree/v8.1.5"
+                "source": "https://github.com/symfony/routing/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -10101,16 +10179,16 @@
         },
         {
             "name": "symfony/security-core",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security-core.git",
-                "reference": "5fdd9ad1449af76d537bcea471aaabaf8dbe92e7"
+                "reference": "efa0b10f82504d5710db3b53e234607a8ccbd2a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security-core/zipball/5fdd9ad1449af76d537bcea471aaabaf8dbe92e7",
-                "reference": "5fdd9ad1449af76d537bcea471aaabaf8dbe92e7",
+                "url": "https://api.github.com/repos/symfony/security-core/zipball/efa0b10f82504d5710db3b53e234607a8ccbd2a1",
+                "reference": "efa0b10f82504d5710db3b53e234607a8ccbd2a1",
                 "shasum": ""
             },
             "require": {
@@ -10160,7 +10238,7 @@
             "description": "Symfony Security Component - Core Library",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/security-core/tree/v8.1.5"
+                "source": "https://github.com/symfony/security-core/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -10180,7 +10258,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-21T17:47:34+00:00"
+            "time": "2026-08-30T01:03:44+00:00"
         },
         {
             "name": "symfony/security-csrf",
@@ -10443,16 +10521,16 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v3.7.1",
+            "version": "v3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "c0a284bab1ed8aa0417e3d69250ab437739563a0"
+                "reference": "15e6a07ec2a2c75ceb1b21dd98105ee8456d2257"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/c0a284bab1ed8aa0417e3d69250ab437739563a0",
-                "reference": "c0a284bab1ed8aa0417e3d69250ab437739563a0",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/15e6a07ec2a2c75ceb1b21dd98105ee8456d2257",
+                "reference": "15e6a07ec2a2c75ceb1b21dd98105ee8456d2257",
                 "shasum": ""
             },
             "require": {
@@ -10506,7 +10584,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v3.7.1"
+                "source": "https://github.com/symfony/service-contracts/tree/v3.7.3"
             },
             "funding": [
                 {
@@ -10526,7 +10604,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-16T09:55:08+00:00"
+            "time": "2026-07-27T15:39:01+00:00"
         },
         {
             "name": "symfony/stimulus-bundle",
@@ -11763,16 +11841,16 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "61743d9bc7ab23b194527ca1be2fafd7dc93b74a"
+                "reference": "3783365b58972f4779254d98372af80fbf15e170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/61743d9bc7ab23b194527ca1be2fafd7dc93b74a",
-                "reference": "61743d9bc7ab23b194527ca1be2fafd7dc93b74a",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/3783365b58972f4779254d98372af80fbf15e170",
+                "reference": "3783365b58972f4779254d98372af80fbf15e170",
                 "shasum": ""
             },
             "require": {
@@ -11826,7 +11904,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v8.1.5"
+                "source": "https://github.com/symfony/var-dumper/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -11846,20 +11924,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-21T12:16:08+00:00"
+            "time": "2026-08-30T20:10:55+00:00"
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v8.1.5",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "b8f7dd85493e8372c7c81a1547caaaf86b9c16d1"
+                "reference": "802362f41128c430fd6685491e1fb72127fae78a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/b8f7dd85493e8372c7c81a1547caaaf86b9c16d1",
-                "reference": "b8f7dd85493e8372c7c81a1547caaaf86b9c16d1",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/802362f41128c430fd6685491e1fb72127fae78a",
+                "reference": "802362f41128c430fd6685491e1fb72127fae78a",
                 "shasum": ""
             },
             "require": {
@@ -11909,7 +11987,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v8.1.5"
+                "source": "https://github.com/symfony/var-exporter/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -11929,7 +12007,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-13T16:11:28+00:00"
+            "time": "2026-08-29T06:30:03+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -12988,16 +13066,16 @@
         },
         {
             "name": "nowo-tech/hot-reload-bundle",
-            "version": "v1.4.1",
+            "version": "v1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/HotReloadBundle.git",
-                "reference": "7a1b085685dd02cbb01ac972157c263246abcea6"
+                "reference": "45900325faf889100e1dfbb88ade41a21cb172ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/HotReloadBundle/zipball/7a1b085685dd02cbb01ac972157c263246abcea6",
-                "reference": "7a1b085685dd02cbb01ac972157c263246abcea6",
+                "url": "https://api.github.com/repos/nowo-tech/HotReloadBundle/zipball/45900325faf889100e1dfbb88ade41a21cb172ff",
+                "reference": "45900325faf889100e1dfbb88ade41a21cb172ff",
                 "shasum": ""
             },
             "require": {
@@ -13027,6 +13105,11 @@
                 "twig/twig": "Required for {{ nowo_hot_reload_assets() }} Twig helper"
             },
             "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.5.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Nowo\\HotReloadBundle\\": "src/"
@@ -13069,7 +13152,7 @@
                 "issues": "https://github.com/nowo-tech/HotReloadBundle/issues",
                 "source": "https://github.com/nowo-tech/HotReloadBundle"
             },
-            "time": "2026-08-19T16:29:02+00:00"
+            "time": "2026-08-28T22:47:35+00:00"
         },
         {
             "name": "nowo-tech/phpstan-frankenphp",

@@ -56,6 +56,10 @@ final class SiteBackupSecurityDefaultsGuard implements EventSubscriberInterface
         private readonly ?string $panelPasswordHash,
         #[Autowire('%kernel.secret%')]
         private readonly string $appSecret = '',
+        #[Autowire('%env(REDIS_URL)%')]
+        private readonly string $redisUrl = '',
+        #[Autowire('%env(default::REDIS_PASSWORD)%')]
+        private readonly ?string $redisPassword = null,
     ) {
     }
 
@@ -120,6 +124,21 @@ final class SiteBackupSecurityDefaultsGuard implements EventSubscriberInterface
         if (\strlen($secret) < 16) {
             throw new RuntimeException('APP_SECRET must be at least 16 characters outside local development (dev/test).');
         }
+
+        if (!$this->redisIsAuthenticated()) {
+            throw new RuntimeException('REDIS_PASSWORD (or a password in REDIS_URL / MESSENGER_TRANSPORT_DSN) must be set outside local development so sessions and the Messenger queue are not open on the shared Docker network.');
+        }
+    }
+
+    private function redisIsAuthenticated(): bool
+    {
+        if ('' !== trim((string) $this->redisPassword)) {
+            return true;
+        }
+
+        $parts = parse_url($this->redisUrl);
+
+        return \is_array($parts) && isset($parts['pass']) && '' !== (string) $parts['pass'];
     }
 
     private function isLocalDevelopmentEnvironment(): bool

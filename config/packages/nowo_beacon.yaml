@@ -28,11 +28,15 @@ nowo_beacon:
     ignore_exceptions:
         - Symfony\Component\Security\Core\Exception\AccessDeniedException
         - Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+        - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
     send:
         environment: true
         release: true
         server_name: true
         stacktrace: true
+        # Off: frame arguments can carry request payloads and secrets to Beacon (REQ-BEACON-007, OTHER specs 2026-10-12).
+        # beacon-bundle 1.8.0 predates send.stack_vars (added in 1.10.0) and never sends frame vars; uncomment when bumping to >= 1.10.
+        # stack_vars: false
         request: true
         user: false
         runtime: true

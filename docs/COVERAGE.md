@@ -38,7 +38,6 @@ make test-unit-js-coverage
 | Location | Why |
 |----------|-----|
 | `Permission::__construct()` | Empty private constructor only blocks instantiation. |
-| `PwaStatelessCookieSubscriber` non-`Cookie` branch | `ResponseHeaderBag::getCookies()` always yields `Cookie` instances; defensive continue. |
 
 ## Test helpers for hard-to-reach FS edges
 

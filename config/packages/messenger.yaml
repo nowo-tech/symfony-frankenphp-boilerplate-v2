@@ -9,9 +9,11 @@ framework:
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
-                    # Doctrine `queue_name`. Redis DSN must stay host+port (REQ-MESSENGER-001);
-                    # put the stream name here as `stream:` when switching to Redis — never `/messages` in the DSN.
+                    # Default DSN is Doctrine (.env.dist): `queue_name`. Each transport rejects the other's options, so when
+                    # MESSENGER_TRANSPORT_DSN switches to Redis replace this with `stream: nowo_shell_async` (dedicated
+                    # stream — shared redis-8.10.2 also hosts Beacon/other queues; REQ-MESSENGER-001: never in the DSN path).
                     queue_name: async
+                    auto_setup: true
                 retry_strategy:
                     max_retries: 3
                     delay: 1000
