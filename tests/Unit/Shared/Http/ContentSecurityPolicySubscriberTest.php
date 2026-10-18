@@ -84,38 +84,15 @@ final class ContentSecurityPolicySubscriberTest extends TestCase
         self::assertNull($response->headers->get('Content-Security-Policy'));
     }
 
-    public function testStampsNonceOnInlineScriptsWithoutNonce(): void
+    public function testDoesNotStampNoncesOnBareInlineScriptsOrStyles(): void
     {
-        $html = '<html><body><script>window.x=1</script><script src="/app.js"></script>'
-            .'<script nonce="already">ok()</script>'
-            .'<script type="application/json">{"a":1}</script></body></html>';
+        // Regression (fix(security)): a bare inline tag — e.g. injected markup — must not inherit the request nonce.
+        $html = '<html><head><style>body{margin:0}</style></head><body><script>window.x=1</script>'
+            .'<script nonce="already">ok()</script></body></html>';
         $response = $this->dispatch('/', $html, kernelDebug: false);
-        $content = (string) $response->getContent();
-        $nonce = (string) preg_replace(
-            "/.*script-src 'self' 'nonce-([^']+)'.*/s",
-            '$1',
-            (string) $response->headers->get('Content-Security-Policy'),
-        );
 
-        self::assertStringContainsString('<script nonce="'.$nonce.'">window.x=1</script>', $content);
-        self::assertStringContainsString('<script src="/app.js"></script>', $content);
-        self::assertStringContainsString('<script nonce="already">ok()</script>', $content);
-        self::assertStringContainsString('<script type="application/json">{"a":1}</script>', $content);
-    }
-
-    public function testStampsNonceOnInlineStylesWithoutNonce(): void
-    {
-        $html = '<html><head><style>body{margin:0}</style><style nonce="already">.x{}</style></head><body></body></html>';
-        $response = $this->dispatch('/', $html, kernelDebug: false);
-        $content = (string) $response->getContent();
-        $nonce = (string) preg_replace(
-            "/.*style-src-elem 'self' 'nonce-([^']+)'.*/s",
-            '$1',
-            (string) $response->headers->get('Content-Security-Policy'),
-        );
-
-        self::assertStringContainsString('<style nonce="'.$nonce.'">body{margin:0}</style>', $content);
-        self::assertStringContainsString('<style nonce="already">.x{}</style>', $content);
+        self::assertSame($html, $response->getContent());
+        self::assertStringContainsString("script-src 'self' 'nonce-", (string) $response->headers->get('Content-Security-Policy'));
     }
 
     public function testProdCspAppendsConfiguredConnectSources(): void
