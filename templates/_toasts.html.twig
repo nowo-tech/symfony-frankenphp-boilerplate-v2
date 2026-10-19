@@ -39,7 +39,9 @@
                                 <p class="nowo-ui-toast__message flash__message">{{ message.message }}</p>
                             {% endif %}
                         {% else %}
-                            <p class="nowo-ui-toast__message flash__message">{{ message|flash_trans }}</p>
+                            {#- TranslatableMessage flashes (product controllers) go through |trans: AuthKit's flash_trans up to
+                                1.27.2 only translates plain string keys and returns objects unchanged. -#}
+                            <p class="nowo-ui-toast__message flash__message">{{ message.message is defined ? message|trans : message|flash_trans }}</p>
                         {% endif %}
                     </div>
                     <button

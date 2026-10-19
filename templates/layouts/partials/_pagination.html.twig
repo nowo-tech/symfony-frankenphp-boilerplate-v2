@@ -10,7 +10,7 @@
   Optional:
     - query
     - nav_label (translation key)
-    - trans_domain (default messages) for showing/previous/next
+    - trans_domain (default NowoUiKitBundle) for showing/previous/next
     - nav_trans_domain (default = trans_domain) for aria-label
     - framework
     - page_param / per_page_param (UiKit list scaffold, View\Pagination; default page / per_page)
@@ -19,7 +19,7 @@
 {% set query = query|default({}) %}
 {% set nav_label = nav_label|default('pagination.nav') %}
 {% set framework = framework|default(null) %}
-{% set trans_domain = trans_domain|default('messages') %}
+{% set trans_domain = trans_domain|default('NowoUiKitBundle') %}
 {% set nav_trans_domain = nav_trans_domain|default(trans_domain) %}
 {% set route = route|default(app.request.attributes.get('_route')) %}
 {% set route_params = route_params|default(app.request.attributes.get('_route_params')|default({})) %}
