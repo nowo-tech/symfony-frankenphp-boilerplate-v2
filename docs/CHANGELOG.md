@@ -9,6 +9,8 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-21
+
 ### Added
 - **AuthKit 1.20 security UX** (REQ-AUTH-008): slide-to-confirm, device-intelligence (`di_obs`, Trusted browsers), otp-input on password-reset complete; FormKit **2.5.2**. Device ID is not a credential. `qr_login.mode` stays **disabled** (AUTH-005). Migration `Version20260825190000`.
 
@@ -22,6 +24,7 @@ This repository is the **platform** starter (`Identity` / `Shared` / `Setup`). P
 
 ### Changed
 
+- **PHP 8.5.12:** the image builds on `dunglas/frankenphp:1.13.2-php8.5.12` (FrankenPHP 1.13.2, PHP 8.5.12, Caddy 2.11.7) instead of the floating `dunglas/frankenphp:1-php8.5`; rebuild the image to pick it up.
 - **SiteBackup 1.13.8 → 1.17.0** (`nowo-tech/site-backup-bundle`): panel `security.access_roles: [ROLE_ADMIN]` declared explicitly (1.14.2+ fail-closed on empty list); per-IP panel login throttle on by default (5 / 15 min → HTTP 429 + `Retry-After`, pool `cache.rate_limiter` / `cache.app`), disabled only under `when@test`; `InstanceSettingsDurableSetupDoneStore::clearDone()` (1.15 SPI); host `panel/index.html.twig` override confirms via `data-nowo-confirm` + delegated listener (1.16, no inline `onsubmit`). Restores / setup steps that rewrite files now leave `var/site-backup/worker-restart.required` — restart FrankenPHP workers, then `bin/console nowo:site-backup:worker-restart --clear`.
 - **Beacon `send.stack_vars`** (REQ-BEACON-007): documented off in `nowo_beacon.yaml`; beacon-bundle 1.8.0 has no such key (added in 1.10.0) and never sends frame arguments — uncomment `stack_vars: false` when bumping Beacon to ≥ 1.10.
 - **Kit-over-shim (OTHER pass 40):** LoginThrottle **3.2.0**, CookieConsent **1.9.7**, Pwa **1.5.0**, HotReload **1.5.2**. Deleted host shims now owned by kits: `AuthKitAwareLoginRateLimiter`, `PwaStatelessCookieSubscriber`. PWA bootstrap `Set-Cookie` strip uses kit `http.strip_set_cookie_on_bootstrap: true`.
@@ -91,7 +94,8 @@ First **stable** release of the Nowo Shell platform boilerplate: Symfony 8.1 + P
 - This is the first tag on [`nowo-tech/symfony-frankenphp-boilerplate-v2`](https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2). Lineage was extracted from the former Nowo Shell / Beacon product tree; historical product-only changelog entries are intentionally omitted.
 - Clone and follow [INSTALL.md](INSTALL.md). Upgrade path for consumers of older private forks: see [UPGRADING.md](UPGRADING.md).
 
-[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/nowo-tech/symfony-frankenphp-boilerplate-v2/compare/v1.0.0...v1.0.1

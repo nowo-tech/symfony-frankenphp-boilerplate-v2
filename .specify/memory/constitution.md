@@ -20,7 +20,7 @@ Artifacts under `specs/` are the source of truth; code must align with them.
 
 ### II. Canonical stack
 
-- **PHP 8.5** via `dunglas/frankenphp:1-php8.5`
+- **PHP 8.5** via `dunglas/frankenphp:1.13.2-php8.5.12` (exact tag, bumped deliberately)
 - **Symfony 8.1.\*** (Flex + native Runtime)
 - **Docker Compose** as the required local environment
 - FrankenPHP in **classic** or **worker** mode, switched only via `FRANKENPHP_MODE`

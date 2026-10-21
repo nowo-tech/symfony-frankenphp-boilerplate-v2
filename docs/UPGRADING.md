@@ -7,7 +7,7 @@ Product apps built on this tree (e.g. [symfony-beacon](https://github.com/nowo-t
 ## Table of contents
 
 - [First install (no previous version)](#first-install-no-previous-version)
-- [Unreleased (main after 1.0.3)](#unreleased-main-after-103)
+- [Upgrading from 1.0.3 to 1.1.0](#upgrading-from-103-to-110)
 - [Upgrading from 1.0.2 to 1.0.3](#upgrading-from-102-to-103)
 - [Upgrading from 1.0.1 to 1.0.2](#upgrading-from-101-to-102)
 - [Upgrading from 1.0.0 to 1.0.1](#upgrading-from-100-to-101)
@@ -51,7 +51,9 @@ There is no `composer update nowo-tech/symfony-frankenphp-boilerplate-v2` path f
 
 ---
 
-## Unreleased (main after 1.0.3)
+## Upgrading from 1.0.3 to 1.1.0
+
+- **Base image:** `dunglas/frankenphp:1.13.2-php8.5.12` (FrankenPHP 1.13.2, PHP 8.5.12, Caddy 2.11.7) instead of the floating `dunglas/frankenphp:1-php8.5`. Rebuild the image (`docker compose build --pull`, or the image build of the deploy); no code, migration or env change comes with it.
 
 **No migrations.**
 
